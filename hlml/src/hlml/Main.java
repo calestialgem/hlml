@@ -1,4 +1,4 @@
-package hlml.main;
+package hlml;
 
 /** Holds the entrypoint. */
 final class Main {
