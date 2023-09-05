@@ -50,7 +50,8 @@ final class Main {
         .map(Path::toString)
         .filter(n -> n.endsWith(Source.extension))
         .map(n -> n.substring(0, n.length() - Source.extension.length()))
-        .forEach(n -> Checker.check(subject, artifacts, includes, n));
+        .map(n -> Checker.check(subject, artifacts, includes, n))
+        .forEach(t -> Builder.build(subject, artifacts, t));
     }
     catch (IOException cause) {
       throw subject

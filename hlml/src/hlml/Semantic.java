@@ -7,8 +7,10 @@ import java.util.Optional;
 /** Meaningful constructs in the program. */
 sealed interface Semantic {
   /** Collective understanding of a piece of code. */
-  record Target(Map<String, Source> sources, Optional<Entrypoint> entrypoint)
-    implements Semantic
+  record Target(
+    String name,
+    Map<String, Source> sources,
+    Optional<Entrypoint> entrypoint) implements Semantic
   {}
 
   /** Files that hold the code. */

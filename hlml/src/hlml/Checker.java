@@ -83,7 +83,7 @@ final class Checker {
     sources = new HashMap<>();
     entrypoint = Optional.empty();
     check_source(subject, name);
-    Semantic.Target target = new Semantic.Target(sources, entrypoint);
+    Semantic.Target target = new Semantic.Target(name, sources, entrypoint);
     Path target_artifact_path =
       artifacts.resolve("%s.%s%s".formatted(name, "target", Source.extension));
     try {
