@@ -6,16 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Validates a parcel for correctness. */
+/** Semantically analyzes a parcel. */
 final class Checker {
-  /** Checks a parcel. TODO: Return result of the semantic analysis. */
-  static void check(
+  /** Checks a parcel. */
+  static Semantic.Target check(
     Subject subject,
     List<Path> parcel_sites,
     String target_parcel_name)
   {
     Checker checker = new Checker(subject, parcel_sites, target_parcel_name);
-    checker.check();
+    return checker.check();
   }
 
   /** Subject that is reported when the target parcel is not found. */
@@ -43,9 +43,10 @@ final class Checker {
   }
 
   /** Checks the parcel. */
-  private void check() {
+  private Semantic.Target check() {
     resolved_parcels = new HashMap<>();
     resolve_parcel(subject, target_parcel_name);
+    return null;
   }
 
   /** Resolve a parcel. */
