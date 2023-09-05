@@ -3,28 +3,47 @@ package hlml;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 /** Holds the entrypoint. */
 final class Main {
   /** Entrypoint of the compiler. */
-  public static void main(String... arguments) throws IOException {
+  public static void main(String... arguments) {
     Main main = new Main();
     main.launch_tests();
   }
 
-  /** Constructor. */
-  private Main() {}
+  /** Subject that is reported when the launcher fails. */
+  private final Subject subject;
 
-  /** Tests the compiler by using the test suite at `tests`. */
-  private void launch_tests() throws IOException {
-    Files.list(Path.of("tests")).forEach(this::launch_test);
+  /** Directory for the executable test parcels. */
+  private final Path test_parcel_site;
+
+  /** Parcel sites to be passed to the compiler when compiling tests. */
+  private final List<Path> parcel_sites;
+
+  /** Constructor. */
+  private Main() {
+    subject = Subject.of("compiler launcher");
+    test_parcel_site = Path.of("tests");
+    parcel_sites = List.of(test_parcel_site);
   }
 
-  /** Tests compiling the given code. */
-  private void launch_test(Path test_path) {
-    String test_name = test_path.getFileName().toString();
-    test_name = test_name.substring(0, test_name.length() - ".hlml".length());
-    Path output_file = Path.of("tests", test_name + ".mlog");
-    Compiler.build(test_path, output_file);
+  /** Tests the compiler by building the executable tests. */
+  private void launch_tests() {
+    try {
+      Files
+        .list(test_parcel_site)
+        .map(Path::getFileName)
+        .map(Path::toString)
+        .forEach(p -> Checker.check(subject, parcel_sites, p));
+    }
+    catch (IOException cause) {
+      throw subject
+        .to_diagnostic(
+          "failure",
+          "Could not list the test parcel site's entries!")
+        .to_exception(cause);
+    }
   }
 }
