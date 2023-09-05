@@ -44,6 +44,17 @@ final class Main {
   /** Tests the compiler by building the executable tests. */
   private void launch_tests() {
     try {
+      Files.walkFileTree(artifacts, new Deletor());
+    }
+    catch (IOException cause) {
+      throw Subject
+        .of(artifacts)
+        .to_diagnostic(
+          "failure",
+          "Could not delete the existing artifact directory!")
+        .to_exception(cause);
+    }
+    try {
       Files
         .list(executables)
         .map(Path::getFileName)
@@ -62,7 +73,6 @@ final class Main {
   /** Builds an executable test. */
   private void launch_test(String name) {
     try {
-      Path artifacts = this.artifacts.resolve(name);
       Semantic.Target target =
         Checker.check(subject, artifacts, includes, name);
       Builder.build(subject, artifacts, target);

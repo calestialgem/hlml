@@ -58,19 +58,6 @@ final class Checker {
 
   /** Checks the target. */
   private Semantic.Target check() {
-    if (Files.exists(artifacts)) {
-      try {
-        Files.walkFileTree(artifacts, new Deletor());
-      }
-      catch (IOException cause) {
-        throw Subject
-          .of(artifacts)
-          .to_diagnostic(
-            "failure",
-            "Could not delete the existing artifact directory!")
-          .to_exception(cause);
-      }
-    }
     try {
       Files.createDirectories(artifacts);
     }
