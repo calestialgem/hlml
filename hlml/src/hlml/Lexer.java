@@ -48,6 +48,7 @@ final class Lexer {
         }
         case '{' -> tokens.add(new Token.OpeningBrace(start));
         case '}' -> tokens.add(new Token.ClosingBrace(start));
+        case ';' -> tokens.add(new Token.Semicolon(start));
         default -> {
           if (initial >= 'a' && initial <= 'z') {
             while (has_current()) {
@@ -67,6 +68,57 @@ final class Lexer {
               default -> { token = new Token.LowercaseIdentifier(start, text); }
             }
             tokens.add(token);
+            break;
+          }
+          if (initial >= '0' && initial <= '9') {
+            Natural128 value = Natural128.zero;
+            value =
+              value
+                .add(initial - '0')
+                .orElseThrow(
+                  () -> source
+                    .subject(start, current)
+                    .to_diagnostic("error", "Huge number!")
+                    .to_exception());
+            while (has_current()) {
+              int character = get_current();
+              if (character == '_')
+                continue;
+              boolean is_digit = character >= '0' && character <= '9';
+              if (!is_digit)
+                break;
+              advance();
+              value =
+                value
+                  .multiply(10)
+                  .orElseThrow(
+                    () -> source
+                      .subject(start, current)
+                      .to_diagnostic("error", "Huge number!")
+                      .to_exception());
+              value =
+                value
+                  .add(character - '0')
+                  .orElseThrow(
+                    () -> source
+                      .subject(start, current)
+                      .to_diagnostic("error", "Huge number!")
+                      .to_exception());
+            }
+            Token.NumberConstant number =
+              new Token.NumberConstant(
+                start,
+                current,
+                value
+                  .to_double()
+                  .orElseThrow(
+                    () -> source
+                      .subject(start, current)
+                      .to_diagnostic(
+                        "error",
+                        "Number is not representable as a binary64 floating point!")
+                      .to_exception()));
+            tokens.add(number);
             break;
           }
           throw source
