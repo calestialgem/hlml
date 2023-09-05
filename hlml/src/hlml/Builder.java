@@ -88,6 +88,31 @@ final class Builder {
   /** Builds an expression. */
   private int build_expression(Semantic.Expression expression) {
     return switch (expression) {
+      case Semantic.EqualTo b -> build_binary_operation(b, "equal");
+      case Semantic.NotEqualTo b -> build_binary_operation(b, "notEqual");
+      case Semantic.StrictlyEqualTo b ->
+        build_binary_operation(b, "strictEqual");
+      case Semantic.LessThan b -> build_binary_operation(b, "lessThan");
+      case Semantic.LessThanOrEqualTo b ->
+        build_binary_operation(b, "lessThanEq");
+      case Semantic.GreaterThan b -> build_binary_operation(b, "greaterThan");
+      case Semantic.GreaterThanOrEqualTo b ->
+        build_binary_operation(b, "greaterThanEq");
+      case Semantic.BitwiseOr b -> build_binary_operation(b, "or");
+      case Semantic.BitwiseXor b -> build_binary_operation(b, "xor");
+      case Semantic.BitwiseAnd b -> build_binary_operation(b, "and");
+      case Semantic.LeftShift b -> build_binary_operation(b, "shl");
+      case Semantic.RightShift b -> build_binary_operation(b, "shr");
+      case Semantic.Addition b -> build_binary_operation(b, "add");
+      case Semantic.Subtraction b -> build_binary_operation(b, "sub");
+      case Semantic.Multiplication b -> build_binary_operation(b, "mul");
+      case Semantic.Division b -> build_binary_operation(b, "div");
+      case Semantic.IntegerDivision b -> build_binary_operation(b, "idiv");
+      case Semantic.Modulus b -> build_binary_operation(b, "mod");
+      case Semantic.Promotion u -> build_unary_operation(u, "add");
+      case Semantic.Negation u -> build_unary_operation(u, "sub");
+      case Semantic.BitwiseNot u -> build_unary_operation(u, "not");
+      case Semantic.LogicalNot u -> build_unary_operation(u, "notEqual");
       case Semantic.NumberConstant number_constant -> {
         formatter
           .format(
@@ -96,11 +121,40 @@ final class Builder {
             decimal_formatter.format(number_constant.value()));
         yield register_count;
       }
-      default ->
-        throw Subject
-          .of("compiler")
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
     };
+  }
+
+  /** Builds a binary operation. */
+  private int build_binary_operation(
+    Semantic.BinaryOperation operation,
+    String operation_code)
+  {
+    int left_register = build_expression(operation.left_operand());
+    register_count++;
+    int right_register = build_expression(operation.right_operand());
+    formatter
+      .format(
+        "op %s r%d r%d r%d%n",
+        operation_code,
+        left_register,
+        left_register,
+        right_register);
+    register_count--;
+    return register_count;
+  }
+
+  /** Builds a unary operation. */
+  private int build_unary_operation(
+    Semantic.UnaryOperation operation,
+    String operation_code)
+  {
+    int left_register = build_expression(operation.operand());
+    formatter
+      .format(
+        "op %s r%d 0 r%d%n",
+        operation_code,
+        left_register,
+        left_register);
+    return register_count;
   }
 }
