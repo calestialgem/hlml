@@ -82,11 +82,9 @@ final class Lexer {
                     .to_exception());
             while (has_current()) {
               int character = get_current();
-              if (character == '_')
-                continue;
+              if (character == '_') { continue; }
               boolean is_digit = character >= '0' && character <= '9';
-              if (!is_digit)
-                break;
+              if (!is_digit) { break; }
               advance();
               value =
                 value

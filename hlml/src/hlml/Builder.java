@@ -39,10 +39,11 @@ final class Builder {
   /** Builds the target. */
   @SuppressWarnings("resource")
   private Path build() {
-    if (target.entrypoint().isEmpty())
+    if (target.entrypoint().isEmpty()) {
       throw subject
         .to_diagnostic("error", "There is no entrypoint in the target!")
         .to_exception();
+    }
     Path output = artifacts.resolve("%s%s".formatted(target.name(), extension));
     try {
       formatter = new Formatter(Files.newOutputStream(output));
@@ -56,11 +57,12 @@ final class Builder {
     build_statement(target.entrypoint().get().body());
     formatter.format("end%n");
     formatter.close();
-    if (formatter.ioException() != null)
+    if (formatter.ioException() != null) {
       throw Subject
         .of(output)
         .to_diagnostic("failure", "Could not write to the output file!")
         .to_exception(formatter.ioException());
+    }
     return output;
   }
 

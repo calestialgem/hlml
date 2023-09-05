@@ -96,16 +96,14 @@ public record Natural128(long high_part, long low_part) {
 
   /** Converts the natural to a {@code double} if it fits. */
   public OptionalDouble to_double() {
-    if (high_part != 0)
-      return OptionalDouble.empty();
+    if (high_part != 0) { return OptionalDouble.empty(); }
     int scale_up = Long.numberOfTrailingZeros(low_part);
     long scaled_natural = low_part >>> scale_up;
     int precision = Long.SIZE - Long.numberOfLeadingZeros(scaled_natural);
     int double_mantissa_bits = 52;
     int double_mantissa_precision = double_mantissa_bits + 1;
     int floating_places = double_mantissa_precision - precision;
-    if (floating_places < 0)
-      return OptionalDouble.empty();
+    if (floating_places < 0) { return OptionalDouble.empty(); }
     long mantissa = scaled_natural << floating_places;
     long mantissa_mask = (1L << double_mantissa_bits) - 1;
     long masked_mantissa = mantissa & mantissa_mask;
