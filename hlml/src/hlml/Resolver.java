@@ -129,7 +129,7 @@ final class Resolver {
     Path representation_path =
       artifact_directory
         .resolve(
-          "%s.%s.%s"
+          "%s.%s%s"
             .formatted(source_name, representation_name, Source.extension));
     try {
       Files.writeString(representation_path, representation.toString());
