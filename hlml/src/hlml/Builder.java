@@ -111,7 +111,12 @@ final class Builder {
       case Semantic.Modulus b -> build_binary_operation(b, "mod");
       case Semantic.Promotion u -> build_unary_operation(u, "add");
       case Semantic.Negation u -> build_unary_operation(u, "sub");
-      case Semantic.BitwiseNot u -> build_unary_operation(u, "not");
+      case Semantic.BitwiseNot u -> {
+        int register = build_expression(u.operand());
+        formatter
+          .format("op not r%d r%d 0%n", register, register);
+        yield register_count;
+      }
       case Semantic.LogicalNot u -> build_unary_operation(u, "notEqual");
       case Semantic.NumberConstant number_constant -> {
         formatter
@@ -148,13 +153,8 @@ final class Builder {
     Semantic.UnaryOperation operation,
     String operation_code)
   {
-    int left_register = build_expression(operation.operand());
-    formatter
-      .format(
-        "op %s r%d 0 r%d%n",
-        operation_code,
-        left_register,
-        left_register);
+    int register = build_expression(operation.operand());
+    formatter.format("op %s r%d 0 r%d%n", operation_code, register, register);
     return register_count;
   }
 }

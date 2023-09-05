@@ -3,7 +3,7 @@ op add r0 0 r0
 set r0 7
 op sub r0 0 r0
 set r0 7
-op not r0 0 r0
+op not r0 r0 0
 set r0 7
 op notEqual r0 0 r0
 set r0 100
