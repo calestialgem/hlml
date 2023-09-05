@@ -6,13 +6,13 @@ import java.util.List;
 /** Transforms a source file to a list of tokens. */
 final class Lexer {
   /** Lexes a source file.. */
-  static LexedSource lex(Source source) {
+  static LexedSource lex(LoadedSource source) {
     Lexer lexer = new Lexer(source);
     return lexer.lex();
   }
 
   /** Source file that is lexed. */
-  private final Source source;
+  private final LoadedSource source;
 
   /** Contents of the lexed source file. */
   private String contents;
@@ -30,7 +30,9 @@ final class Lexer {
   private int initial;
 
   /** Constructor. */
-  private Lexer(Source source) { this.source = source; }
+  private Lexer(LoadedSource source) {
+    this.source = source;
+  }
 
   /** Lexes the source file. */
   private LexedSource lex() {
