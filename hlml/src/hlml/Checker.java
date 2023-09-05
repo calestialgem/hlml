@@ -40,6 +40,9 @@ final class Checker {
   /** Entrypoint declaration if there is one in the target. */
   private Optional<Semantic.Entrypoint> entrypoint;
 
+  /** Currently checked source. */
+  private Resolution.Source source;
+
   /** Declarations in the currently checked source. */
   private Map<String, Semantic.Declaration> declarations;
 
@@ -92,17 +95,14 @@ final class Checker {
   private Semantic.Source check_source(Subject subject, String name) {
     if (sources.containsKey(name)) { return sources.get(name); }
     Path file = find_source(subject, name);
-    Resolution.Source resolved_source = Resolver.resolve(file, artifacts);
+    source = Resolver.resolve(file, artifacts);
     declarations = new HashMap<>();
-    for (Resolution.Declaration resolution : resolved_source
-      .declarations()
-      .values())
-    {
+    for (Resolution.Declaration resolution : source.declarations().values()) {
       Semantic.Declaration declaration = check_declaration(resolution);
       switch (declaration) {
         case Semantic.Entrypoint as_entrypoint -> {
           if (entrypoint.isPresent()) {
-            throw resolved_source
+            throw source
               .subject(resolution.node())
               .to_diagnostic(
                 "error",
@@ -113,9 +113,9 @@ final class Checker {
         }
       }
     }
-    Semantic.Source source = new Semantic.Source(declarations);
-    sources.put(name, source);
-    return source;
+    Semantic.Source checked_source = new Semantic.Source(declarations);
+    sources.put(name, checked_source);
+    return checked_source;
   }
 
   /** Check a declaration. */
@@ -148,6 +148,11 @@ final class Checker {
     return switch (node) {
       case Node.NumberConstant number_constant ->
         new Semantic.NumberConstant(number_constant.value());
+      default ->
+        throw source
+          .subject(node)
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
     };
   }
 
