@@ -53,7 +53,7 @@ sealed interface Subject {
 
   /** Returns a subject as the given path. */
   static Subject of(Path path) {
-    return of(path.toAbsolutePath().normalize());
+    return of(path.toAbsolutePath().normalize().toString());
   }
 
   /** Returns a subject as the location in the given file from the start byte up
