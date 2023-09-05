@@ -36,6 +36,27 @@ sealed interface Node {
     }
   }
 
+  /** Statements that evaluates an expression and discards it. */
+  record Discard(Expression discarded) implements Statement {
+    @Override
+    public int first(List<Token> tokens) { return discarded.first(tokens); }
+
+    @Override
+    public int last(List<Token> tokens) { return discarded.last(tokens) + 1; }
+  }
+
+  /** Calculations that denote a value. */
+  sealed interface Expression extends Node {}
+
+  /** Expression that directly denotes a compile-time known number value. */
+  record NumberConstant(int first, double value) implements Expression {
+    @Override
+    public int first(List<Token> tokens) { return first; }
+
+    @Override
+    public int last(List<Token> tokens) { return first; }
+  }
+
   /** Index of the node's first token. Used for reporting diagnostics with a
    * source location. */
   int first(List<Token> tokens);

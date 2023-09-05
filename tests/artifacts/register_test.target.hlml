@@ -1,0 +1,1 @@
+Target[name=register_test, sources={register_test=Source[declarations={}]}, entrypoint=Optional[Entrypoint[body=Block[inner_statements=[null, null]]]]]

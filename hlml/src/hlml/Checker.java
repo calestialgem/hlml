@@ -137,6 +137,7 @@ final class Checker {
             .stream()
             .map(this::check_statement)
             .toList());
+      default -> null;
     };
   }
 

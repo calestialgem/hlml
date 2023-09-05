@@ -52,7 +52,7 @@ final class Parser {
 
   /** Parses a statement. */
   private Optional<Node.Statement> parse_statement() {
-    return first_of(this::parse_block);
+    return first_of(this::parse_block, this::parse_discard);
   }
 
   /** Parses a block. */
@@ -65,6 +65,32 @@ final class Parser {
       "inner statement list closer `}` of the block statement");
     Node.Block block = new Node.Block(first, body);
     return Optional.of(block);
+  }
+
+  /** Parses a discard. */
+  private Optional<Node.Discard> parse_discard() {
+    Optional<Node.Expression> discarded = parse_expression();
+    if (discarded.isEmpty())
+      return Optional.empty();
+    expect(Token.Semicolon.class, "terminator `;` of the discard statement");
+    Node.Discard discard = new Node.Discard(discarded.get());
+    return Optional.of(discard);
+  }
+
+  /** Parses an expression. */
+  private Optional<Node.Expression> parse_expression() {
+    return first_of(this::parse_number_constant);
+  }
+
+  /** Parses a number constant. */
+  private Optional<Node.NumberConstant> parse_number_constant() {
+    int first = current;
+    Optional<Token.NumberConstant> token = parse(Token.NumberConstant.class);
+    if (token.isEmpty())
+      return Optional.empty();
+    Node.NumberConstant number_constant =
+      new Node.NumberConstant(first, token.get().value());
+    return Optional.of(number_constant);
   }
 
   /** Runs the given parser repeatedly and collects the parsed constructs as a
