@@ -223,12 +223,12 @@ final class Lexer {
     IntFunction<Token> repeated_extended_lexer_function)
   {
     if (has_current() && get_current() == initial) {
+      advance();
       if (has_current() && get_current() == '=') {
         advance();
         lex_single(repeated_extended_lexer_function);
         return;
       }
-      advance();
       lex_single(repeated_lexer_function);
       return;
     }
