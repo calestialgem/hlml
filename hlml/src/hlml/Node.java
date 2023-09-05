@@ -27,7 +27,7 @@ sealed interface Node {
     @Override
     public int last(List<Token> tokens) {
       if (!body.isEmpty())
-        return body.get(body.size() - 1).last(tokens);
+        return body.get(body.size() - 1).last(tokens) + 1;
       return first + 1;
     }
   }
