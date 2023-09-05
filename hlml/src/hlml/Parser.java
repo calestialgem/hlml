@@ -243,13 +243,13 @@ final class Parser {
     BinaryOperationParser<PrecedenceType>... binary_operation_parsers)
   {
     Optional<OperandType> first_operand = operand_parser_function.get();
-    if (first_operand.isEmpty())
-      return Optional.empty();
+    if (first_operand.isEmpty()) { return Optional.empty(); }
     PrecedenceType result = first_operand.get();
     while (true) {
       for (BinaryOperationParser<PrecedenceType> binary_operation_parser : binary_operation_parsers) {
-        if (parse_token(binary_operation_parser.operator_class()).isEmpty())
+        if (parse_token(binary_operation_parser.operator_class()).isEmpty()) {
           continue;
+        }
         OperandType right_operand =
           expect(
             operand_parser_function,
@@ -273,14 +273,16 @@ final class Parser {
     List<UnaryOperationParser<PrecedenceType>> stack = new ArrayList<>();
     while (true) {
       for (UnaryOperationParser<PrecedenceType> unary_operation_parser : unary_operation_parsers) {
-        if (parse_token(unary_operation_parser.operator_class()).isEmpty())
+        if (parse_token(unary_operation_parser.operator_class()).isEmpty()) {
           continue;
+        }
         stack.add(unary_operation_parser);
       }
       break;
     }
-    if (stack.isEmpty())
+    if (stack.isEmpty()) {
       return operand_parser_function.get().map(Function.identity());
+    }
     PrecedenceType result =
       expect(
         operand_parser_function,
