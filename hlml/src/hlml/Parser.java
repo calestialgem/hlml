@@ -70,8 +70,7 @@ final class Parser {
   /** Parses a discard. */
   private Optional<Node.Discard> parse_discard() {
     Optional<Node.Expression> discarded = parse_expression();
-    if (discarded.isEmpty())
-      return Optional.empty();
+    if (discarded.isEmpty()) { return Optional.empty(); }
     expect(Token.Semicolon.class, "terminator `;` of the discard statement");
     Node.Discard discard = new Node.Discard(discarded.get());
     return Optional.of(discard);
@@ -86,8 +85,7 @@ final class Parser {
   private Optional<Node.NumberConstant> parse_number_constant() {
     int first = current;
     Optional<Token.NumberConstant> token = parse(Token.NumberConstant.class);
-    if (token.isEmpty())
-      return Optional.empty();
+    if (token.isEmpty()) { return Optional.empty(); }
     Node.NumberConstant number_constant =
       new Node.NumberConstant(first, token.get().value());
     return Optional.of(number_constant);

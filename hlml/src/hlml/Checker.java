@@ -100,15 +100,16 @@ final class Checker {
     {
       Semantic.Declaration declaration = check_declaration(resolution);
       switch (declaration) {
-        case Semantic.Entrypoint entrypoint -> {
-          if (this.entrypoint.isPresent())
+        case Semantic.Entrypoint as_entrypoint -> {
+          if (entrypoint.isPresent()) {
             throw resolved_source
               .subject(resolution.node())
               .to_diagnostic(
                 "error",
                 "Redeclaration of the entrypoint in the target!")
               .to_exception();
-          this.entrypoint = Optional.of(entrypoint);
+          }
+          entrypoint = Optional.of(as_entrypoint);
         }
       }
     }
