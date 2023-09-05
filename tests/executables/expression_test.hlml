@@ -18,7 +18,9 @@ entrypoint {
   100 >> 7;     # op shr r0 r0 r1
 
   100 & 7;      # op and r0 r0 r1
+
   100 ^ 7;      # op xor r0 r0 r1
+
   100 | 7;      # op  or r0 r0 r1
 
   100  < 7;     # op      lessThan r0 r0 r1
