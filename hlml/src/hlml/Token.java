@@ -38,6 +38,195 @@ sealed interface Token {
     public String explanation() { return "punctuation `;`"; }
   }
 
+  /** Punctuation `+`. */
+  record Plus(int start) implements Token {
+    @Override
+    public int end() { return start + "+".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `+`"; }
+  }
+
+  /** Punctuation `-`. */
+  record Minus(int start) implements Token {
+    @Override
+    public int end() { return start + "-".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `-`"; }
+  }
+
+  /** Punctuation `~`. */
+  record Tilde(int start) implements Token {
+    @Override
+    public int end() { return start + "~".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `~`"; }
+  }
+
+  /** Punctuation `*`. */
+  record Star(int start) implements Token {
+    @Override
+    public int end() { return start + "*".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `*`"; }
+  }
+
+  /** Punctuation `%`. */
+  record Percent(int start) implements Token {
+    @Override
+    public int end() { return start + "%".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `%`"; }
+  }
+
+  /** Punctuation `&`. */
+  record Ampersand(int start) implements Token {
+    @Override
+    public int end() { return start + "&".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `&`"; }
+  }
+
+  /** Punctuation `^`. */
+  record Caret(int start) implements Token {
+    @Override
+    public int end() { return start + "^".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `^`"; }
+  }
+
+  /** Punctuation `|`. */
+  record Pipe(int start) implements Token {
+    @Override
+    public int end() { return start + "|".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `|`"; }
+  }
+
+  /** Punctuation `/`. */
+  record Slash(int start) implements Token {
+    @Override
+    public int end() { return start + "/".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `/`"; }
+  }
+
+  /** Punctuation `//`. */
+  record SlashSlash(int start) implements Token {
+    @Override
+    public int end() { return start + "//".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `//`"; }
+  }
+
+  /** Punctuation `!`. */
+  record Exclamation(int start) implements Token {
+    @Override
+    public int end() { return start + "!".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `!`"; }
+  }
+
+  /** Punctuation `!=`. */
+  record ExclamationEqual(int start) implements Token {
+    @Override
+    public int end() { return start + "!=".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `!=`"; }
+  }
+
+  /** Punctuation `<`. */
+  record Left(int start) implements Token {
+    @Override
+    public int end() { return start + "<".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `<`"; }
+  }
+
+  /** Punctuation `<<`. */
+  record LeftLeft(int start) implements Token {
+    @Override
+    public int end() { return start + "<<".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `<<`"; }
+  }
+
+  /** Punctuation `<=`. */
+  record LeftEqual(int start) implements Token {
+    @Override
+    public int end() { return start + "<=".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `<=`"; }
+  }
+
+  /** Punctuation `>`. */
+  record Right(int start) implements Token {
+    @Override
+    public int end() { return start + ">".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `>`"; }
+  }
+
+  /** Punctuation `>>`. */
+  record RightRight(int start) implements Token {
+    @Override
+    public int end() { return start + ">>".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `>>`"; }
+  }
+
+  /** Punctuation `>=`. */
+  record RightEqual(int start) implements Token {
+    @Override
+    public int end() { return start + ">=".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `>=`"; }
+  }
+
+  /** Punctuation `=`. */
+  record Equal(int start) implements Token {
+    @Override
+    public int end() { return start + "=".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `=`"; }
+  }
+
+  /** Punctuation `==`. */
+  record EqualEqual(int start) implements Token {
+    @Override
+    public int end() { return start + "==".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `==`"; }
+  }
+
+  /** Punctuation `===`. */
+  record EqualEqualEqual(int start) implements Token {
+    @Override
+    public int end() { return start + "===".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `===`"; }
+  }
+
   /** Any word that refers to a user-defined construct. */
   sealed interface Identifier extends Token {
     /** Characters that make up the identifier. */

@@ -2,6 +2,7 @@ package hlml;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.IntFunction;
 
 /** Transforms a source file to a list of tokens. */
 final class Lexer {
@@ -23,6 +24,12 @@ final class Lexer {
   /** Index of the currently lexed character. */
   private int current;
 
+  /** Currently lexed token's first character. */
+  private int initial;
+
+  /** Currently lexed token's first character's first byte's index. */
+  private int start;
+
   /** Constructor. */
   private Lexer(LoadedSource source) {
     this.source = source;
@@ -34,8 +41,8 @@ final class Lexer {
     tokens = new ArrayList<Token>();
     current = 0;
     while (has_current()) {
-      int start = current;
-      int initial = get_current();
+      initial = get_current();
+      start = current;
       advance();
       switch (initial) {
         case ' ', '\t', '\r', '\n' -> {}
@@ -46,9 +53,36 @@ final class Lexer {
             if (character == '\n') { break; }
           }
         }
-        case '{' -> tokens.add(new Token.OpeningBrace(start));
-        case '}' -> tokens.add(new Token.ClosingBrace(start));
-        case ';' -> tokens.add(new Token.Semicolon(start));
+        case '{' -> lex_single(Token.OpeningBrace::new);
+        case '}' -> lex_single(Token.ClosingBrace::new);
+        case ';' -> lex_single(Token.Semicolon::new);
+        case '+' -> lex_single(Token.Plus::new);
+        case '-' -> lex_single(Token.Minus::new);
+        case '~' -> lex_single(Token.Tilde::new);
+        case '*' -> lex_single(Token.Star::new);
+        case '%' -> lex_single(Token.Percent::new);
+        case '&' -> lex_single(Token.Ampersand::new);
+        case '^' -> lex_single(Token.Caret::new);
+        case '|' -> lex_single(Token.Pipe::new);
+        case '/' -> lex_repeatable(Token.Slash::new, Token.SlashSlash::new);
+        case '!' ->
+          lex_extensible(Token.Exclamation::new, Token.ExclamationEqual::new);
+        case '<' ->
+          lex_repeatable_or_extensible(
+            Token.Left::new,
+            Token.LeftLeft::new,
+            Token.LeftEqual::new);
+        case '>' ->
+          lex_repeatable_or_extensible(
+            Token.Right::new,
+            Token.RightRight::new,
+            Token.RightEqual::new);
+        case '=' ->
+          lex_repeatable_and_extensible(
+            Token.Equal::new,
+            Token.EqualEqual::new,
+            Token.EqualEqual::new,
+            Token.EqualEqualEqual::new);
         default -> {
           if (initial >= 'a' && initial <= 'z') {
             while (has_current()) {
@@ -127,6 +161,83 @@ final class Lexer {
       }
     }
     return new LexedSource(source, tokens);
+  }
+
+  /** Lexes a single punctuation. */
+  private void lex_single(IntFunction<Token> lexer_function) {
+    Token token = lexer_function.apply(start);
+    tokens.add(token);
+  }
+
+  /** Lexes a single or repeated punctuation. */
+  private void lex_repeatable(
+    IntFunction<Token> lexer_function,
+    IntFunction<Token> repeated_lexer_function)
+  {
+    if (has_current() && get_current() == initial) {
+      advance();
+      lex_single(repeated_lexer_function);
+      return;
+    }
+    lex_single(lexer_function);
+  }
+
+  /** Lexes a single or extended punctuation. */
+  private void lex_extensible(
+    IntFunction<Token> lexer_function,
+    IntFunction<Token> extended_lexer_function)
+  {
+    if (has_current() && get_current() == '=') {
+      advance();
+      lex_single(extended_lexer_function);
+      return;
+    }
+    lex_single(lexer_function);
+  }
+
+  /** Lexes a single, repeated, or extended punctuation. */
+  private void lex_repeatable_or_extensible(
+    IntFunction<Token> lexer_function,
+    IntFunction<Token> repeated_lexer_function,
+    IntFunction<Token> extended_lexer_function)
+  {
+    if (has_current() && get_current() == initial) {
+      advance();
+      lex_single(repeated_lexer_function);
+      return;
+    }
+    if (has_current() && get_current() == '=') {
+      advance();
+      lex_single(extended_lexer_function);
+      return;
+    }
+    lex_single(lexer_function);
+  }
+
+  /** Lexes a single, repeated, extended, or repeated and extended
+   * punctuation. */
+  private void lex_repeatable_and_extensible(
+    IntFunction<Token> lexer_function,
+    IntFunction<Token> repeated_lexer_function,
+    IntFunction<Token> extended_lexer_function,
+    IntFunction<Token> repeated_extended_lexer_function)
+  {
+    if (has_current() && get_current() == initial) {
+      if (has_current() && get_current() == '=') {
+        advance();
+        lex_single(repeated_extended_lexer_function);
+        return;
+      }
+      advance();
+      lex_single(repeated_lexer_function);
+      return;
+    }
+    if (has_current() && get_current() == '=') {
+      advance();
+      lex_single(extended_lexer_function);
+      return;
+    }
+    lex_single(lexer_function);
   }
 
   /** Skips over the currently lexed character. */
