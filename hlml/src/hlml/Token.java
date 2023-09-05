@@ -6,18 +6,27 @@ sealed interface Token {
   record Entrypoint(int start) implements Token {
     @Override
     public int end() { return start + "entrypoint".length(); }
+
+    @Override
+    public String explanation() { return "keyword `entrypoint`"; }
   }
 
   /** Punctuation `{`. */
   record OpeningBrace(int start) implements Token {
     @Override
     public int end() { return start + "{".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `{`"; }
   }
 
   /** Punctuation `}`. */
   record ClosingBrace(int start) implements Token {
     @Override
     public int end() { return start + "}".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `}`"; }
   }
 
   /** Any word that refers to a user-defined construct. */
@@ -31,7 +40,12 @@ sealed interface Token {
 
   /** Identifiers the begin with a lowercase letter. Used for identifying
    * variables and procedures. */
-  record LowercaseIdentifier(int start, String text) implements Identifier {}
+  record LowercaseIdentifier(int start, String text) implements Identifier {
+    @Override
+    public String explanation() {
+      return "lowercase identifier `%s`".formatted(text);
+    }
+  }
 
   /** Index of the token's first character's first byte from the beginning of
    * the file. Used for reporting diagnostics with a source location. */
@@ -41,4 +55,7 @@ sealed interface Token {
    * the beginning of the file. Used for reporting diagnostics with a source
    * location. */
   int end();
+
+  /** Returns a text to report the token to the user. */
+  String explanation();
 }

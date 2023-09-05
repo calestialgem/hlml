@@ -76,7 +76,7 @@ final class Lexer {
             break;
           }
           throw source
-            .subject(start)
+            .subject(start, current)
             .to_diagnostic("error", "Unknown character `%c`!", initial)
             .to_exception();
         }

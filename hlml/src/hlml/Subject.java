@@ -1,7 +1,5 @@
 package hlml;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Formatter;
 
@@ -14,29 +12,12 @@ sealed interface Subject {
   }
 
   /** Creator as a location in a source file. */
-  record Location(Path file, int start, int end) implements Subject {
+  record Location(Path file, String contents, int start, int end)
+    implements Subject
+  {
     @Override
     public void format_to(Formatter formatter) {
       formatter.format("%s", file.toAbsolutePath().normalize());
-      String contents;
-      try {
-        contents = Files.readString(file);
-      }
-      catch (IOException cause) {
-        throw of(file)
-          .to_diagnostic("failure", "Could not read the source file!")
-          .to_exception(cause);
-      }
-      if (contents.length() <= start || contents.length() < end) {
-        throw of(file)
-          .to_diagnostic(
-            "error",
-            "File changed between lexing and reporting! Length: %d, Start: %d, End: %d",
-            contents.length(),
-            start,
-            end)
-          .to_exception();
-      }
       int line = 1;
       int column = 1;
       int index = 0;
@@ -49,9 +30,8 @@ sealed interface Subject {
         }
       }
       formatter.format(":%d:%d", line, column);
-      int length = end - start;
-      if (length <= 1)
-        return;
+      int start_line = line;
+      int start_column = column;
       for (; index < end; index = contents.offsetByCodePoints(index, 1)) {
         column++;
         int character = contents.codePointAt(index);
@@ -60,6 +40,8 @@ sealed interface Subject {
           column = 1;
         }
       }
+      if (start_line == line && start_column == column - 1)
+        return;
       formatter.format(":%d:%d", line, column);
     }
   }
@@ -76,14 +58,8 @@ sealed interface Subject {
 
   /** Returns a subject as the location in the given file from the start byte up
    * to the end byte. */
-  static Subject of(Path file, int start, int end) {
-    return new Location(file, start, end);
-  }
-
-  /** Returns a subject as the character at the given index in the given
-   * file. */
-  static Subject of(Path file, int index) {
-    return of(file, index, index + 1);
+  static Subject of(Path file, String contents, int start, int end) {
+    return new Location(file, contents, start, end);
   }
 
   /** Returns a message from this subject. */

@@ -8,9 +8,4 @@ record Source(Path path) {
   Subject subject() {
     return Subject.of(path);
   }
-
-  /** Returns a subject as a character in this source file. */
-  Subject subject(int index) {
-    return Subject.of(path, index);
-  }
 }
