@@ -96,6 +96,11 @@ final class Builder {
             decimal_formatter.format(number_constant.value()));
         yield register_count;
       }
+      default ->
+        throw Subject
+          .of("compiler")
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
     };
   }
 }
