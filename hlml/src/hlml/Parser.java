@@ -33,8 +33,7 @@ final class Parser {
         expect(this::parse_declaration, "top level declaration");
       declarations.add(declaration);
     }
-    ParsedSource parsed_source = new ParsedSource(source, declarations);
-    return parsed_source;
+    return new ParsedSource(source, declarations);
   }
 
   /** Parses a declaration. */
@@ -44,8 +43,7 @@ final class Parser {
 
   /** Parses a entrypoint. */
   private Optional<Node.Entrypoint> parse_entrypoint() {
-    if (parse(Token.Entrypoint.class).isEmpty())
-      return Optional.empty();
+    if (parse(Token.Entrypoint.class).isEmpty()) { return Optional.empty(); }
     Node.Statement body =
       expect(this::parse_block, "body of the entrypoint declaration");
     Node.Entrypoint entrypoint = new Node.Entrypoint(body);
@@ -60,8 +58,7 @@ final class Parser {
   /** Parses a block. */
   private Optional<Node.Block> parse_block() {
     int first = current;
-    if (parse(Token.OpeningBrace.class).isEmpty())
-      return Optional.empty();
+    if (parse(Token.OpeningBrace.class).isEmpty()) { return Optional.empty(); }
     List<Node.Statement> body = repeats_of(this::parse_statement);
     expect(
       Token.ClosingBrace.class,
@@ -78,8 +75,7 @@ final class Parser {
     List<ConstructType> constructs = new ArrayList<>();
     while (true) {
       Optional<ConstructType> construct = parser_function.get();
-      if (construct.isEmpty())
-        break;
+      if (construct.isEmpty()) { break; }
       constructs.add(construct.get());
     }
     return constructs;
@@ -93,8 +89,7 @@ final class Parser {
   {
     for (Supplier<Optional<? extends ConstructType>> parser_function : parser_functions) {
       Optional<? extends ConstructType> construct = parser_function.get();
-      if (construct.isPresent())
-        return Optional.of(construct.get());
+      if (construct.isPresent()) { return Optional.of(construct.get()); }
     }
     return Optional.empty();
   }
@@ -113,11 +108,9 @@ final class Parser {
   private <TokenType extends Token> Optional<TokenType> parse(
     Class<TokenType> token_class)
   {
-    if (current == source.tokens().size())
-      return Optional.empty();
+    if (current == source.tokens().size()) { return Optional.empty(); }
     Token token = source.tokens().get(current);
-    if (!token_class.isInstance(token))
-      return Optional.empty();
+    if (!token_class.isInstance(token)) { return Optional.empty(); }
     current++;
     return Optional.of((TokenType) token);
   }
@@ -129,8 +122,7 @@ final class Parser {
     String construct_explanation)
   {
     Optional<ConstructType> construct = parse_function.get();
-    if (construct.isPresent())
-      return construct.get();
+    if (construct.isPresent()) { return construct.get(); }
     if (current == source.tokens().size()) {
       Token reported_token = source.tokens().get(current - 1);
       throw source

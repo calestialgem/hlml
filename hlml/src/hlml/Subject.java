@@ -40,8 +40,7 @@ sealed interface Subject {
           column = 1;
         }
       }
-      if (start_line == line && start_column == column - 1)
-        return;
+      if (start_line == line && start_column == column - 1) { return; }
       formatter.format(":%d:%d", line, column);
     }
   }
@@ -75,8 +74,7 @@ sealed interface Subject {
       formatter.format(format, arguments);
     }
     String message = buffer.toString();
-    Diagnostic diagnostic = new Diagnostic(message);
-    return diagnostic;
+    return new Diagnostic(message);
   }
 
   /** Formats the subject. */

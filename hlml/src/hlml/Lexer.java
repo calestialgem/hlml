@@ -23,12 +23,6 @@ final class Lexer {
   /** Index of the currently lexed character. */
   private int current;
 
-  /** Currently lexed token's first character's first byte's index. */
-  private int start;
-
-  /** Currently lexed token's first character. */
-  private int initial;
-
   /** Constructor. */
   private Lexer(LoadedSource source) {
     this.source = source;
@@ -40,8 +34,8 @@ final class Lexer {
     tokens = new ArrayList<Token>();
     current = 0;
     while (has_current()) {
-      start = current;
-      initial = get_current();
+      int start = current;
+      int initial = get_current();
       advance();
       switch (initial) {
         case ' ', '\t', '\r', '\n' -> {}
@@ -82,8 +76,7 @@ final class Lexer {
         }
       }
     }
-    LexedSource lexed_source = new LexedSource(source, tokens);
-    return lexed_source;
+    return new LexedSource(source, tokens);
   }
 
   /** Skips over the currently lexed character. */

@@ -28,9 +28,10 @@ sealed interface Node {
 
     @Override
     public int last(List<Token> tokens) {
-      if (!inner_statements.isEmpty())
+      if (!inner_statements.isEmpty()) {
         return inner_statements.get(inner_statements.size() - 1).last(tokens)
           + 1;
+      }
       return first + 1;
     }
   }

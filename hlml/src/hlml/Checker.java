@@ -81,8 +81,7 @@ final class Checker {
 
   /** Resolve a source file. */
   private Resolution.Source resolve_source(Subject subject, String name) {
-    if (sources.containsKey(name))
-      return sources.get(name);
+    if (sources.containsKey(name)) { return sources.get(name); }
     Path file = find_source(subject, name);
     Resolution.Source parcel = Resolver.resolve(file, artifacts);
     sources.put(name, parcel);
@@ -94,8 +93,7 @@ final class Checker {
     String full_name = name + Source.extension;
     for (Path site : includes) {
       Path file = site.resolve(full_name);
-      if (Files.exists(file))
-        return file;
+      if (Files.exists(file)) { return file; }
     }
     throw subject
       .to_diagnostic(

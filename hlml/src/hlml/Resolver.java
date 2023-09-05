@@ -53,13 +53,11 @@ final class Resolver {
       }
       declarations.put(declaration.designator(), declaration);
     }
-    Resolution.Source resolved_source =
-      new Resolution.Source(
-        source.path(),
-        loaded_source.contents(),
-        lexed_source.tokens(),
-        declarations);
-    return resolved_source;
+    return new Resolution.Source(
+      source.path(),
+      loaded_source.contents(),
+      lexed_source.tokens(),
+      declarations);
   }
 
   /** Resolves a declaration in a source file in the parcel. */

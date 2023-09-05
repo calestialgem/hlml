@@ -29,7 +29,6 @@ final class Loader {
         .to_diagnostic("failure", "Could not read the source file!")
         .to_exception(cause);
     }
-    LoadedSource loaded_source = new LoadedSource(source, contents);
-    return loaded_source;
+    return new LoadedSource(source, contents);
   }
 }
