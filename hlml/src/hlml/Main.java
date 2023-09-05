@@ -50,13 +50,25 @@ final class Main {
         .map(Path::toString)
         .filter(n -> n.endsWith(Source.extension))
         .map(n -> n.substring(0, n.length() - Source.extension.length()))
-        .map(n -> Checker.check(subject, artifacts, includes, n))
-        .forEach(t -> Builder.build(subject, artifacts, t));
+        .forEach(this::launch_test);
     }
     catch (IOException cause) {
       throw subject
         .to_diagnostic("failure", "Could not list the executable tests!")
         .to_exception(cause);
+    }
+  }
+
+  /** Builds an executable test. */
+  private void launch_test(String name) {
+    try {
+      Path artifacts = this.artifacts.resolve(name);
+      Semantic.Target target =
+        Checker.check(subject, artifacts, includes, name);
+      Builder.build(subject, artifacts, target);
+    }
+    catch (Throwable exception) {
+      exception.printStackTrace();
     }
   }
 }

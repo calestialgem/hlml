@@ -1,0 +1,6 @@
+# Tests allocating registers for temporary expressions.
+
+entrypoint {
+  1;
+  71;
+}
