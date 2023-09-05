@@ -86,7 +86,7 @@ final class Builder {
   }
 
   /** Builds an expression. */
-  private int build_expression(Semantic.Expression expression) {
+  private Evaluation build_expression(Semantic.Expression expression) {
     return switch (expression) {
       case Semantic.EqualTo b -> build_binary_operation(b, "equal");
       case Semantic.NotEqualTo b -> build_binary_operation(b, "notEqual");
@@ -112,49 +112,65 @@ final class Builder {
       case Semantic.Promotion u -> build_unary_operation(u, "add");
       case Semantic.Negation u -> build_unary_operation(u, "sub");
       case Semantic.BitwiseNot u -> {
-        int register = build_expression(u.operand());
-        formatter
-          .format("op not r%d r%d 0%n", register, register);
-        yield register_count;
+        Evaluation operand = build_expression(u.operand());
+        int result = overwrite_evaluation(operand);
+        formatter.format("op not r%d ", result);
+        build_evaluation(operand);
+        formatter.format(" 0%n");
+        yield new Evaluation.Register(result);
       }
       case Semantic.LogicalNot u -> build_unary_operation(u, "notEqual");
-      case Semantic.NumberConstant number_constant -> {
-        formatter
-          .format(
-            "set r%d %s%n",
-            register_count,
-            decimal_formatter.format(number_constant.value()));
-        yield register_count;
-      }
+      case Semantic.NumberConstant number_constant ->
+        new Evaluation.Immediate(number_constant.value());
     };
   }
 
   /** Builds a binary operation. */
-  private int build_binary_operation(
+  private Evaluation build_binary_operation(
     Semantic.BinaryOperation operation,
     String operation_code)
   {
-    int left_register = build_expression(operation.left_operand());
+    Evaluation left_operand = build_expression(operation.left_operand());
     register_count++;
-    int right_register = build_expression(operation.right_operand());
-    formatter
-      .format(
-        "op %s r%d r%d r%d%n",
-        operation_code,
-        left_register,
-        left_register,
-        right_register);
+    Evaluation right_operand = build_expression(operation.right_operand());
     register_count--;
-    return register_count;
+    int result = overwrite_evaluation(left_operand);
+    formatter.format("op %s r%d ", operation_code, result);
+    build_evaluation(left_operand);
+    formatter.format(" ");
+    build_evaluation(right_operand);
+    formatter.format("%n");
+    return new Evaluation.Register(result);
   }
 
   /** Builds a unary operation. */
-  private int build_unary_operation(
+  private Evaluation build_unary_operation(
     Semantic.UnaryOperation operation,
     String operation_code)
   {
-    int register = build_expression(operation.operand());
-    formatter.format("op %s r%d 0 r%d%n", operation_code, register, register);
-    return register_count;
+    Evaluation operand = build_expression(operation.operand());
+    int result = overwrite_evaluation(operand);
+    formatter.format("op %s r%d 0 ", operation_code, result);
+    build_evaluation(operand);
+    formatter.format("%n");
+    return new Evaluation.Register(result);
+  }
+
+  /** Builds an evaluation as an instruction parameter. */
+  private void build_evaluation(Evaluation evaluation) {
+    switch (evaluation) {
+      case Evaluation.Register r -> formatter.format("r%d", r.index());
+      case Evaluation.Immediate i ->
+        formatter.format(decimal_formatter.format(i.value()));
+    }
+  }
+
+  /** Returns the register index to overwrite the evaluation if it is on a
+   * register. */
+  private int overwrite_evaluation(Evaluation evaluation) {
+    return switch (evaluation) {
+      case Evaluation.Register r -> r.index();
+      case Evaluation.Immediate i -> register_count;
+    };
   }
 }
