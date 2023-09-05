@@ -83,7 +83,22 @@ final class Checker {
     sources = new HashMap<>();
     entrypoint = Optional.empty();
     check_source(subject, name);
-    return new Semantic.Target(sources, entrypoint);
+    Semantic.Target target = new Semantic.Target(sources, entrypoint);
+    Path target_artifact_path =
+      artifacts.resolve("%s.%s%s".formatted(name, "target", Source.extension));
+    try {
+      Files.writeString(target_artifact_path, target.toString());
+    }
+    catch (IOException cause) {
+      throw Subject
+        .of(target_artifact_path)
+        .to_diagnostic(
+          "failure",
+          "Could not record the target of source `%s`",
+          name)
+        .to_exception(cause);
+    }
+    return target;
   }
 
   /** Check a source file. */
