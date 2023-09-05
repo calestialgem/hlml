@@ -7,12 +7,9 @@ import java.util.Optional;
 /** Meaningful constructs in the program. */
 sealed interface Semantic {
   /** Collective understanding of a piece of code. */
-  record Target(Map<String, Parcel> parcels, Optional<Entrypoint> entrypoint)
+  record Target(Map<String, Source> sources, Optional<Entrypoint> entrypoint)
     implements Semantic
   {}
-
-  /** Subdivisions of code that are in an acyclic dependency graph. */
-  record Parcel(Map<String, Source> sources) implements Semantic {}
 
   /** Files that hold the code. */
   record Source(Map<String, Declaration> declarations) implements Semantic {}
