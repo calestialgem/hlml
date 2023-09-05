@@ -27,4 +27,13 @@ sealed interface Semantic {
 
   /** Statements that are sequentially executed. */
   record Block(List<Statement> inner_statements) implements Statement {}
+
+  /** Statements that evaluate an expression and discard the value. */
+  record Discard(Expression discarded) implements Statement {}
+
+  /** Value calculations to be evaluated by the processor. */
+  sealed interface Expression extends Semantic {}
+
+  /** Expression that evaluates to a hard-coded numeric value. */
+  record NumberConstant(double value) implements Expression {}
 }

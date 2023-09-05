@@ -127,7 +127,7 @@ final class Checker {
     };
   }
 
-  /** Check a statement. */
+  /** Checks a statement. */
   private Semantic.Statement check_statement(Node.Statement node) {
     return switch (node) {
       case Node.Block block ->
@@ -137,7 +137,16 @@ final class Checker {
             .stream()
             .map(this::check_statement)
             .toList());
-      default -> null;
+      case Node.Discard discard ->
+        new Semantic.Discard(check_expression(discard.discarded()));
+    };
+  }
+
+  /** Checks an expression. */
+  private Semantic.Expression check_expression(Node.Expression node) {
+    return switch (node) {
+      case Node.NumberConstant number_constant ->
+        new Semantic.NumberConstant(number_constant.value());
     };
   }
 

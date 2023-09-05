@@ -3,6 +3,7 @@ package hlml;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.DecimalFormat;
 import java.util.Formatter;
 
 /** Transforms a target to a list of instructions that could be run by a
@@ -29,6 +30,12 @@ final class Builder {
   /** Tool to write to the output file. */
   private Formatter formatter;
 
+  /** Tool to format numbers. */
+  private DecimalFormat decimal_formatter;
+
+  /** Number of unique registers used through the program. */
+  private int register_count;
+
   /** Constructor. */
   private Builder(Subject subject, Path artifacts, Semantic.Target target) {
     this.subject = subject;
@@ -54,6 +61,9 @@ final class Builder {
         .to_diagnostic("failure", "Could not write to the output file!")
         .to_exception(cause);
     }
+    decimal_formatter = new DecimalFormat("0.#");
+    decimal_formatter.setMaximumFractionDigits(Integer.MAX_VALUE);
+    register_count = 0;
     build_statement(target.entrypoint().get().body());
     formatter.format("end%n");
     formatter.close();
@@ -69,9 +79,23 @@ final class Builder {
   /** Builds a statement. */
   private void build_statement(Semantic.Statement statement) {
     switch (statement) {
-      case Semantic.Block block -> {
+      case Semantic.Block block ->
         block.inner_statements().forEach(this::build_statement);
-      }
+      case Semantic.Discard discard -> build_expression(discard.discarded());
     }
+  }
+
+  /** Builds an expression. */
+  private int build_expression(Semantic.Expression expression) {
+    return switch (expression) {
+      case Semantic.NumberConstant number_constant -> {
+        formatter
+          .format(
+            "set r%d %s%n",
+            register_count,
+            decimal_formatter.format(number_constant.value()));
+        yield register_count;
+      }
+    };
   }
 }
