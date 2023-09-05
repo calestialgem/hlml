@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /** Semantically analyzes a target. */
 final class Checker {
@@ -33,9 +34,14 @@ final class Checker {
   /** Name of the checked target. */
   private final String name;
 
-  /** Cached resolved sources. Used for skipping the context-free stages when
-   * the same source is mentioned multiple times. */
-  private Map<String, Resolution.Source> sources;
+  /** Checked sources depended on by the target. */
+  private Map<String, Semantic.Source> sources;
+
+  /** Entrypoint declaration if there is one in the target. */
+  private Optional<Semantic.Entrypoint> entrypoint;
+
+  /** Declarations in the currently checked source. */
+  private Map<String, Semantic.Declaration> declarations;
 
   /** Constructor. */
   private Checker(
@@ -75,17 +81,61 @@ final class Checker {
         .to_exception(cause);
     }
     sources = new HashMap<>();
-    resolve_source(subject, name);
-    return null;
+    entrypoint = Optional.empty();
+    check_source(subject, name);
+    return new Semantic.Target(sources, entrypoint);
   }
 
-  /** Resolve a source file. */
-  private Resolution.Source resolve_source(Subject subject, String name) {
+  /** Check a source file. */
+  private Semantic.Source check_source(Subject subject, String name) {
     if (sources.containsKey(name)) { return sources.get(name); }
     Path file = find_source(subject, name);
-    Resolution.Source parcel = Resolver.resolve(file, artifacts);
-    sources.put(name, parcel);
-    return parcel;
+    Resolution.Source resolved_source = Resolver.resolve(file, artifacts);
+    declarations = new HashMap<>();
+    for (Resolution.Declaration resolution : resolved_source
+      .declarations()
+      .values())
+    {
+      Semantic.Declaration declaration = check_declaration(resolution);
+      switch (declaration) {
+        case Semantic.Entrypoint entrypoint -> {
+          if (this.entrypoint.isPresent())
+            throw resolved_source
+              .subject(resolution.node())
+              .to_diagnostic(
+                "error",
+                "Redeclaration of the entrypoint in the target!")
+              .to_exception();
+          this.entrypoint = Optional.of(entrypoint);
+        }
+      }
+    }
+    Semantic.Source source = new Semantic.Source(declarations);
+    sources.put(name, source);
+    return source;
+  }
+
+  /** Check a declaration. */
+  private Semantic.Declaration check_declaration(
+    Resolution.Declaration resolution)
+  {
+    return switch (resolution) {
+      case Resolution.Entrypoint entrypoint ->
+        new Semantic.Entrypoint(check_statement(entrypoint.node().body()));
+    };
+  }
+
+  /** Check a statement. */
+  private Semantic.Statement check_statement(Node.Statement node) {
+    return switch (node) {
+      case Node.Block block ->
+        new Semantic.Block(
+          block
+            .inner_statements()
+            .stream()
+            .map(this::check_statement)
+            .toList());
+    };
   }
 
   /** Find a source file. */
