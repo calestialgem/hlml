@@ -3,6 +3,7 @@ package hlml;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /** Transforms tokens to a list of declarations. */
@@ -43,7 +44,9 @@ final class Parser {
 
   /** Parses a entrypoint. */
   private Optional<Node.Entrypoint> parse_entrypoint() {
-    if (parse(Token.Entrypoint.class).isEmpty()) { return Optional.empty(); }
+    if (parse_token(Token.Entrypoint.class).isEmpty()) {
+      return Optional.empty();
+    }
     Node.Statement body =
       expect(this::parse_block, "body of the entrypoint declaration");
     Node.Entrypoint entrypoint = new Node.Entrypoint(body);
@@ -58,9 +61,11 @@ final class Parser {
   /** Parses a block. */
   private Optional<Node.Block> parse_block() {
     int first = current;
-    if (parse(Token.OpeningBrace.class).isEmpty()) { return Optional.empty(); }
+    if (parse_token(Token.OpeningBrace.class).isEmpty()) {
+      return Optional.empty();
+    }
     List<Node.Statement> body = repeats_of(this::parse_statement);
-    expect(
+    expect_token(
       Token.ClosingBrace.class,
       "inner statement list closer `}` of the block statement");
     Node.Block block = new Node.Block(first, body);
@@ -71,20 +76,227 @@ final class Parser {
   private Optional<Node.Discard> parse_discard() {
     Optional<Node.Expression> discarded = parse_expression();
     if (discarded.isEmpty()) { return Optional.empty(); }
-    expect(Token.Semicolon.class, "terminator `;` of the discard statement");
+    expect_token(
+      Token.Semicolon.class,
+      "terminator `;` of the discard statement");
     Node.Discard discard = new Node.Discard(discarded.get());
     return Optional.of(discard);
   }
 
   /** Parses an expression. */
   private Optional<Node.Expression> parse_expression() {
+    return first_of(this::parse_precedence_9);
+  }
+
+  /** Parses an expression at precedence level 9. */
+  private Optional<Node.Precedence9> parse_precedence_9() {
+    return parse_binary_operations(
+      this::parse_precedence_8,
+      new BinaryOperationParser<>(
+        Token.EqualEqual.class,
+        Node.EqualTo::new,
+        "equal to"),
+      new BinaryOperationParser<>(
+        Token.ExclamationEqual.class,
+        Node.NotEqualTo::new,
+        "not equal to"),
+      new BinaryOperationParser<>(
+        Token.EqualEqualEqual.class,
+        Node.StrictlyEqualTo::new,
+        "strictly equal to"));
+  }
+
+  /** Parses an expression at precedence level 8. */
+  private Optional<Node.Precedence8> parse_precedence_8() {
+    return parse_binary_operations(
+      this::parse_precedence_7,
+      new BinaryOperationParser<>(
+        Token.Left.class,
+        Node.LessThan::new,
+        "less than"),
+      new BinaryOperationParser<>(
+        Token.LeftEqual.class,
+        Node.LessThanOrEqualTo::new,
+        "less than or equal to"),
+      new BinaryOperationParser<>(
+        Token.Right.class,
+        Node.GreaterThan::new,
+        "greater than"),
+      new BinaryOperationParser<>(
+        Token.RightEqual.class,
+        Node.GreaterThanOrEqualTo::new,
+        "greater than or equal to"));
+  }
+
+  /** Parses an expression at precedence level 7. */
+  private Optional<Node.Precedence7> parse_precedence_7() {
+    return parse_binary_operations(
+      this::parse_precedence_6,
+      new BinaryOperationParser<>(
+        Token.Pipe.class,
+        Node.BitwiseOr::new,
+        "bitwise or"));
+  }
+
+  /** Parses an expression at precedence level 6. */
+  private Optional<Node.Precedence6> parse_precedence_6() {
+    return parse_binary_operations(
+      this::parse_precedence_5,
+      new BinaryOperationParser<>(
+        Token.Caret.class,
+        Node.BitwiseXor::new,
+        "bitwise xor"));
+  }
+
+  /** Parses an expression at precedence level 5. */
+  private Optional<Node.Precedence5> parse_precedence_5() {
+    return parse_binary_operations(
+      this::parse_precedence_4,
+      new BinaryOperationParser<>(
+        Token.Ampersand.class,
+        Node.BitwiseAnd::new,
+        "bitwise and"));
+  }
+
+  /** Parses an expression at precedence level 4. */
+  private Optional<Node.Precedence4> parse_precedence_4() {
+    return parse_binary_operations(
+      this::parse_precedence_3,
+      new BinaryOperationParser<>(
+        Token.LeftLeft.class,
+        Node.LeftShift::new,
+        "left shift"),
+      new BinaryOperationParser<>(
+        Token.RightRight.class,
+        Node.RightShift::new,
+        "right shift"));
+  }
+
+  /** Parses an expression at precedence level 3. */
+  private Optional<Node.Precedence3> parse_precedence_3() {
+    return parse_binary_operations(
+      this::parse_precedence_2,
+      new BinaryOperationParser<>(
+        Token.Plus.class,
+        Node.Addition::new,
+        "addition"),
+      new BinaryOperationParser<>(
+        Token.Minus.class,
+        Node.Subtraction::new,
+        "subtraction"));
+  }
+
+  /** Parses an expression at precedence level 2. */
+  private Optional<Node.Precedence2> parse_precedence_2() {
+    return parse_binary_operations(
+      this::parse_precedence_1,
+      new BinaryOperationParser<>(
+        Token.Star.class,
+        Node.Multiplication::new,
+        "multiplication"),
+      new BinaryOperationParser<>(
+        Token.Slash.class,
+        Node.Division::new,
+        "division"),
+      new BinaryOperationParser<>(
+        Token.SlashSlash.class,
+        Node.IntegerDivision::new,
+        "integer division"),
+      new BinaryOperationParser<>(
+        Token.Percent.class,
+        Node.Modulus::new,
+        "modulus"));
+  }
+
+  /** Parses an expression at precedence level 1. */
+  private Optional<Node.Precedence1> parse_precedence_1() {
+    return parse_unary_operations(
+      this::parse_precedence_0,
+      new UnaryOperationParser<>(
+        Token.Plus.class,
+        Node.Promotion::new,
+        "promotion"),
+      new UnaryOperationParser<>(
+        Token.Minus.class,
+        Node.Negation::new,
+        "negation"),
+      new UnaryOperationParser<>(
+        Token.Tilde.class,
+        Node.BitwiseNot::new,
+        "bitwise not"),
+      new UnaryOperationParser<>(
+        Token.Exclamation.class,
+        Node.LogicalNot::new,
+        "logical not"));
+  }
+
+  /** Parses an expression at precedence level 0. */
+  private Optional<Node.Precedence0> parse_precedence_0() {
     return first_of(this::parse_number_constant);
+  }
+
+  /** Parses a group of binary operators in the same precedence level from left
+   * to right. */
+  @SafeVarargs
+  private <PrecedenceType extends Node.Expression, OperandType extends PrecedenceType> Optional<PrecedenceType> parse_binary_operations(
+    Supplier<Optional<OperandType>> operand_parser_function,
+    BinaryOperationParser<PrecedenceType>... binary_operation_parsers)
+  {
+    Optional<OperandType> first_operand = operand_parser_function.get();
+    if (first_operand.isEmpty())
+      return Optional.empty();
+    PrecedenceType result = first_operand.get();
+    while (true) {
+      for (BinaryOperationParser<PrecedenceType> binary_operation_parser : binary_operation_parsers) {
+        if (parse_token(binary_operation_parser.operator_class()).isEmpty())
+          continue;
+        OperandType right_operand =
+          expect(
+            operand_parser_function,
+            "right operand of %s expression"
+              .formatted(binary_operation_parser.name()));
+        result =
+          binary_operation_parser.initializer().apply(result, right_operand);
+      }
+      break;
+    }
+    return Optional.of(result);
+  }
+
+  /** Parses a group of unary operators in the same precedence level from right
+   * to left. */
+  @SafeVarargs
+  private <PrecedenceType extends Node.Expression, OperandType extends PrecedenceType> Optional<PrecedenceType> parse_unary_operations(
+    Supplier<Optional<OperandType>> operand_parser_function,
+    UnaryOperationParser<PrecedenceType>... unary_operation_parsers)
+  {
+    List<UnaryOperationParser<PrecedenceType>> stack = new ArrayList<>();
+    while (true) {
+      for (UnaryOperationParser<PrecedenceType> unary_operation_parser : unary_operation_parsers) {
+        if (parse_token(unary_operation_parser.operator_class()).isEmpty())
+          continue;
+        stack.add(unary_operation_parser);
+      }
+      break;
+    }
+    if (stack.isEmpty())
+      return operand_parser_function.get().map(Function.identity());
+    PrecedenceType result =
+      expect(
+        operand_parser_function,
+        "operand of %s expression"
+          .formatted(stack.get(stack.size() - 1).name()));
+    for (int i = stack.size(); i != 0; i--) {
+      result = stack.get(i - 1).initializer().apply(result);
+    }
+    return Optional.of(result);
   }
 
   /** Parses a number constant. */
   private Optional<Node.NumberConstant> parse_number_constant() {
     int first = current;
-    Optional<Token.NumberConstant> token = parse(Token.NumberConstant.class);
+    Optional<Token.NumberConstant> token =
+      parse_token(Token.NumberConstant.class);
     if (token.isEmpty()) { return Optional.empty(); }
     Node.NumberConstant number_constant =
       new Node.NumberConstant(first, token.get().value());
@@ -120,16 +332,16 @@ final class Parser {
 
   /** Ensures that the given token parses. Otherwise throws a diagnostic with
    * the given explanation. Returns the parsed token. */
-  private <TokenType extends Token> TokenType expect(
+  private <TokenType extends Token> TokenType expect_token(
     Class<TokenType> token_class,
     String token_explanation)
   {
-    return expect(() -> parse(token_class), token_explanation);
+    return expect(() -> parse_token(token_class), token_explanation);
   }
 
   /** Parses the next token if it exists and it is of the given class. */
   @SuppressWarnings("unchecked")
-  private <TokenType extends Token> Optional<TokenType> parse(
+  private <TokenType extends Token> Optional<TokenType> parse_token(
     Class<TokenType> token_class)
   {
     if (current == source.tokens().size()) { return Optional.empty(); }
