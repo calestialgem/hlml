@@ -2,6 +2,7 @@ package hlml;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +44,7 @@ final class Checker {
 
   /** Checks the parcel. */
   private void check() {
+    resolved_parcels = new HashMap<>();
     resolve_parcel(subject, target_parcel_name);
   }
 
