@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /** Combines the source files in a parcel together and resolves the
  * designators. */
@@ -32,10 +33,32 @@ final class Resolver {
   /** Resolves the parcel. */
   private Resolution.Parcel resolve() {
     sources = new HashMap<>();
-    artifact_directory = directory.resolve("artifacts");
     Path source_directory = directory.resolve("src");
-    try {
-      Files.list(source_directory).forEach(this::resolve_source);
+    try (Stream<Path> list = Files.list(source_directory)) {
+      artifact_directory = directory.resolve("artifacts");
+      if (Files.exists(artifact_directory)) {
+        try {
+          Files.walkFileTree(artifact_directory, new Deletor());
+        }
+        catch (IOException cause) {
+          throw Subject
+            .of(artifact_directory)
+            .to_diagnostic(
+              "failure",
+              "Could not delete the existing artifact directory!")
+            .to_exception(cause);
+        }
+      }
+      try {
+        Files.createDirectory(artifact_directory);
+      }
+      catch (IOException cause) {
+        throw Subject
+          .of(artifact_directory)
+          .to_diagnostic("failure", "Could not create the artifact directory!")
+          .to_exception(cause);
+      }
+      list.forEach(this::resolve_source);
     }
     catch (IOException cause) {
       throw Subject
