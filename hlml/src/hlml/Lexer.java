@@ -1,21 +1,18 @@
 package hlml;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 /** Transforms a source file to a list of tokens. */
 final class Lexer {
-  /** Lexes a source file. Returns the tokens in the file. */
-  static List<Token> lex(Path source_file) {
-    Lexer lexer = new Lexer(source_file);
+  /** Lexes a source file.. */
+  static LexedSource lex(Source source) {
+    Lexer lexer = new Lexer(source);
     return lexer.lex();
   }
 
   /** Source file that is lexed. */
-  private final Path source_file;
+  private final Source source;
 
   /** Contents of the lexed source file. */
   private String contents;
@@ -33,21 +30,11 @@ final class Lexer {
   private int initial;
 
   /** Constructor. */
-  private Lexer(Path source_file) {
-    this.source_file = source_file;
-  }
+  private Lexer(Source source) { this.source = source; }
 
-  /** Lexes the source file. Returns the tokens in the file. */
-  private List<Token> lex() {
-    try {
-      contents = Files.readString(source_file);
-    }
-    catch (IOException cause) {
-      throw Subject
-        .of(source_file)
-        .to_diagnostic("failure", "Could not read the source file!")
-        .to_exception(cause);
-    }
+  /** Lexes the source file. */
+  private LexedSource lex() {
+    contents = source.contents();
     tokens = new ArrayList<Token>();
     current = 0;
     while (has_current()) {
@@ -86,14 +73,15 @@ final class Lexer {
             tokens.add(token);
             break;
           }
-          throw Subject
-            .of(source_file, start)
+          throw source
+            .subject(start)
             .to_diagnostic("error", "Unknown character `%c`!", initial)
             .to_exception();
         }
       }
     }
-    return tokens;
+    LexedSource lexed_source = new LexedSource(source, tokens);
+    return lexed_source;
   }
 
   /** Skips over the currently lexed character. */
