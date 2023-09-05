@@ -2,11 +2,12 @@ package hlml;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /** Meaningful constructs in the program. */
 sealed interface Semantic {
   /** Collective understanding of a piece of code. */
-  record Target(Map<String, Parcel> parcels, List<Entrypoint> entrypoints)
+  record Target(Map<String, Parcel> parcels, Optional<Entrypoint> entrypoints)
     implements Semantic
   {}
 
