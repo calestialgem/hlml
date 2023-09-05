@@ -6,13 +6,6 @@ import java.util.Map;
 
 /** Tabulated user-defined constructs in a parcel. */
 sealed interface Resolution {
-  /** Collection of source files that make up a program's named subdivision.
-   * Parcels can be individually published and shipped. Hence, dependencies
-   * between parcels cannot be cyclic. */
-  record Parcel(Path directory, Map<String, Source> sources)
-    implements Resolution
-  {}
-
   /** File that holds the contents of the program as text. */
   record Source(
     Path path,

@@ -1,77 +1,108 @@
 package hlml;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Semantically analyzes a parcel. */
+/** Semantically analyzes a target. */
 final class Checker {
-  /** Checks a parcel. */
+  /** Checks a target. */
   static Semantic.Target check(
     Subject subject,
-    List<Path> parcel_sites,
-    String target_parcel_name)
+    Path artifacts,
+    List<Path> includes,
+    String name)
   {
-    Checker checker = new Checker(subject, parcel_sites, target_parcel_name);
+    Checker checker = new Checker(subject, artifacts, includes, name);
     return checker.check();
   }
 
-  /** Subject that is reported when the target parcel is not found. */
+  /** Subject that is reported when the target is not found. */
   private final Subject subject;
 
-  /** Ordered collection of directories to look for a parcel by its name. */
-  private final List<Path> parcel_sites;
+  /** Path to the directory where compilation artifacts can be recorded to. */
+  private final Path artifacts;
 
-  /** Name of the checked parcel. */
-  private final String target_parcel_name;
+  /** Ordered collection of directories to look for a source file by its
+   * name. */
+  private final List<Path> includes;
 
-  /** Cached resolved parcels. Used for skipping the context-free stages when
-   * the same parcel is mentioned multiple times. */
-  private Map<String, Resolution.Parcel> resolved_parcels;
+  /** Name of the checked target. */
+  private final String name;
+
+  /** Cached resolved sources. Used for skipping the context-free stages when
+   * the same source is mentioned multiple times. */
+  private Map<String, Resolution.Source> sources;
 
   /** Constructor. */
   private Checker(
     Subject subject,
-    List<Path> parcel_sites,
-    String target_parcel_name)
+    Path artifacts,
+    List<Path> includes,
+    String name)
   {
     this.subject = subject;
-    this.parcel_sites = parcel_sites;
-    this.target_parcel_name = target_parcel_name;
+    this.artifacts = artifacts;
+    this.includes = includes;
+    this.name = name;
   }
 
-  /** Checks the parcel. */
+  /** Checks the target. */
   private Semantic.Target check() {
-    resolved_parcels = new HashMap<>();
-    resolve_parcel(subject, target_parcel_name);
+    if (Files.exists(artifacts)) {
+      try {
+        Files.walkFileTree(artifacts, new Deletor());
+      }
+      catch (IOException cause) {
+        throw Subject
+          .of(artifacts)
+          .to_diagnostic(
+            "failure",
+            "Could not delete the existing artifact directory!")
+          .to_exception(cause);
+      }
+    }
+    try {
+      Files.createDirectories(artifacts);
+    }
+    catch (IOException cause) {
+      throw Subject
+        .of(artifacts)
+        .to_diagnostic("failure", "Could not create the artifact directory!")
+        .to_exception(cause);
+    }
+    sources = new HashMap<>();
+    resolve_source(subject, name);
     return null;
   }
 
-  /** Resolve a parcel. */
-  private Resolution.Parcel resolve_parcel(Subject subject, String name) {
-    if (resolved_parcels.containsKey(name))
-      return resolved_parcels.get(name);
-    Path parcel_directory = find_parcel(subject, name);
-    Resolution.Parcel parcel = Resolver.resolve(parcel_directory);
-    resolved_parcels.put(name, parcel);
+  /** Resolve a source file. */
+  private Resolution.Source resolve_source(Subject subject, String name) {
+    if (sources.containsKey(name))
+      return sources.get(name);
+    Path file = find_source(subject, name);
+    Resolution.Source parcel = Resolver.resolve(file, artifacts);
+    sources.put(name, parcel);
     return parcel;
   }
 
-  /** Find a parcel. */
-  private Path find_parcel(Subject subject, String name) {
-    for (Path site : parcel_sites) {
-      Path directory = site.resolve(name);
-      if (Files.exists(directory))
-        return directory;
+  /** Find a source file. */
+  private Path find_source(Subject subject, String name) {
+    String full_name = name + Source.extension;
+    for (Path site : includes) {
+      Path file = site.resolve(full_name);
+      if (Files.exists(file))
+        return file;
     }
     throw subject
       .to_diagnostic(
         "error",
-        "Could not find a parcel named `%s` in the fallowing parcel sites: `%s`!",
+        "Could not find a source named `%s` in the fallowing directories: `%s`!",
         name,
-        parcel_sites)
+        includes)
       .to_exception();
   }
 }

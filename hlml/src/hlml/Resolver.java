@@ -5,81 +5,31 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
-/** Combines the source files in a parcel together and resolves the
+/** First pass of the analysis. Records down all the declarations'
  * designators. */
 final class Resolver {
-  /** Resolves a parcel. */
-  static Resolution.Parcel resolve(Path directory) {
-    Resolver resolver = new Resolver(directory);
+  /** Resolves a source. */
+  static Resolution.Source resolve(Path file, Path artifacts) {
+    Resolver resolver = new Resolver(file, artifacts);
     return resolver.resolve();
   }
 
-  /** Path to the resolved parcel's directory. */
-  private final Path directory;
+  /** Path to the resolved source file. */
+  private final Path file;
 
-  /** Resolved parcel's artifact directory. */
-  private Path artifact_directory;
-
-  /** Resolved sources. */
-  private Map<String, Resolution.Source> sources;
+  /** Path to the directory where compilation artifacts can be recorded to. */
+  private final Path artifacts;
 
   /** Constructor. */
-  private Resolver(Path directory) {
-    this.directory = directory;
+  private Resolver(Path file, Path artifacts) {
+    this.file = file;
+    this.artifacts = artifacts;
   }
 
-  /** Resolves the parcel. */
-  private Resolution.Parcel resolve() {
-    sources = new HashMap<>();
-    Path source_directory = directory.resolve("src");
-    try (Stream<Path> list = Files.list(source_directory)) {
-      artifact_directory = directory.resolve("artifacts");
-      if (Files.exists(artifact_directory)) {
-        try {
-          Files.walkFileTree(artifact_directory, new Deletor());
-        }
-        catch (IOException cause) {
-          throw Subject
-            .of(artifact_directory)
-            .to_diagnostic(
-              "failure",
-              "Could not delete the existing artifact directory!")
-            .to_exception(cause);
-        }
-      }
-      try {
-        Files.createDirectory(artifact_directory);
-      }
-      catch (IOException cause) {
-        throw Subject
-          .of(artifact_directory)
-          .to_diagnostic("failure", "Could not create the artifact directory!")
-          .to_exception(cause);
-      }
-      list.forEach(this::resolve_source);
-    }
-    catch (IOException cause) {
-      throw Subject
-        .of(directory)
-        .to_diagnostic(
-          "failure",
-          "Could not list the parcel's source directory!")
-        .to_exception(cause);
-    }
-    Resolution.Parcel parcel = new Resolution.Parcel(directory, sources);
-    return parcel;
-  }
-
-  /** Resolves a file in the parcel. */
-  private void resolve_source(Path file) {
+  /** Resolves the source. */
+  private Resolution.Source resolve() {
     Source source = Source.of(file);
-    if (sources.containsKey(source.name()))
-      throw Subject
-        .of(file)
-        .to_diagnostic("error", "Reinclusion of `%s`!", source.name())
-        .to_exception();
     LoadedSource loaded_source = Loader.load(source);
     record_representation(source.name(), "contents", loaded_source.contents());
     LexedSource lexed_source = Lexer.lex(loaded_source);
@@ -109,7 +59,7 @@ final class Resolver {
         loaded_source.contents(),
         lexed_source.tokens(),
         declarations);
-    sources.put(source.name(), resolved_source);
+    return resolved_source;
   }
 
   /** Resolves a declaration in a source file in the parcel. */
@@ -127,7 +77,7 @@ final class Resolver {
     Object representation)
   {
     Path representation_path =
-      artifact_directory
+      artifacts
         .resolve(
           "%s.%s%s"
             .formatted(source_name, representation_name, Source.extension));
