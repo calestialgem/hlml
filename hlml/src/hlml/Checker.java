@@ -146,13 +146,54 @@ final class Checker {
   /** Checks an expression. */
   private Semantic.Expression check_expression(Node.Expression node) {
     return switch (node) {
+      case Node.EqualTo(var l, var r) ->
+        new Semantic.EqualTo(check_expression(l), check_expression(r));
+      case Node.NotEqualTo(var l, var r) ->
+        new Semantic.NotEqualTo(check_expression(l), check_expression(r));
+      case Node.StrictlyEqualTo(var l, var r) ->
+        new Semantic.StrictlyEqualTo(check_expression(l), check_expression(r));
+      case Node.LessThan(var l, var r) ->
+        new Semantic.LessThan(check_expression(l), check_expression(r));
+      case Node.LessThanOrEqualTo(var l, var r) ->
+        new Semantic.LessThanOrEqualTo(
+          check_expression(l),
+          check_expression(r));
+      case Node.GreaterThan(var l, var r) ->
+        new Semantic.GreaterThan(check_expression(l), check_expression(r));
+      case Node.GreaterThanOrEqualTo(var l, var r) ->
+        new Semantic.GreaterThanOrEqualTo(
+          check_expression(l),
+          check_expression(r));
+      case Node.BitwiseOr(var l, var r) ->
+        new Semantic.BitwiseOr(check_expression(l), check_expression(r));
+      case Node.BitwiseXor(var l, var r) ->
+        new Semantic.BitwiseXor(check_expression(l), check_expression(r));
+      case Node.BitwiseAnd(var l, var r) ->
+        new Semantic.BitwiseAnd(check_expression(l), check_expression(r));
+      case Node.LeftShift(var l, var r) ->
+        new Semantic.LeftShift(check_expression(l), check_expression(r));
+      case Node.RightShift(var l, var r) ->
+        new Semantic.RightShift(check_expression(l), check_expression(r));
+      case Node.Addition(var l, var r) ->
+        new Semantic.Addition(check_expression(l), check_expression(r));
+      case Node.Subtraction(var l, var r) ->
+        new Semantic.Subtraction(check_expression(l), check_expression(r));
+      case Node.Multiplication(var l, var r) ->
+        new Semantic.Multiplication(check_expression(l), check_expression(r));
+      case Node.Division(var l, var r) ->
+        new Semantic.Division(check_expression(l), check_expression(r));
+      case Node.IntegerDivision(var l, var r) ->
+        new Semantic.IntegerDivision(check_expression(l), check_expression(r));
+      case Node.Modulus(var l, var r) ->
+        new Semantic.Modulus(check_expression(l), check_expression(r));
+      case Node.Promotion(var o) -> new Semantic.Promotion(check_expression(o));
+      case Node.Negation(var o) -> new Semantic.Negation(check_expression(o));
+      case Node.BitwiseNot(var o) ->
+        new Semantic.BitwiseNot(check_expression(o));
+      case Node.LogicalNot(var o) ->
+        new Semantic.LogicalNot(check_expression(o));
       case Node.NumberConstant number_constant ->
         new Semantic.NumberConstant(number_constant.value());
-      default ->
-        throw source
-          .subject(node)
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
     };
   }
 
