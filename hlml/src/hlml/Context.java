@@ -3,7 +3,7 @@ package hlml;
 import java.util.Map;
 import java.util.Optional;
 
-/** Collection of global and local symbols in a program. */
+/** Collection of global symbols in a program. */
 sealed interface Context {
   /** Context of the whole target. */
   final class Target implements Context {
