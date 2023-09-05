@@ -4,6 +4,11 @@ import java.util.List;
 
 /** Lexical representation of a source file. */
 record LexedSource(LoadedSource source, List<Token> tokens) {
+  /** Returns a subject as a node in this source file. */
+  Subject subject(Node node) {
+    return subject(node.start(tokens), node.end(tokens));
+  }
+
   /** Returns a subject as a token in this source file. */
   Subject subject(Token token) {
     return subject(token.start(), token.end());
