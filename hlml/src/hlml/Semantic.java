@@ -5,10 +5,12 @@ import java.util.Map;
 
 /** Meaningful constructs in the program. */
 sealed interface Semantic {
-  /** Collective code that is executed on a processor. */
-  record Program(Map<String, Parcel> parcels) implements Semantic {}
+  /** Collective understanding of a piece of code. */
+  record Target(Map<String, Parcel> parcels, List<Entrypoint> entrypoints)
+    implements Semantic
+  {}
 
-  /** Subdivisions of program that are in an acyclic dependency graph. */
+  /** Subdivisions of code that are in an acyclic dependency graph. */
   record Parcel(Map<String, Source> sources) implements Semantic {}
 
   /** Files that hold the code. */
