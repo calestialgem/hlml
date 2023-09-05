@@ -20,14 +20,17 @@ sealed interface Node {
   sealed interface Statement extends Node {}
 
   /** Sequentially executed collection of instructions. */
-  record Block(int first, List<Statement> body) implements Statement {
+  record Block(int first, List<Statement> inner_statements)
+    implements Statement
+  {
     @Override
     public int first(List<Token> tokens) { return first; }
 
     @Override
     public int last(List<Token> tokens) {
-      if (!body.isEmpty())
-        return body.get(body.size() - 1).last(tokens) + 1;
+      if (!inner_statements.isEmpty())
+        return inner_statements.get(inner_statements.size() - 1).last(tokens)
+          + 1;
       return first + 1;
     }
   }
