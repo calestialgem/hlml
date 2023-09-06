@@ -16,6 +16,21 @@ sealed interface Node {
     public int last(List<Token> tokens) { return body.last(tokens); }
   }
 
+  /** Declaration of a memory location that holds a value. */
+  record Var(String identifier, Expression initial_value)
+    implements Declaration
+  {
+    @Override
+    public int first(List<Token> tokens) {
+      return initial_value.first(tokens) - 3;
+    }
+
+    @Override
+    public int last(List<Token> tokens) {
+      return initial_value.last(tokens) + 1;
+    }
+  }
+
   /** Instructions that can be given to the processor. */
   sealed interface Statement extends Node {}
 

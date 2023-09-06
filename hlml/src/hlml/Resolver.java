@@ -21,6 +21,9 @@ final class Resolver {
   /** Path to the directory where compilation artifacts can be recorded to. */
   private final Path artifacts;
 
+  /** Resolved source. */
+  private ParsedSource parsed_source;
+
   /** Constructor. */
   private Resolver(Path file, Path artifacts) {
     this.file = file;
@@ -34,7 +37,7 @@ final class Resolver {
     record_representation(source.name(), "contents", loaded_source.contents());
     LexedSource lexed_source = Lexer.lex(loaded_source);
     record_representation(source.name(), "tokens", lexed_source.tokens());
-    ParsedSource parsed_source = Parser.parse(lexed_source);
+    parsed_source = Parser.parse(lexed_source);
     record_representation(
       source.name(),
       "declarations",
@@ -64,6 +67,11 @@ final class Resolver {
   private Resolution.Declaration resolve_declaration(Node.Declaration node) {
     return switch (node) {
       case Node.Entrypoint entrypoint -> new Resolution.Entrypoint(entrypoint);
+      case Node.Var var ->
+        throw parsed_source
+          .subject(node)
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
     };
   }
 
