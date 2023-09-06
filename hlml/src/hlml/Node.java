@@ -4,7 +4,7 @@ import java.util.List;
 
 /** Hierarchical collection of tokens in the source file. */
 sealed interface Node {
-  /** Defining a new entity. */
+  /** Asserting a fact about the program. */
   sealed interface Declaration extends Node {}
 
   /** Declaration of the program's first instructions. */
@@ -16,9 +16,24 @@ sealed interface Node {
     public int last(List<Token> tokens) { return body.last(tokens); }
   }
 
-  /** Declaration of a memory location that holds a value. */
+  /** Declaration of a global entity. */
+  record Global(Definition definition) implements Declaration {
+    @Override
+    public int first(List<Token> tokens) { return definition.first(tokens); }
+
+    @Override
+    public int last(List<Token> tokens) { return definition.last(tokens); }
+  }
+
+  /** Creation of a new entity by the user. */
+  sealed interface Definition extends Node {
+    /** Identifier of the defined entity. */
+    String identifier();
+  }
+
+  /** Defining a memory location that holds a value. */
   record Var(String identifier, Expression initial_value)
-    implements Declaration
+    implements Definition
   {
     @Override
     public int first(List<Token> tokens) {
@@ -49,6 +64,15 @@ sealed interface Node {
       }
       return first + 1;
     }
+  }
+
+  /** Statements that define an entity. */
+  record Local(Definition definition) implements Statement {
+    @Override
+    public int first(List<Token> tokens) { return definition.first(tokens); }
+
+    @Override
+    public int last(List<Token> tokens) { return definition.last(tokens); }
   }
 
   /** Statements that evaluates an expression and discards it. */

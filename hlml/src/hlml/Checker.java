@@ -140,6 +140,11 @@ final class Checker {
             .toList());
       case Node.Discard discard ->
         new Semantic.Discard(check_expression(discard.discarded()));
+      default ->
+        throw source
+          .subject(node)
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
     };
   }
 

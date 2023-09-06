@@ -39,7 +39,7 @@ final class Parser {
 
   /** Parses a declaration. */
   private Optional<Node.Declaration> parse_declaration() {
-    return first_of(this::parse_entrypoint, this::parse_var);
+    return first_of(this::parse_entrypoint, this::parse_global);
   }
 
   /** Parses a entrypoint. */
@@ -51,6 +51,16 @@ final class Parser {
       expect(this::parse_block, "body of the entrypoint declaration");
     Node.Entrypoint entrypoint = new Node.Entrypoint(body);
     return Optional.of(entrypoint);
+  }
+
+  /** Parses a global. */
+  private Optional<Node.Global> parse_global() {
+    return parse_definition().map(Node.Global::new);
+  }
+
+  /** Parses a definition. */
+  private Optional<Node.Definition> parse_definition() {
+    return first_of(this::parse_var);
   }
 
   /** Parses a var. */
@@ -77,7 +87,7 @@ final class Parser {
 
   /** Parses a statement. */
   private Optional<Node.Statement> parse_statement() {
-    return first_of(this::parse_block, this::parse_discard);
+    return first_of(this::parse_block, this::parse_local, this::parse_discard);
   }
 
   /** Parses a block. */
@@ -92,6 +102,11 @@ final class Parser {
       "inner statement list closer `}` of the block statement");
     Node.Block block = new Node.Block(first, body);
     return Optional.of(block);
+  }
+
+  /** Parses a local. */
+  private Optional<Node.Local> parse_local() {
+    return parse_definition().map(Node.Local::new);
   }
 
   /** Parses a discard. */

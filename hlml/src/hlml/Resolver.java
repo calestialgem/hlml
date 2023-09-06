@@ -63,11 +63,11 @@ final class Resolver {
       declarations);
   }
 
-  /** Resolves a declaration in a source file in the parcel. */
+  /** Resolves a declaration in the source file. */
   private Resolution.Declaration resolve_declaration(Node.Declaration node) {
     return switch (node) {
       case Node.Entrypoint entrypoint -> new Resolution.Entrypoint(entrypoint);
-      case Node.Var var ->
+      default ->
         throw parsed_source
           .subject(node)
           .to_diagnostic("failure", "Unimplemented!")
@@ -75,8 +75,8 @@ final class Resolver {
     };
   }
 
-  /** Records a representation of a source file in the parcel. Used for
-   * debugging the compiler. */
+  /** Records a representation of the source file. Used for debugging the
+   * compiler. */
   private void record_representation(
     String source_name,
     String representation_name,
