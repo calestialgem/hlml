@@ -11,7 +11,6 @@ sealed interface Semantic {
 
   /** Files that hold the code. */
   record Source(
-    String name,
     Optional<Entrypoint> entrypoint,
     Map<String, Definition> globals) implements Semantic
   {}

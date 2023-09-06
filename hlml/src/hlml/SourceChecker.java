@@ -43,7 +43,7 @@ final class SourceChecker {
     for (String identifier : source.globals().keySet()) {
       find_global(identifier);
     }
-    return new Semantic.Source(source.name(), entrypoint, globals);
+    return new Semantic.Source(entrypoint, globals);
   }
 
   /** Finds a global in the current source and checks it if it is unchecked. */
