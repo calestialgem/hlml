@@ -11,6 +11,15 @@ sealed interface Token {
     public String explanation() { return "keyword `entrypoint`"; }
   }
 
+  /** Keyword `var`. */
+  record Var(int start) implements Token {
+    @Override
+    public int end() { return start + "var".length(); }
+
+    @Override
+    public String explanation() { return "keyword `var`"; }
+  }
+
   /** Punctuation `{`. */
   record OpeningBrace(int start) implements Token {
     @Override
