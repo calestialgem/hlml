@@ -1,1 +1,1 @@
-Target[name=entrypoint_test, sources={entrypoint_test=Source[declarations={}]}, entrypoint=Optional[Entrypoint[body=Block[inner_statements=[]]]]]
+Target[name=entrypoint_test, sources={entrypoint_test=Source[globals={}]}, entrypoint=Optional[Entrypoint[body=Block[inner_statements=[]]]]]

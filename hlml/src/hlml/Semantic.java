@@ -14,13 +14,21 @@ sealed interface Semantic {
   {}
 
   /** Files that hold the code. */
-  record Source(Map<String, Declaration> declarations) implements Semantic {}
-
-  /** Definition of a construct in code. */
-  sealed interface Declaration extends Semantic {}
+  record Source(Map<String, Definition> globals) implements Semantic {}
 
   /** First instructions that are executed by the processor. */
-  record Entrypoint(Statement body) implements Declaration {}
+  record Entrypoint(Statement body) implements Semantic {}
+
+  /** Definition of a construct in code. */
+  sealed interface Definition extends Semantic {
+    /** Word that designates this definition. */
+    String identifier();
+  }
+
+  /** Definition of a variable. */
+  record Var(String identifier, Expression initial_value)
+    implements Definition
+  {}
 
   /** Instructions to be executed by the processor. */
   sealed interface Statement extends Semantic {}

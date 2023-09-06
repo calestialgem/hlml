@@ -43,8 +43,8 @@ final class Checker {
   /** Currently checked source. */
   private Resolution.Source source;
 
-  /** Declarations in the currently checked source. */
-  private Map<String, Semantic.Declaration> declarations;
+  /** Definitions in the currently checked source. */
+  private Map<String, Semantic.Definition> globals;
 
   /** Constructor. */
   private Checker(
@@ -96,35 +96,36 @@ final class Checker {
     if (sources.containsKey(name)) { return sources.get(name); }
     Path file = find_source(subject, name);
     source = Resolver.resolve(file, artifacts);
-    declarations = new HashMap<>();
-    for (Resolution.Declaration resolution : source.declarations().values()) {
-      Semantic.Declaration declaration = check_declaration(resolution);
-      switch (declaration) {
-        case Semantic.Entrypoint as_entrypoint -> {
-          if (entrypoint.isPresent()) {
-            throw source
-              .subject(resolution.node())
-              .to_diagnostic(
-                "error",
-                "Redeclaration of the entrypoint in the target!")
-              .to_exception();
-          }
-          entrypoint = Optional.of(as_entrypoint);
-        }
+    globals = new HashMap<>();
+    if (source.entrypoint().isPresent()) {
+      Node.Entrypoint node = source.entrypoint().get();
+      if (entrypoint.isPresent()) {
+        throw source
+          .subject(node)
+          .to_diagnostic(
+            "error",
+            "Redeclaration of the entrypoint in the target!")
+          .to_exception();
       }
+      entrypoint =
+        Optional.of(new Semantic.Entrypoint(check_statement(node.body())));
     }
-    Semantic.Source checked_source = new Semantic.Source(declarations);
+    for (Node.Definition node : source.globals().values()) {
+      Semantic.Definition definition = check_definition(node);
+      globals.put(definition.identifier(), definition);
+    }
+    Semantic.Source checked_source = new Semantic.Source(globals);
     sources.put(name, checked_source);
     return checked_source;
   }
 
-  /** Check a declaration. */
-  private Semantic.Declaration check_declaration(
-    Resolution.Declaration resolution)
-  {
-    return switch (resolution) {
-      case Resolution.Entrypoint entrypoint ->
-        new Semantic.Entrypoint(check_statement(entrypoint.node().body()));
+  /** Check a definition. */
+  private Semantic.Definition check_definition(Node.Definition node) {
+    return switch (node) {
+      case Node.Var var ->
+        new Semantic.Var(
+          var.identifier(),
+          check_expression(var.initial_value()));
     };
   }
 

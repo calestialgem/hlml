@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /** First pass of the analysis. Records down all the declarations'
  * designators. */
@@ -21,9 +22,6 @@ final class Resolver {
   /** Path to the directory where compilation artifacts can be recorded to. */
   private final Path artifacts;
 
-  /** Resolved source. */
-  private ParsedSource parsed_source;
-
   /** Constructor. */
   private Resolver(Path file, Path artifacts) {
     this.file = file;
@@ -37,42 +35,42 @@ final class Resolver {
     record_representation(source.name(), "contents", loaded_source.contents());
     LexedSource lexed_source = Lexer.lex(loaded_source);
     record_representation(source.name(), "tokens", lexed_source.tokens());
-    parsed_source = Parser.parse(lexed_source);
+    ParsedSource parsed_source = Parser.parse(lexed_source);
     record_representation(
       source.name(),
       "declarations",
       parsed_source.declarations());
-    Map<String, Resolution.Declaration> declarations = new HashMap<>();
+    Optional<Node.Entrypoint> entrypoint = Optional.empty();
+    Map<String, Node.Definition> globals = new HashMap<>();
     for (Node.Declaration node : parsed_source.declarations()) {
-      Resolution.Declaration declaration = resolve_declaration(node);
-      if (declarations.containsKey(declaration.designator())) {
-        throw parsed_source
-          .subject(node)
-          .to_diagnostic(
-            "error",
-            "Redeclaration of `%s`!",
-            declaration.designator())
-          .to_exception();
+      switch (node) {
+        case Node.Entrypoint e -> {
+          if (entrypoint.isPresent()) {
+            throw parsed_source
+              .subject(node)
+              .to_diagnostic("error", "Redeclaration of entrypoint!")
+              .to_exception();
+          }
+          entrypoint = Optional.of(e);
+        }
+        case Node.Global g -> {
+          String identifier = g.definition().identifier();
+          if (globals.containsKey(identifier)) {
+            throw parsed_source
+              .subject(node)
+              .to_diagnostic("error", "Redeclaration of `%s`!", identifier)
+              .to_exception();
+          }
+          globals.put(identifier, g.definition());
+        }
       }
-      declarations.put(declaration.designator(), declaration);
     }
     return new Resolution.Source(
       source.path(),
       loaded_source.contents(),
       lexed_source.tokens(),
-      declarations);
-  }
-
-  /** Resolves a declaration in the source file. */
-  private Resolution.Declaration resolve_declaration(Node.Declaration node) {
-    return switch (node) {
-      case Node.Entrypoint entrypoint -> new Resolution.Entrypoint(entrypoint);
-      default ->
-        throw parsed_source
-          .subject(node)
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
-    };
+      entrypoint,
+      globals);
   }
 
   /** Records a representation of the source file. Used for debugging the
