@@ -1,8 +1,10 @@
 package hlml;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /** Checks a source. */
 final class SourceChecker {
@@ -18,6 +20,9 @@ final class SourceChecker {
   /** Definitions that were checked. */
   private Map<String, Semantic.Definition> globals;
 
+  /** Definitions that are being checked. */
+  private Set<Node.Definition> currently_checked;
+
   /** Constructor. */
   private SourceChecker(Resolution.Source source) {
     this.source = source;
@@ -26,27 +31,58 @@ final class SourceChecker {
   /** Check the source. */
   private Semantic.Source check() {
     globals = new HashMap<>();
+    currently_checked = new HashSet<>();
     Optional<Semantic.Entrypoint> entrypoint = Optional.empty();
     if (source.entrypoint().isPresent()) {
       Node.Entrypoint node = source.entrypoint().get();
       Semantic.Statement body = check_statement(node.body());
       entrypoint = Optional.of(new Semantic.Entrypoint(body));
     }
-    for (Node.Definition node : source.globals().values()) {
-      Semantic.Definition definition = check_definition(node);
-      globals.put(definition.identifier(), definition);
-    }
+    for (String identifier : source.globals().keySet())
+      find_global(source.subject(source.globals().get(identifier)), identifier);
     return new Semantic.Source(entrypoint, globals);
   }
 
+  /** Finds a global in the current source and checks it if it is unchecked. */
+  private Semantic.Definition find_global(Subject subject, String identifier) {
+    if (globals.containsKey(identifier))
+      return globals.get(identifier);
+    if (!source.globals().containsKey(identifier)) {
+      throw subject
+        .to_diagnostic(
+          "error",
+          "Could not find a global named `%s` in the current source!",
+          identifier)
+        .to_exception();
+    }
+    Semantic.Definition global =
+      check_definition(subject, source.globals().get(identifier));
+    globals.put(identifier, global);
+    return global;
+  }
+
   /** Check a definition. */
-  private Semantic.Definition check_definition(Node.Definition node) {
-    return switch (node) {
+  private Semantic.Definition check_definition(
+    Subject subject,
+    Node.Definition node)
+  {
+    if (currently_checked.contains(node)) {
+      throw subject
+        .to_diagnostic(
+          "error",
+          "Cyclic definition with `%s`!",
+          node.identifier())
+        .to_exception();
+    }
+    currently_checked.add(node);
+    Semantic.Definition definition = switch (node) {
       case Node.Var var ->
         new Semantic.Var(
           var.identifier(),
           check_expression(var.initial_value()));
     };
+    currently_checked.remove(node);
+    return definition;
   }
 
   /** Checks a statement. */
