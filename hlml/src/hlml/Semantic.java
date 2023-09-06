@@ -26,7 +26,7 @@ sealed interface Semantic {
 
   /** Definition of a variable. */
   record Var(String identifier, Expression initial_value)
-    implements Definition
+    implements Definition, Statement
   {}
 
   /** Instructions to be executed by the processor. */
@@ -34,9 +34,6 @@ sealed interface Semantic {
 
   /** Statements that are sequentially executed. */
   record Block(List<Statement> inner_statements) implements Statement {}
-
-  /** Statements that define local symbols. */
-  record Local(Definition definition) implements Statement {}
 
   /** Statements that evaluate an expression and discard the value. */
   record Discard(Expression discarded) implements Statement {}

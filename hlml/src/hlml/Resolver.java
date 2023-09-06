@@ -53,15 +53,15 @@ final class Resolver {
           }
           entrypoint = Optional.of(e);
         }
-        case Node.Global g -> {
-          String identifier = g.definition().identifier();
+        case Node.Definition g -> {
+          String identifier = g.identifier();
           if (globals.containsKey(identifier)) {
             throw parsed_source
               .subject(node)
               .to_diagnostic("error", "Redeclaration of `%s`!", identifier)
               .to_exception();
           }
-          globals.put(identifier, g.definition());
+          globals.put(identifier, g);
         }
       }
     }

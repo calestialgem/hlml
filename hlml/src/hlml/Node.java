@@ -16,24 +16,15 @@ sealed interface Node {
     public int last(List<Token> tokens) { return body.last(tokens); }
   }
 
-  /** Declaration that introduces a symbol to the global scope. */
-  record Global(Definition definition) implements Declaration {
-    @Override
-    public int first(List<Token> tokens) { return definition.first(tokens); }
-
-    @Override
-    public int last(List<Token> tokens) { return definition.last(tokens); }
-  }
-
   /** Creation of a new symbol by the user. */
-  sealed interface Definition extends Node {
+  sealed interface Definition extends Declaration {
     /** Identifier of the defined symbol. */
     String identifier();
   }
 
   /** Defining a symbol that holds an unknown value. */
   record Var(String identifier, Expression initial_value)
-    implements Definition
+    implements Definition, Statement
   {
     @Override
     public int first(List<Token> tokens) {
@@ -64,15 +55,6 @@ sealed interface Node {
       }
       return first + 1;
     }
-  }
-
-  /** Statements that define an entity. */
-  record Local(Definition definition) implements Statement {
-    @Override
-    public int first(List<Token> tokens) { return definition.first(tokens); }
-
-    @Override
-    public int last(List<Token> tokens) { return definition.last(tokens); }
   }
 
   /** Statements that evaluates an expression and discards it. */

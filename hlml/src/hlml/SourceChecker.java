@@ -83,13 +83,17 @@ final class SourceChecker {
     }
     currently_checked.add(node);
     Semantic.Definition definition = switch (node) {
-      case Node.Var var ->
-        new Semantic.Var(
-          var.identifier(),
-          check_expression(scope, var.initial_value()));
+      case Node.Var var -> check_var(scope, var);
     };
     currently_checked.remove(node);
     return definition;
+  }
+
+  /** Check a variable definition. */
+  private Semantic.Var check_var(Scope scope, Node.Var node) {
+    return new Semantic.Var(
+      node.identifier(),
+      check_expression(scope, node.initial_value()));
   }
 
   /** Checks a statement. */
@@ -103,11 +107,10 @@ final class SourceChecker {
         }
         yield new Semantic.Block(inner_statements);
       }
-      case Node.Local local -> {
-        Semantic.Definition definition =
-          check_definition(scope, local.definition());
-        scope.introduce(definition);
-        yield new Semantic.Local(definition);
+      case Node.Var v -> {
+        Semantic.Var local = check_var(scope, v);
+        scope.introduce(local);
+        yield local;
       }
       case Node.Discard discard ->
         new Semantic.Discard(check_expression(scope, discard.discarded()));

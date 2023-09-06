@@ -86,7 +86,7 @@ final class Builder {
     switch (statement) {
       case Semantic.Block block ->
         block.inner_statements().forEach(this::build_statement);
-      case Semantic.Local local ->
+      case Semantic.Var local ->
         throw Subject
           .of("compiler")
           .to_diagnostic("failure", "Unimplemented!")
