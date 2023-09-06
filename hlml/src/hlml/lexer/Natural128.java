@@ -1,4 +1,4 @@
-package hlml;
+package hlml.lexer;
 
 import java.util.Optional;
 import java.util.OptionalDouble;

@@ -1,4 +1,4 @@
-package hlml;
+package hlml.builder;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,16 +7,22 @@ import java.text.DecimalFormat;
 import java.util.Formatter;
 import java.util.Optional;
 
-import hlml.Semantic.Entrypoint;
+import hlml.checker.Semantic;
+import hlml.checker.Semantic.Entrypoint;
+import hlml.reporter.Subject;
 
 /** Transforms a target to a list of instructions that could be run by a
  * processor. */
-final class Builder {
+public final class Builder {
   /** Assembly file extension. */
   public static final String extension = ".mlog";
 
   /** Builds a target. Returns the path to the output assembly file. */
-  static Path build(Subject subject, Path artifacts, Semantic.Target target) {
+  public static Path build(
+    Subject subject,
+    Path artifacts,
+    Semantic.Target target)
+  {
     Builder builder = new Builder(subject, artifacts, target);
     return builder.build();
   }

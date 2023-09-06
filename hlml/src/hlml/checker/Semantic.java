@@ -1,11 +1,11 @@
-package hlml;
+package hlml.checker;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /** Meaningful constructs in the program. */
-sealed interface Semantic {
+public sealed interface Semantic {
   /** Collective understanding of a piece of code. */
   record Target(String name, Map<String, Source> sources) implements Semantic {}
 

@@ -1,4 +1,4 @@
-package hlml;
+package hlml.parser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,10 +6,13 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import hlml.lexer.LexedSource;
+import hlml.lexer.Token;
+
 /** Transforms tokens to a list of declarations. */
-final class Parser {
+public final class Parser {
   /** Parses a source file. Returns the declarations in the file. */
-  static ParsedSource parse(LexedSource source) {
+  public static ParsedSource parse(LexedSource source) {
     Parser parser = new Parser(source);
     return parser.parse();
   }

@@ -1,4 +1,4 @@
-package hlml;
+package hlml.resolver;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,11 +7,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import hlml.Source;
+import hlml.lexer.LexedSource;
+import hlml.lexer.Lexer;
+import hlml.loader.LoadedSource;
+import hlml.loader.Loader;
+import hlml.parser.Node;
+import hlml.parser.ParsedSource;
+import hlml.parser.Parser;
+import hlml.reporter.Subject;
+
 /** First pass of the analysis. Records down all the declarations'
  * designators. */
-final class Resolver {
+public final class Resolver {
   /** Resolves a source. */
-  static Resolution.Source resolve(Path file, Path artifacts) {
+  public static Resolution.Source resolve(Path file, Path artifacts) {
     Resolver resolver = new Resolver(file, artifacts);
     return resolver.resolve();
   }

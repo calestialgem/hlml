@@ -1,4 +1,4 @@
-package hlml;
+package hlml.launcher;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 
 /** File visitor that deletes. */
-public class Deletor implements FileVisitor<Path> {
+final class Deletor implements FileVisitor<Path> {
   @Override
   public FileVisitResult preVisitDirectory(
     Path directory,

@@ -1,7 +1,7 @@
-package hlml;
+package hlml.lexer;
 
 /** Longest sequence of characters that make up a meaningful word in hlml. */
-sealed interface Token {
+public sealed interface Token {
   /** Keyword `entrypoint`. */
   record Entrypoint(int start) implements Token {
     @Override

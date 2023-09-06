@@ -1,9 +1,15 @@
-package hlml;
+package hlml.launcher;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+
+import hlml.Source;
+import hlml.builder.Builder;
+import hlml.checker.Checker;
+import hlml.checker.Semantic;
+import hlml.reporter.Subject;
 
 /** Holds the entrypoint. */
 final class Main {

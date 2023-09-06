@@ -1,9 +1,11 @@
-package hlml;
+package hlml.parser;
 
 import java.util.List;
 
+import hlml.lexer.Token;
+
 /** Hierarchical collection of tokens in the source file. */
-sealed interface Node {
+public sealed interface Node {
   /** Asserting a fact about the program. */
   sealed interface Declaration extends Node {}
 

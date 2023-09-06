@@ -1,4 +1,4 @@
-package hlml;
+package hlml.checker;
 
 import java.util.ArrayList;
 import java.util.List;

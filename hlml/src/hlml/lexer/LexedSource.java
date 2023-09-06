@@ -1,24 +1,30 @@
-package hlml;
+package hlml.lexer;
 
 import java.util.List;
 
+import hlml.loader.LoadedSource;
+import hlml.parser.Node;
+import hlml.reporter.Subject;
+
 /** Lexical representation of a source file. */
-record LexedSource(LoadedSource source, List<Token> tokens) {
+public record LexedSource(LoadedSource source, List<Token> tokens) {
   /** Returns the source file's name. */
-  String name() { return source.name(); }
+  public String name() {
+    return source.name();
+  }
 
   /** Returns a subject as a node in this source file. */
-  Subject subject(Node node) {
+  public Subject subject(Node node) {
     return subject(node.start(tokens), node.end(tokens));
   }
 
   /** Returns a subject as a token in this source file. */
-  Subject subject(Token token) {
+  public Subject subject(Token token) {
     return subject(token.start(), token.end());
   }
 
   /** Returns a subject as a range of characters in this source file. */
-  Subject subject(int start, int end) {
+  public Subject subject(int start, int end) {
     return source.subject(start, end);
   }
 }

@@ -2,13 +2,15 @@ package hlml;
 
 import java.nio.file.Path;
 
+import hlml.reporter.Subject;
+
 /** Representation of a HLML source file. */
-record Source(Path path) {
+public record Source(Path path) {
   /** File extension of HLML source files. */
   public static final String extension = ".hlml";
 
   /** Validates the given path and returns it as a source. */
-  static Source of(Path path) {
+  public static Source of(Path path) {
     String name = path.getFileName().toString();
     if (!name.endsWith(extension)) {
       throw Subject
@@ -67,13 +69,13 @@ record Source(Path path) {
   }
 
   /** Returns the source file's name. */
-  String name() {
+  public String name() {
     String name = path.getFileName().toString();
     return name.substring(0, name.length() - extension.length());
   }
 
   /** Returns a subject as this source file. */
-  Subject subject() {
+  public Subject subject() {
     return Subject.of(path);
   }
 }

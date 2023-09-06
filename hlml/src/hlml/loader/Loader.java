@@ -1,12 +1,14 @@
-package hlml;
+package hlml.loader;
 
 import java.io.IOException;
 import java.nio.file.Files;
 
+import hlml.Source;
+
 /** Reads a source file and stores its contents in memory. */
-final class Loader {
+public final class Loader {
   /** Loads a source. */
-  static LoadedSource load(Source source) {
+  public static LoadedSource load(Source source) {
     Loader loader = new Loader(source);
     return loader.load();
   }

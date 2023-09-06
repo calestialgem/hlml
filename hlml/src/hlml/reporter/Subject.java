@@ -1,10 +1,10 @@
-package hlml;
+package hlml.reporter;
 
 import java.nio.file.Path;
 import java.util.Formatter;
 
 /** A diagnostic's creator. */
-sealed interface Subject {
+public sealed interface Subject {
   /** Creator by name. */
   record Nominal(String name) implements Subject {
     @Override

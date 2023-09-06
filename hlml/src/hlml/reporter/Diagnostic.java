@@ -1,15 +1,15 @@
-package hlml;
+package hlml.reporter;
 
 /** Reports about the compilation process. */
-record Diagnostic(String message) {
+public record Diagnostic(String message) {
   /** Returns an exception with this diagnostic's message. */
-  RuntimeException to_exception() {
+  public RuntimeException to_exception() {
     return new RuntimeException(message);
   }
 
   /** Returns an exception with this diagnostic's message and the given
    * cause. */
-  RuntimeException to_exception(Throwable cause) {
+  public RuntimeException to_exception(Throwable cause) {
     return new RuntimeException(message, cause);
   }
 }

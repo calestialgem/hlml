@@ -1,13 +1,15 @@
-package hlml;
+package hlml.lexer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntFunction;
 
+import hlml.loader.LoadedSource;
+
 /** Transforms a source file to a list of tokens. */
-final class Lexer {
+public final class Lexer {
   /** Lexes a source file.. */
-  static LexedSource lex(LoadedSource source) {
+  public static LexedSource lex(LoadedSource source) {
     Lexer lexer = new Lexer(source);
     return lexer.lex();
   }

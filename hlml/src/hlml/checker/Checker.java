@@ -1,4 +1,4 @@
-package hlml;
+package hlml.checker;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,10 +7,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import hlml.Source;
+import hlml.reporter.Subject;
+import hlml.resolver.Resolution;
+import hlml.resolver.Resolver;
+
 /** Semantically analyzes a target. */
-final class Checker {
+public final class Checker {
   /** Checks a target. */
-  static Semantic.Target check(
+  public static Semantic.Target check(
     Subject subject,
     Path artifacts,
     List<Path> includes,

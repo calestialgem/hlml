@@ -1,4 +1,4 @@
-package hlml;
+package hlml.builder;
 
 /** Result of executing an expression. */
 sealed interface Evaluation {
