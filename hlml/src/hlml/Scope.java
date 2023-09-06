@@ -38,8 +38,7 @@ final class Scope {
   /** Introduces a new local to the scope. Invalidates all the child scopes! */
   void introduce(Semantic.Definition local) {
     while (definitions.size() > last) {
-      definitions.remove(last);
-      last--;
+      definitions.remove(definitions.size() - 1);
     }
     definitions.add(local);
     last++;
