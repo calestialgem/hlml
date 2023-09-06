@@ -12,11 +12,11 @@ import hlml.checker.Semantic;
 import hlml.reporter.Subject;
 
 /** Holds the entrypoint. */
-final class Main {
+final class Launcher {
   /** Entrypoint of the compiler. */
   public static void main(String... arguments) {
-    Main main = new Main();
-    main.launch_tests();
+    Launcher launcher = new Launcher();
+    launcher.launch_tests();
   }
 
   /** Subject that is reported when the launcher fails. */
@@ -38,7 +38,7 @@ final class Main {
   private final List<Path> includes;
 
   /** Constructor. */
-  private Main() {
+  private Launcher() {
     subject = Subject.of("compiler launcher");
     tests = Path.of("tests");
     artifacts = tests.resolve("artifacts");
