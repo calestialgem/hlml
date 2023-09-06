@@ -222,7 +222,7 @@ final class SourceChecker {
               .to_exception();
           }
           yield new Semantic.GlobalVariableAccess(
-            new Designation(source.name(), accessed.identifier()));
+            new Name(source.name(), accessed.identifier()));
         }
         throw source
           .subject(node)

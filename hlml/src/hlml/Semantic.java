@@ -180,7 +180,7 @@ sealed interface Semantic {
   record NumberConstant(double value) implements Expression {}
 
   /** Expression that evaluates to an unknown in the global scope. */
-  record GlobalVariableAccess(Designation designation) implements Expression {}
+  record GlobalVariableAccess(Name name) implements Expression {}
 
   /** Expression that evaluates to an unknown in the local scope. */
   record LocalVariableAccess(String identifier) implements Expression {}
