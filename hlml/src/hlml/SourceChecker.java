@@ -1,7 +1,9 @@
 package hlml;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -35,7 +37,7 @@ final class SourceChecker {
     Optional<Semantic.Entrypoint> entrypoint = Optional.empty();
     if (source.entrypoint().isPresent()) {
       Node.Entrypoint node = source.entrypoint().get();
-      Semantic.Statement body = check_statement(node.body());
+      Semantic.Statement body = check_statement(Scope.create(), node.body());
       entrypoint = Optional.of(new Semantic.Entrypoint(body));
     }
     for (String identifier : source.globals().keySet())
@@ -86,22 +88,24 @@ final class SourceChecker {
   }
 
   /** Checks a statement. */
-  private Semantic.Statement check_statement(Node.Statement node) {
+  private Semantic.Statement check_statement(Scope scope, Node.Statement node) {
     return switch (node) {
-      case Node.Block block ->
-        new Semantic.Block(
-          block
-            .inner_statements()
-            .stream()
-            .map(this::check_statement)
-            .toList());
+      case Node.Block block -> {
+        Scope inner_scope = scope.create_child();
+        List<Semantic.Statement> inner_statements = new ArrayList<>();
+        for (Node.Statement i : block.inner_statements()) {
+          inner_statements.add(check_statement(inner_scope, i));
+        }
+        yield new Semantic.Block(inner_statements);
+      }
+      case Node.Local local -> {
+        Semantic.Definition definition =
+          check_definition(source.subject(node), local.definition());
+        scope.introduce(definition);
+        yield new Semantic.Local(definition);
+      }
       case Node.Discard discard ->
         new Semantic.Discard(check_expression(discard.discarded()));
-      default ->
-        throw source
-          .subject(node)
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
     };
   }
 
