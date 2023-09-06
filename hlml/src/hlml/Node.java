@@ -16,7 +16,7 @@ sealed interface Node {
     public int last(List<Token> tokens) { return body.last(tokens); }
   }
 
-  /** Declaration of a global entity. */
+  /** Declaration that introduces a symbol to the global scope. */
   record Global(Definition definition) implements Declaration {
     @Override
     public int first(List<Token> tokens) { return definition.first(tokens); }
@@ -25,13 +25,13 @@ sealed interface Node {
     public int last(List<Token> tokens) { return definition.last(tokens); }
   }
 
-  /** Creation of a new entity by the user. */
+  /** Creation of a new symbol by the user. */
   sealed interface Definition extends Node {
-    /** Identifier of the defined entity. */
+    /** Identifier of the defined symbol. */
     String identifier();
   }
 
-  /** Defining a memory location that holds a value. */
+  /** Defining a symbol that holds an unknown value. */
   record Var(String identifier, Expression initial_value)
     implements Definition
   {
