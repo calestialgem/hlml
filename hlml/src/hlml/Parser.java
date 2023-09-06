@@ -39,7 +39,7 @@ final class Parser {
 
   /** Parses a declaration. */
   private Optional<Node.Declaration> parse_declaration() {
-    return first_of(this::parse_entrypoint);
+    return first_of(this::parse_entrypoint, this::parse_var);
   }
 
   /** Parses a entrypoint. */
@@ -51,6 +51,28 @@ final class Parser {
       expect(this::parse_block, "body of the entrypoint declaration");
     Node.Entrypoint entrypoint = new Node.Entrypoint(body);
     return Optional.of(entrypoint);
+  }
+
+  /** Parses a var. */
+  private Optional<Node.Var> parse_var() {
+    if (parse_token(Token.Var.class).isEmpty())
+      return Optional.empty();
+    Token.LowercaseIdentifier identifier =
+      expect_token(
+        Token.LowercaseIdentifier.class,
+        "identifier of the variable declaration");
+    expect_token(
+      Token.Equal.class,
+      "initial value introducer `=` of the variable declaration");
+    Node.Expression initial_value =
+      expect(
+        this::parse_expression,
+        "initial value of the variable declaration");
+    expect_token(
+      Token.Semicolon.class,
+      "terminator `;` of the variable declaration");
+    Node.Var var = new Node.Var(identifier.text(), initial_value);
+    return Optional.of(var);
   }
 
   /** Parses a statement. */
