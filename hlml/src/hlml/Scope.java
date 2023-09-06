@@ -29,8 +29,7 @@ final class Scope {
   Optional<Semantic.Definition> find(String identifier) {
     for (int i = last; i != 0; i--) {
       Semantic.Definition local = definitions.get(i - 1);
-      if (local.identifier().equals(identifier))
-        return Optional.of(local);
+      if (local.identifier().equals(identifier)) { return Optional.of(local); }
     }
     return Optional.empty();
   }

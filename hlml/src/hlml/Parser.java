@@ -60,8 +60,7 @@ final class Parser {
 
   /** Parses a var. */
   private Optional<Node.Var> parse_var() {
-    if (parse_token(Token.Var.class).isEmpty())
-      return Optional.empty();
+    if (parse_token(Token.Var.class).isEmpty()) { return Optional.empty(); }
     Token.LowercaseIdentifier identifier =
       expect_token(
         Token.LowercaseIdentifier.class,
@@ -337,8 +336,7 @@ final class Parser {
     int first = current;
     Optional<Token.LowercaseIdentifier> token =
       parse_token(Token.LowercaseIdentifier.class);
-    if (token.isEmpty())
-      return Optional.empty();
+    if (token.isEmpty()) { return Optional.empty(); }
     Node.VariableAccess variable_access =
       new Node.VariableAccess(first, token.get().text());
     return Optional.of(variable_access);
