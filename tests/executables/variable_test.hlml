@@ -1,0 +1,14 @@
+# Tests variables.
+
+var global = 56;
+
+entrypoint {
+  var local = 17;
+  local + global - 45;
+  {
+    var inner = 5555;
+    inner + local * global;
+  }
+  var another = local // global;
+  another;
+}
