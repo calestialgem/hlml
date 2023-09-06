@@ -51,7 +51,7 @@ final class SourceChecker {
       return Optional.of(globals.get(identifier));
     if (!source.globals().containsKey(identifier)) { return Optional.empty(); }
     Semantic.Definition global =
-      check_definition(source.globals().get(identifier));
+      check_definition(Scope.create(), source.globals().get(identifier));
     globals.put(identifier, global);
     return Optional.of(global);
   }
@@ -68,7 +68,10 @@ final class SourceChecker {
   }
 
   /** Check a definition. */
-  private Semantic.Definition check_definition(Node.Definition node) {
+  private Semantic.Definition check_definition(
+    Scope scope,
+    Node.Definition node)
+  {
     if (currently_checked.contains(node)) {
       throw source
         .subject(node)
@@ -83,7 +86,7 @@ final class SourceChecker {
       case Node.Var var ->
         new Semantic.Var(
           var.identifier(),
-          check_expression(Scope.create(), var.initial_value()));
+          check_expression(scope, var.initial_value()));
     };
     currently_checked.remove(node);
     return definition;
@@ -101,7 +104,8 @@ final class SourceChecker {
         yield new Semantic.Block(inner_statements);
       }
       case Node.Local local -> {
-        Semantic.Definition definition = check_definition(local.definition());
+        Semantic.Definition definition =
+          check_definition(scope, local.definition());
         scope.introduce(definition);
         yield new Semantic.Local(definition);
       }
