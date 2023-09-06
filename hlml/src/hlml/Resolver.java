@@ -65,12 +65,7 @@ final class Resolver {
         }
       }
     }
-    return new Resolution.Source(
-      source.path(),
-      loaded_source.contents(),
-      lexed_source.tokens(),
-      entrypoint,
-      globals);
+    return new Resolution.Source(parsed_source, entrypoint, globals);
   }
 
   /** Records a representation of the source file. Used for debugging the

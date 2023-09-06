@@ -2,6 +2,9 @@ package hlml;
 
 /** Raw representation of the source file. */
 record LoadedSource(Source source, String contents) {
+  /** Returns the source file's name. */
+  String name() { return source.name(); }
+
   /** Returns a subject as a token in this source file. */
   Subject subject(Token token) {
     return subject(token.start(), token.end());

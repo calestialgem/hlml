@@ -40,31 +40,22 @@ final class SourceChecker {
       Semantic.Statement body = check_statement(Scope.create(), node.body());
       entrypoint = Optional.of(new Semantic.Entrypoint(body));
     }
-    for (String identifier : source.globals().keySet())
+    for (String identifier : source.globals().keySet()) {
       find_global(identifier);
-    return new Semantic.Source(entrypoint, globals);
+    }
+    return new Semantic.Source(source.name(), entrypoint, globals);
   }
 
   /** Finds a global in the current source and checks it if it is unchecked. */
   private Optional<Semantic.Definition> find_global(String identifier) {
-    if (globals.containsKey(identifier))
+    if (globals.containsKey(identifier)) {
       return Optional.of(globals.get(identifier));
+    }
     if (!source.globals().containsKey(identifier)) { return Optional.empty(); }
     Semantic.Definition global =
       check_definition(Scope.create(), source.globals().get(identifier));
     globals.put(identifier, global);
     return Optional.of(global);
-  }
-
-  /** Finds a symbol in the given scope or the current source. */
-  private Optional<Semantic.Definition> find(Scope scope, String identifier) {
-    Optional<Semantic.Definition> local = scope.find(identifier);
-    if (local.isPresent())
-      return local;
-    Optional<Semantic.Definition> global = find_global(identifier);
-    if (global.isPresent())
-      return global;
-    return Optional.empty();
   }
 
   /** Check a definition. */
@@ -206,9 +197,9 @@ final class SourceChecker {
       case Node.NumberConstant number_constant ->
         new Semantic.NumberConstant(number_constant.value());
       case Node.VariableAccess v -> {
-        Optional<Semantic.Definition> symbol = find(scope, v.identifier());
-        if (symbol.isPresent()) {
-          if (!(symbol.get() instanceof Semantic.Var accessed)) {
+        Optional<Semantic.Definition> local = scope.find(v.identifier());
+        if (local.isPresent()) {
+          if (!(local.get() instanceof Semantic.Var accessed)) {
             throw source
               .subject(node)
               .to_diagnostic(
@@ -217,7 +208,21 @@ final class SourceChecker {
                 v.identifier())
               .to_exception();
           }
-          yield new Semantic.LocalVariableAccess(accessed);
+          yield new Semantic.LocalVariableAccess(accessed.identifier());
+        }
+        Optional<Semantic.Definition> global = find_global(v.identifier());
+        if (global.isPresent()) {
+          if (!(global.get() instanceof Semantic.Var accessed)) {
+            throw source
+              .subject(node)
+              .to_diagnostic(
+                "error",
+                "Accessed symbol `%s` is not a variable!",
+                v.identifier())
+              .to_exception();
+          }
+          yield new Semantic.GlobalVariableAccess(
+            new Designation(source.name(), accessed.identifier()));
         }
         throw source
           .subject(node)

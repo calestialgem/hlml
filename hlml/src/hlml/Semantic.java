@@ -11,6 +11,7 @@ sealed interface Semantic {
 
   /** Files that hold the code. */
   record Source(
+    String name,
     Optional<Entrypoint> entrypoint,
     Map<String, Definition> globals) implements Semantic
   {}
@@ -179,8 +180,8 @@ sealed interface Semantic {
   record NumberConstant(double value) implements Expression {}
 
   /** Expression that evaluates to an unknown in the global scope. */
-  record GlobalVariableAccess(Var accessed) implements Expression {}
+  record GlobalVariableAccess(Designation designation) implements Expression {}
 
   /** Expression that evaluates to an unknown in the local scope. */
-  record LocalVariableAccess(Var accessed) implements Expression {}
+  record LocalVariableAccess(String identifier) implements Expression {}
 }
