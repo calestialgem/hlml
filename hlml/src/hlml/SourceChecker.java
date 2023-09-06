@@ -41,35 +41,37 @@ final class SourceChecker {
       entrypoint = Optional.of(new Semantic.Entrypoint(body));
     }
     for (String identifier : source.globals().keySet())
-      find_global(source.subject(source.globals().get(identifier)), identifier);
+      find_global(identifier);
     return new Semantic.Source(entrypoint, globals);
   }
 
   /** Finds a global in the current source and checks it if it is unchecked. */
-  private Semantic.Definition find_global(Subject subject, String identifier) {
+  private Optional<Semantic.Definition> find_global(String identifier) {
     if (globals.containsKey(identifier))
-      return globals.get(identifier);
-    if (!source.globals().containsKey(identifier)) {
-      throw subject
-        .to_diagnostic(
-          "error",
-          "Could not find a global named `%s` in the current source!",
-          identifier)
-        .to_exception();
-    }
+      return Optional.of(globals.get(identifier));
+    if (!source.globals().containsKey(identifier)) { return Optional.empty(); }
     Semantic.Definition global =
-      check_definition(subject, source.globals().get(identifier));
+      check_definition(source.globals().get(identifier));
     globals.put(identifier, global);
-    return global;
+    return Optional.of(global);
+  }
+
+  /** Finds a symbol in the given scope or the current source. */
+  private Optional<Semantic.Definition> find(Scope scope, String identifier) {
+    Optional<Semantic.Definition> local = scope.find(identifier);
+    if (local.isPresent())
+      return local;
+    Optional<Semantic.Definition> global = find_global(identifier);
+    if (global.isPresent())
+      return global;
+    return Optional.empty();
   }
 
   /** Check a definition. */
-  private Semantic.Definition check_definition(
-    Subject subject,
-    Node.Definition node)
-  {
+  private Semantic.Definition check_definition(Node.Definition node) {
     if (currently_checked.contains(node)) {
-      throw subject
+      throw source
+        .subject(node)
         .to_diagnostic(
           "error",
           "Cyclic definition with `%s`!",
@@ -99,8 +101,7 @@ final class SourceChecker {
         yield new Semantic.Block(inner_statements);
       }
       case Node.Local local -> {
-        Semantic.Definition definition =
-          check_definition(source.subject(node), local.definition());
+        Semantic.Definition definition = check_definition(local.definition());
         scope.introduce(definition);
         yield new Semantic.Local(definition);
       }
@@ -198,31 +199,26 @@ final class SourceChecker {
       case Node.NumberConstant number_constant ->
         new Semantic.NumberConstant(number_constant.value());
       case Node.VariableAccess v -> {
-        Optional<Semantic.Definition> local = scope.find(v.identifier());
-        if (local.isPresent()) {
-          if (!(local.get() instanceof Semantic.Var accessed)) {
+        Optional<Semantic.Definition> symbol = find(scope, v.identifier());
+        if (symbol.isPresent()) {
+          if (!(symbol.get() instanceof Semantic.Var accessed)) {
             throw source
               .subject(node)
               .to_diagnostic(
                 "error",
-                "Accessed local `%s` is not a variable!",
+                "Accessed symbol `%s` is not a variable!",
                 v.identifier())
               .to_exception();
           }
           yield new Semantic.LocalVariableAccess(accessed);
         }
-        Semantic.Definition global =
-          find_global(source.subject(node), v.identifier());
-        if (!(global instanceof Semantic.Var accessed)) {
-          throw source
-            .subject(node)
-            .to_diagnostic(
-              "error",
-              "Accessed global `%s` is not a variable!",
-              v.identifier())
-            .to_exception();
-        }
-        yield new Semantic.GlobalVariableAccess(accessed);
+        throw source
+          .subject(node)
+          .to_diagnostic(
+            "error",
+            "Could not find a symbol named `%s`!",
+            v.identifier())
+          .to_exception();
       }
     };
   }
