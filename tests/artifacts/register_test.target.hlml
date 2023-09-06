@@ -1,1 +1,1 @@
-Target[name=register_test, sources={register_test=Source[globals={}]}, entrypoint=Optional[Entrypoint[body=Block[inner_statements=[Discard[discarded=NumberConstant[value=1.0]], Discard[discarded=NumberConstant[value=71.0]]]]]]]
+Target[name=register_test, sources={register_test=Source[entrypoint=Optional[Entrypoint[body=Block[inner_statements=[Discard[discarded=NumberConstant[value=1.0]], Discard[discarded=NumberConstant[value=71.0]]]]]], globals={}]}]

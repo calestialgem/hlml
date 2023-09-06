@@ -5,6 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.util.Formatter;
+import java.util.Optional;
+
+import hlml.Semantic.Entrypoint;
 
 /** Transforms a target to a list of instructions that could be run by a
  * processor. */
@@ -46,7 +49,9 @@ final class Builder {
   /** Builds the target. */
   @SuppressWarnings("resource")
   private Path build() {
-    if (target.entrypoint().isEmpty()) {
+    Optional<Entrypoint> entrypoint =
+      target.sources().get(target.name()).entrypoint();
+    if (entrypoint.isEmpty()) {
       throw subject
         .to_diagnostic("error", "There is no entrypoint in the target!")
         .to_exception();
@@ -64,7 +69,7 @@ final class Builder {
     decimal_formatter = new DecimalFormat("0.#");
     decimal_formatter.setMaximumFractionDigits(Integer.MAX_VALUE);
     register_count = 0;
-    build_statement(target.entrypoint().get().body());
+    build_statement(entrypoint.get().body());
     formatter.format("end%n");
     formatter.close();
     if (formatter.ioException() != null) {

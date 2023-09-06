@@ -7,14 +7,13 @@ import java.util.Optional;
 /** Meaningful constructs in the program. */
 sealed interface Semantic {
   /** Collective understanding of a piece of code. */
-  record Target(
-    String name,
-    Map<String, Source> sources,
-    Optional<Entrypoint> entrypoint) implements Semantic
-  {}
+  record Target(String name, Map<String, Source> sources) implements Semantic {}
 
   /** Files that hold the code. */
-  record Source(Map<String, Definition> globals) implements Semantic {}
+  record Source(
+    Optional<Entrypoint> entrypoint,
+    Map<String, Definition> globals) implements Semantic
+  {}
 
   /** First instructions that are executed by the processor. */
   record Entrypoint(Statement body) implements Semantic {}
