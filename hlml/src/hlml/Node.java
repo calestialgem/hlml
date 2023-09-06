@@ -285,6 +285,15 @@ sealed interface Node {
     public int last(List<Token> tokens) { return first; }
   }
 
+  /** Expression that denotes an unknown by its name. */
+  record VariableAccess(int first, String identifier) implements Precedence0 {
+    @Override
+    public int first(List<Token> tokens) { return first; }
+
+    @Override
+    public int last(List<Token> tokens) { return first; }
+  }
+
   /** Index of the node's first token. Used for reporting diagnostics with a
    * source location. */
   int first(List<Token> tokens);

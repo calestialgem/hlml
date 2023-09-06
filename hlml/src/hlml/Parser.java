@@ -245,33 +245,6 @@ final class Parser {
         "modulus"));
   }
 
-  /** Parses an expression at precedence level 1. */
-  private Optional<Node.Precedence1> parse_precedence_1() {
-    return parse_unary_operations(
-      this::parse_precedence_0,
-      new UnaryOperationParser<>(
-        Token.Plus.class,
-        Node.Promotion::new,
-        "promotion"),
-      new UnaryOperationParser<>(
-        Token.Minus.class,
-        Node.Negation::new,
-        "negation"),
-      new UnaryOperationParser<>(
-        Token.Tilde.class,
-        Node.BitwiseNot::new,
-        "bitwise not"),
-      new UnaryOperationParser<>(
-        Token.Exclamation.class,
-        Node.LogicalNot::new,
-        "logical not"));
-  }
-
-  /** Parses an expression at precedence level 0. */
-  private Optional<Node.Precedence0> parse_precedence_0() {
-    return first_of(this::parse_number_constant);
-  }
-
   /** Parses a group of binary operators in the same precedence level from left
    * to right. */
   @SafeVarargs
@@ -298,6 +271,28 @@ final class Parser {
       break;
     }
     return Optional.of(result);
+  }
+
+  /** Parses an expression at precedence level 1. */
+  private Optional<Node.Precedence1> parse_precedence_1() {
+    return parse_unary_operations(
+      this::parse_precedence_0,
+      new UnaryOperationParser<>(
+        Token.Plus.class,
+        Node.Promotion::new,
+        "promotion"),
+      new UnaryOperationParser<>(
+        Token.Minus.class,
+        Node.Negation::new,
+        "negation"),
+      new UnaryOperationParser<>(
+        Token.Tilde.class,
+        Node.BitwiseNot::new,
+        "bitwise not"),
+      new UnaryOperationParser<>(
+        Token.Exclamation.class,
+        Node.LogicalNot::new,
+        "logical not"));
   }
 
   /** Parses a group of unary operators in the same precedence level from right
@@ -331,6 +326,11 @@ final class Parser {
     return Optional.of(result);
   }
 
+  /** Parses an expression at precedence level 0. */
+  private Optional<Node.Precedence0> parse_precedence_0() {
+    return first_of(this::parse_number_constant, this::parse_variable_access);
+  }
+
   /** Parses a number constant. */
   private Optional<Node.NumberConstant> parse_number_constant() {
     int first = current;
@@ -340,6 +340,18 @@ final class Parser {
     Node.NumberConstant number_constant =
       new Node.NumberConstant(first, token.get().value());
     return Optional.of(number_constant);
+  }
+
+  /** Parses a variable access. */
+  private Optional<Node.VariableAccess> parse_variable_access() {
+    int first = current;
+    Optional<Token.LowercaseIdentifier> token =
+      parse_token(Token.LowercaseIdentifier.class);
+    if (token.isEmpty())
+      return Optional.empty();
+    Node.VariableAccess variable_access =
+      new Node.VariableAccess(first, token.get().text());
+    return Optional.of(variable_access);
   }
 
   /** Runs the given parser repeatedly and collects the parsed constructs as a

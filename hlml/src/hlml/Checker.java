@@ -199,6 +199,11 @@ final class Checker {
         new Semantic.LogicalNot(check_expression(o));
       case Node.NumberConstant number_constant ->
         new Semantic.NumberConstant(number_constant.value());
+      default ->
+        throw source
+          .subject(node)
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
     };
   }
 
