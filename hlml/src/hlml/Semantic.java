@@ -180,4 +180,10 @@ sealed interface Semantic {
 
   /** Expression that evaluates to a hard-coded numeric value. */
   record NumberConstant(double value) implements Expression {}
+
+  /** Expression that evaluates to an unknown in the global scope. */
+  record GlobalVariableAccess(Var accessed) implements Expression {}
+
+  /** Expression that evaluates to an unknown in the local scope. */
+  record LocalVariableAccess(Var accessed) implements Expression {}
 }
