@@ -101,6 +101,7 @@ public final class Lexer {
             Token token;
             switch (text) {
               case "entrypoint" -> { token = new Token.Entrypoint(start); }
+              case "const" -> { token = new Token.Const(start); }
               case "var" -> { token = new Token.Var(start); }
               default -> { token = new Token.LowercaseIdentifier(start, text); }
             }

@@ -11,6 +11,15 @@ public sealed interface Token {
     public String explanation() { return "keyword `entrypoint`"; }
   }
 
+  /** Keyword `const`. */
+  record Const(int start) implements Token {
+    @Override
+    public int end() { return start + "const".length(); }
+
+    @Override
+    public String explanation() { return "keyword `const`"; }
+  }
+
   /** Keyword `var`. */
   record Var(int start) implements Token {
     @Override
