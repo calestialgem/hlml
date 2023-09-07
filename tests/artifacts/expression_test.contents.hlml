@@ -31,4 +31,8 @@ entrypoint {
   100  == 7;    # op       equal r0 r0 r1
   100  != 7;    # op    notEqual r0 r0 r1
   100 === 7;    # op strictEqual r0 r0 r1
+
+  (100 + 7 * 8);
+  100 + (7 * 8);
+  (100 + 7) * 8;
 }
