@@ -5,10 +5,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.util.Formatter;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
+import hlml.checker.Name;
 import hlml.checker.Semantic;
-import hlml.checker.Semantic.Entrypoint;
 import hlml.reporter.Subject;
 
 /** Transforms a target to a list of instructions that could be run by a
@@ -45,6 +47,9 @@ public final class Builder {
   /** Number of unique registers used through the program. */
   private int register_count;
 
+  /** Global symbols that are already built. */
+  private Set<Name> built;
+
   /** Constructor. */
   private Builder(Subject subject, Path artifacts, Semantic.Target target) {
     this.subject = subject;
@@ -55,7 +60,7 @@ public final class Builder {
   /** Builds the target. */
   @SuppressWarnings("resource")
   private Path build() {
-    Optional<Entrypoint> entrypoint =
+    Optional<Semantic.Entrypoint> entrypoint =
       target.sources().get(target.name()).entrypoint();
     if (entrypoint.isEmpty()) {
       throw subject
@@ -75,6 +80,10 @@ public final class Builder {
     decimal_formatter = new DecimalFormat("0.#");
     decimal_formatter.setMaximumFractionDigits(Integer.MAX_VALUE);
     register_count = 0;
+    built = new HashSet<>();
+    for (Name dependency : entrypoint.get().dependencies()) {
+      build_dependency(dependency);
+    }
     build_statement(entrypoint.get().body());
     formatter.format("end%n");
     formatter.close();
@@ -85,6 +94,25 @@ public final class Builder {
         .to_exception(formatter.ioException());
     }
     return output;
+  }
+
+  /** Builds a dependency. */
+  private void build_dependency(Name name) {
+    if (built.contains(name))
+      return;
+    built.add(name);
+    Semantic.Source source = target.sources().get(name.source());
+    Semantic.Definition definition = source.globals().get(name.identifier());
+    for (Name dependency : definition.dependencies()) {
+      build_dependency(dependency);
+    }
+    switch (definition) {
+      case Semantic.Var v ->
+        throw Subject
+          .of("compiler")
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
+    }
   }
 
   /** Builds a statement. */
