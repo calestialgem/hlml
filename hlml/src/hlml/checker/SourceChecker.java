@@ -22,11 +22,11 @@ final class SourceChecker {
   /** Checked source. */
   private final Resolution.Source source;
 
-  /** Definitions that were checked. */
+  /** Global symbols that were checked. */
   private Map<String, Semantic.Definition> globals;
 
-  /** Definitions that are being checked. */
-  private Set<Node.Definition> currently_checked;
+  /** Global symbols that are being checked. */
+  private Set<String> currently_checked;
 
   /** Constructor. */
   private SourceChecker(Resolution.Source source) {
@@ -63,16 +63,14 @@ final class SourceChecker {
 
   /** Check a definition. */
   private Semantic.Definition check_definition(Node.Definition node) {
-    if (currently_checked.contains(node)) {
+    String identifier = node.identifier().text();
+    if (currently_checked.contains(identifier)) {
       throw source
         .subject(node)
-        .to_diagnostic(
-          "error",
-          "Cyclic definition with `%s`!",
-          node.identifier())
+        .to_diagnostic("error", "Cyclic definition with `%s`!", identifier)
         .to_exception();
     }
-    currently_checked.add(node);
+    currently_checked.add(identifier);
     Semantic.Definition definition = switch (node) {
       case Node.Const c ->
         throw source
@@ -81,7 +79,7 @@ final class SourceChecker {
           .to_exception();
       case Node.Var var -> check_var(Optional.empty(), var);
     };
-    currently_checked.remove(node);
+    currently_checked.remove(identifier);
     return definition;
   }
 
