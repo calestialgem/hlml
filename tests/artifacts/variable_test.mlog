@@ -1,0 +1,10 @@
+set g0 56
+set l0 17
+op add r0 l0 g0
+op sub r0 r0 45
+set l1 5555
+op mul r1 l0 g0
+op add r0 l1 r1
+op idiv r0 l0 g0
+set l2 r0
+end

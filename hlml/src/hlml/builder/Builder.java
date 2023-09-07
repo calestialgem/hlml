@@ -5,7 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.util.Formatter;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -50,6 +52,18 @@ public final class Builder {
   /** Global symbols that are already built. */
   private Set<Name> built;
 
+  /** Indices of the built global variables. */
+  private Map<Name, Integer> global_variable_indices;
+
+  /** Number of global variables used through the program. */
+  private int global_variable_count;
+
+  /** Indices of the built local variables. */
+  private Map<String, Integer> local_variable_indices;
+
+  /** Number of local variables used through the program. */
+  private int local_variable_count;
+
   /** Constructor. */
   private Builder(Subject subject, Path artifacts, Semantic.Target target) {
     this.subject = subject;
@@ -81,6 +95,10 @@ public final class Builder {
     decimal_formatter.setMaximumFractionDigits(Integer.MAX_VALUE);
     register_count = 0;
     built = new HashSet<>();
+    global_variable_indices = new HashMap<>();
+    global_variable_count = 0;
+    local_variable_indices = new HashMap<>();
+    local_variable_count = 0;
     for (Name dependency : entrypoint.get().dependencies()) {
       build_dependency(dependency);
     }
@@ -107,11 +125,10 @@ public final class Builder {
       build_dependency(dependency);
     }
     switch (definition) {
-      case Semantic.Var v ->
-        throw Subject
-          .of("compiler")
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
+      case Semantic.Var v -> {
+        global_variable_indices.put(name, global_variable_count);
+        global_variable_count++;
+      }
     }
   }
 
@@ -120,18 +137,32 @@ public final class Builder {
     switch (statement) {
       case Semantic.Block block ->
         block.inner_statements().forEach(this::build_statement);
-      case Semantic.Var local ->
-        throw Subject
-          .of("compiler")
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
-      case Semantic.Assignment local ->
-        throw Subject
-          .of("compiler")
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
+      case Semantic.Var l -> {
+        local_variable_indices.put(l.identifier(), local_variable_count);
+        if (l.initial_value().isPresent()) {
+          Evaluation variable =
+            new Evaluation.LocalVariable(local_variable_count);
+          Evaluation initial_value = build_expression(l.initial_value().get());
+          build_set(variable, initial_value);
+        }
+        local_variable_count++;
+      }
+      case Semantic.Assignment a -> {
+        Evaluation variable = build_expression(a.variable());
+        Evaluation new_value = build_expression(a.new_value());
+        build_set(variable, new_value);
+      }
       case Semantic.Discard discard -> build_expression(discard.discarded());
     }
+  }
+
+  /** Builds a `set` instruction. */
+  private void build_set(Evaluation target, Evaluation source) {
+    formatter.format("set ");
+    build_evaluation(target);
+    formatter.format(" ");
+    build_evaluation(source);
+    formatter.format("%n");
   }
 
   /** Builds an expression. */
@@ -171,16 +202,11 @@ public final class Builder {
       case Semantic.LogicalNot u -> build_unary_operation(u, "notEqual");
       case Semantic.NumberConstant number_constant ->
         new Evaluation.Immediate(number_constant.value());
-      case Semantic.LocalVariableAccess l ->
-        throw Subject
-          .of("compiler")
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
       case Semantic.GlobalVariableAccess g ->
-        throw Subject
-          .of("compiler")
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
+        new Evaluation.GlobalVariable(global_variable_indices.get(g.name()));
+      case Semantic.LocalVariableAccess l ->
+        new Evaluation.LocalVariable(
+          local_variable_indices.get(l.identifier()));
     };
   }
 
@@ -218,6 +244,8 @@ public final class Builder {
   /** Builds an evaluation as an instruction parameter. */
   private void build_evaluation(Evaluation evaluation) {
     switch (evaluation) {
+      case Evaluation.GlobalVariable g -> formatter.format("g%d", g.index());
+      case Evaluation.LocalVariable l -> formatter.format("l%d", l.index());
       case Evaluation.Register r -> formatter.format("r%d", r.index());
       case Evaluation.Immediate i ->
         formatter.format(decimal_formatter.format(i.value()));
@@ -228,6 +256,8 @@ public final class Builder {
    * register. */
   private int overwrite_evaluation(Evaluation evaluation) {
     return switch (evaluation) {
+      case Evaluation.GlobalVariable g -> register_count;
+      case Evaluation.LocalVariable l -> register_count;
       case Evaluation.Register r -> r.index();
       case Evaluation.Immediate i -> register_count;
     };
