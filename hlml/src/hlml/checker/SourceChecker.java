@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.DoubleBinaryOperator;
+import java.util.function.DoubleUnaryOperator;
 
 import hlml.parser.Node;
 import hlml.resolver.Resolution;
@@ -132,89 +134,154 @@ final class SourceChecker {
   {
     return switch (node) {
       case Node.EqualTo(var l, var r) ->
-        new Semantic.EqualTo(
-          check_expression(scope, l),
-          check_expression(scope, r));
+        fold_binary_operation(
+          new Semantic.EqualTo(
+            check_expression(scope, l),
+            check_expression(scope, r)),
+          (a, b) -> Math.abs(a - b) < 0.000001 ? 1 : 0);
       case Node.NotEqualTo(var l, var r) ->
-        new Semantic.NotEqualTo(
-          check_expression(scope, l),
-          check_expression(scope, r));
+        fold_binary_operation(
+          new Semantic.NotEqualTo(
+            check_expression(scope, l),
+            check_expression(scope, r)),
+          (a, b) -> Math.abs(a - b) < 0.000001 ? 0 : 1);
       case Node.StrictlyEqualTo(var l, var r) ->
-        new Semantic.StrictlyEqualTo(
-          check_expression(scope, l),
-          check_expression(scope, r));
+        fold_binary_operation(
+          new Semantic.StrictlyEqualTo(
+            check_expression(scope, l),
+            check_expression(scope, r)),
+          (a, b) -> Math.abs(a - b) < 0.000001 ? 1 : 0);
       case Node.LessThan(var l, var r) ->
-        new Semantic.LessThan(
-          check_expression(scope, l),
-          check_expression(scope, r));
+        fold_binary_operation(
+          new Semantic.LessThan(
+            check_expression(scope, l),
+            check_expression(scope, r)),
+          (a, b) -> a < b ? 1 : 0);
       case Node.LessThanOrEqualTo(var l, var r) ->
-        new Semantic.LessThanOrEqualTo(
-          check_expression(scope, l),
-          check_expression(scope, r));
+        fold_binary_operation(
+          new Semantic.LessThanOrEqualTo(
+            check_expression(scope, l),
+            check_expression(scope, r)),
+          (a, b) -> a <= b ? 1 : 0);
       case Node.GreaterThan(var l, var r) ->
-        new Semantic.GreaterThan(
-          check_expression(scope, l),
-          check_expression(scope, r));
+        fold_binary_operation(
+          new Semantic.GreaterThan(
+            check_expression(scope, l),
+            check_expression(scope, r)),
+          (a, b) -> a > b ? 1 : 0);
       case Node.GreaterThanOrEqualTo(var l, var r) ->
-        new Semantic.GreaterThanOrEqualTo(
-          check_expression(scope, l),
-          check_expression(scope, r));
+        fold_binary_operation(
+          new Semantic.GreaterThanOrEqualTo(
+            check_expression(scope, l),
+            check_expression(scope, r)),
+          (a, b) -> a >= b ? 1 : 0);
       case Node.BitwiseOr(var l, var r) ->
-        new Semantic.BitwiseOr(
-          check_expression(scope, l),
-          check_expression(scope, r));
+        fold_binary_operation(
+          new Semantic.BitwiseOr(
+            check_expression(scope, l),
+            check_expression(scope, r)),
+          (a, b) -> (long) a | (long) b);
       case Node.BitwiseXor(var l, var r) ->
-        new Semantic.BitwiseXor(
-          check_expression(scope, l),
-          check_expression(scope, r));
+        fold_binary_operation(
+          new Semantic.BitwiseXor(
+            check_expression(scope, l),
+            check_expression(scope, r)),
+          (a, b) -> (long) a ^ (long) b);
       case Node.BitwiseAnd(var l, var r) ->
-        new Semantic.BitwiseAnd(
-          check_expression(scope, l),
-          check_expression(scope, r));
+        fold_binary_operation(
+          new Semantic.BitwiseAnd(
+            check_expression(scope, l),
+            check_expression(scope, r)),
+          (a, b) -> (long) a & (long) b);
       case Node.LeftShift(var l, var r) ->
-        new Semantic.LeftShift(
-          check_expression(scope, l),
-          check_expression(scope, r));
+        fold_binary_operation(
+          new Semantic.LeftShift(
+            check_expression(scope, l),
+            check_expression(scope, r)),
+          (a, b) -> (long) a << (long) b);
       case Node.RightShift(var l, var r) ->
-        new Semantic.RightShift(
-          check_expression(scope, l),
-          check_expression(scope, r));
+        fold_binary_operation(
+          new Semantic.RightShift(
+            check_expression(scope, l),
+            check_expression(scope, r)),
+          (a, b) -> (long) a >> (long) b);
       case Node.Addition(var l, var r) ->
-        new Semantic.Addition(
-          check_expression(scope, l),
-          check_expression(scope, r));
+        fold_binary_operation(
+          new Semantic.Addition(
+            check_expression(scope, l),
+            check_expression(scope, r)),
+          (a, b) -> a + b);
       case Node.Subtraction(var l, var r) ->
-        new Semantic.Subtraction(
-          check_expression(scope, l),
-          check_expression(scope, r));
+        fold_binary_operation(
+          new Semantic.Subtraction(
+            check_expression(scope, l),
+            check_expression(scope, r)),
+          (a, b) -> a - b);
       case Node.Multiplication(var l, var r) ->
-        new Semantic.Multiplication(
-          check_expression(scope, l),
-          check_expression(scope, r));
+        fold_binary_operation(
+          new Semantic.Multiplication(
+            check_expression(scope, l),
+            check_expression(scope, r)),
+          (a, b) -> a * b);
       case Node.Division(var l, var r) ->
-        new Semantic.Division(
-          check_expression(scope, l),
-          check_expression(scope, r));
+        fold_binary_operation(
+          new Semantic.Division(
+            check_expression(scope, l),
+            check_expression(scope, r)),
+          (a, b) -> a / b);
       case Node.IntegerDivision(var l, var r) ->
-        new Semantic.IntegerDivision(
-          check_expression(scope, l),
-          check_expression(scope, r));
+        fold_binary_operation(
+          new Semantic.IntegerDivision(
+            check_expression(scope, l),
+            check_expression(scope, r)),
+          (a, b) -> Math.floor(a / b));
       case Node.Modulus(var l, var r) ->
-        new Semantic.Modulus(
-          check_expression(scope, l),
-          check_expression(scope, r));
+        fold_binary_operation(
+          new Semantic.Modulus(
+            check_expression(scope, l),
+            check_expression(scope, r)),
+          (a, b) -> a % b);
       case Node.Promotion(var o) ->
-        new Semantic.Promotion(check_expression(scope, o));
+        fold_unary_operation(
+          new Semantic.Promotion(check_expression(scope, o)),
+          a -> a);
       case Node.Negation(var o) ->
-        new Semantic.Negation(check_expression(scope, o));
+        fold_unary_operation(
+          new Semantic.Negation(check_expression(scope, o)),
+          a -> -a);
       case Node.BitwiseNot(var o) ->
-        new Semantic.BitwiseNot(check_expression(scope, o));
+        fold_unary_operation(
+          new Semantic.BitwiseNot(check_expression(scope, o)),
+          a -> ~(long) a);
       case Node.LogicalNot(var o) ->
-        new Semantic.LogicalNot(check_expression(scope, o));
+        fold_unary_operation(
+          new Semantic.LogicalNot(check_expression(scope, o)),
+          a -> a != 0 ? 1 : 0);
       case Node.NumberConstant number_constant ->
         new Semantic.NumberConstant(number_constant.value());
       case Node.VariableAccess v -> check_variable_access(scope, v);
     };
+  }
+
+  /** Folds a binary operation if the operands are constants. */
+  private Semantic.Expression fold_binary_operation(
+    Semantic.BinaryOperation operation,
+    DoubleBinaryOperator operator)
+  {
+    if (!(operation.left_operand() instanceof Semantic.NumberConstant(var l)
+      && operation.right_operand() instanceof Semantic.NumberConstant(var r)))
+      return operation;
+    return new Semantic.NumberConstant(operator.applyAsDouble(l, r));
+  }
+
+  /** Folds a unary operation if the operand is constant. */
+  private Semantic.Expression fold_unary_operation(
+    Semantic.UnaryOperation operation,
+    DoubleUnaryOperator operator)
+  {
+    if (!(operation.operand() instanceof Semantic.NumberConstant(var o)))
+      return operation;
+    return new Semantic.NumberConstant(operator.applyAsDouble(o));
   }
 
   /** Checks a variable access. */
