@@ -124,6 +124,7 @@ public final class Builder {
       build_dependency(dependency);
     }
     switch (definition) {
+      case Semantic.Const c -> {}
       case Semantic.Var v -> {
         global_variable_indices.put(name, global_variable_count);
         global_variable_count++;

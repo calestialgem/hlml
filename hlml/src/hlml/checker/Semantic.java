@@ -35,6 +35,12 @@ public sealed interface Semantic {
     String identifier();
   }
 
+  /** Definition of a constant. */
+  record Const(String identifier, double value) implements Definition {
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
   /** Definition of a variable. */
   record Var(String identifier, Optional<Expression> initial_value)
     implements Definition, Statement
