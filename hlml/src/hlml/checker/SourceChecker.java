@@ -132,7 +132,7 @@ final class SourceChecker {
         yield new Semantic.Assignment(variable, new_value);
       }
       case Node.Discard discard ->
-        new Semantic.Discard(check_expression(scope, discard.discarded()));
+        new Semantic.Discard(check_expression(scope, discard.source()));
       default ->
         throw source
           .subject(node)

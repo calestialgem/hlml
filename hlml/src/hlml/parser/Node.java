@@ -88,30 +88,30 @@ public sealed interface Node {
     }
   }
 
-  /** Statements that manipulate expressions. Useful for parsing as all the
-   * initial tokens of these statements are same as expressions. */
-  sealed interface ExpressionBased extends Statement {}
+  /** Statements that affect the processors context. Useful for parsing as all
+   * the initial tokens of these statements are same as expressions. */
+  sealed interface Affect extends Statement {}
+
+  /** Statements that mutate a variable. */
+  sealed interface Mutate extends Affect {
+    /** The mutated variable. */
+    SymbolAccess target();
+
+    @Override
+    default int first(List<Token> tokens) { return target().first(tokens); }
+
+    @Override
+    default int last(List<Token> tokens) { return target().last(tokens) + 1; }
+  }
 
   /** Statements that increment the value hold in a variable. */
-  record Increment(SymbolAccess target) implements ExpressionBased {
-    @Override
-    public int first(List<Token> tokens) { return target.first(tokens); }
-
-    @Override
-    public int last(List<Token> tokens) { return target.last(tokens) + 1; }
-  }
+  record Increment(SymbolAccess target) implements Mutate {}
 
   /** Statements that decrement the value hold in a variable. */
-  record Decrement(SymbolAccess target) implements ExpressionBased {
-    @Override
-    public int first(List<Token> tokens) { return target.first(tokens); }
+  record Decrement(SymbolAccess target) implements Mutate {}
 
-    @Override
-    public int last(List<Token> tokens) { return target.last(tokens) + 1; }
-  }
-
-  /** Statements that change the value hold in a variable. */
-  sealed interface Assign extends ExpressionBased {
+  /** Statements that set the value hold in a variable. */
+  sealed interface Assign extends Affect {
     /** The changed variable. */
     SymbolAccess target();
 
@@ -125,82 +125,83 @@ public sealed interface Node {
     default int last(List<Token> tokens) { return source().last(tokens) + 1; }
   }
 
-  /** Statements that mutate the target to be the same as the source. */
+  /** Statements that set the target to be the same as the source. */
   record DirectlyAssign(SymbolAccess target, Expression source)
     implements Assign
   {}
 
-  /** Statements that mutate the target to be the multiplication of the target
-   * and the source. */
+  /** Statements that set the target to be the multiplication of the target and
+   * the source. */
   record MultiplyAssign(SymbolAccess target, Expression source)
     implements Assign
   {}
 
-  /** Statements that mutate the target to be the division of the target and the
+  /** Statements that set the target to be the division of the target and the
    * source. */
   record DivideAssign(SymbolAccess target, Expression source)
     implements Assign
   {}
 
-  /** Statements that mutate the target to be the integer division of the target
+  /** Statements that set the target to be the integer division of the target
    * and the source. */
   record DivideIntegerAssign(SymbolAccess target, Expression source)
     implements Assign
   {}
 
-  /** Statements that mutate the target to be the modulus of the target and the
+  /** Statements that set the target to be the modulus of the target and the
    * source. */
   record ModulusAssign(SymbolAccess target, Expression source)
     implements Assign
   {}
 
-  /** Statements that mutate the target to be the addition of the target and the
+  /** Statements that set the target to be the addition of the target and the
    * source. */
   record AddAssign(SymbolAccess target, Expression source) implements Assign {}
 
-  /** Statements that mutate the target to be the subtract of the target and the
+  /** Statements that set the target to be the subtract of the target and the
    * source. */
   record SubtractAssign(SymbolAccess target, Expression source)
     implements Assign
   {}
 
-  /** Statements that mutate the target to be the left shift of the target and
-   * the source. */
+  /** Statements that set the target to be the left shift of the target and the
+   * source. */
   record ShiftLeftAssign(SymbolAccess target, Expression source)
     implements Assign
   {}
 
-  /** Statements that mutate the target to be the right shift of the target and
-   * the source. */
+  /** Statements that set the target to be the right shift of the target and the
+   * source. */
   record ShiftRightAssign(SymbolAccess target, Expression source)
     implements Assign
   {}
 
-  /** Statements that mutate the target to be the bitwise and of the target and
-   * the source. */
+  /** Statements that set the target to be the bitwise and of the target and the
+   * source. */
   record AndBitwiseAssign(SymbolAccess target, Expression source)
     implements Assign
   {}
 
-  /** Statements that mutate the target to be the bitwise xor of the target and
-   * the source. */
+  /** Statements that set the target to be the bitwise xor of the target and the
+   * source. */
   record XorBitwiseAssign(SymbolAccess target, Expression source)
     implements Assign
   {}
 
-  /** Statements that mutate the target to be the bitwise or of the target and
-   * the source. */
+  /** Statements that set the target to be the bitwise or of the target and the
+   * source. */
   record OrBitwiseAssign(SymbolAccess target, Expression source)
     implements Assign
   {}
 
-  /** Statements that evaluate an expression and discards it. */
-  record Discard(Expression discarded) implements ExpressionBased {
+  /** Statements that evaluate an expression and discard its value. Useful for
+   * side effects, not the value. */
+  record Discard(Expression source) implements Affect {
     @Override
-    public int first(List<Token> tokens) { return discarded.first(tokens); }
+    public int first(List<Token> tokens) { return source.first(tokens); }
 
     @Override
-    public int last(List<Token> tokens) { return discarded.last(tokens) + 1; }
+    public int last(List<Token> tokens) { return source.last(tokens) + 1; }
   }
 
   /** Calculations that denote a value. */

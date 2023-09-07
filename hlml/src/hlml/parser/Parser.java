@@ -124,11 +124,11 @@ public final class Parser {
     return Optional.of(block);
   }
 
-  /** Parses an expression based statement. */
-  private Optional<Node.ExpressionBased> parse_expression_based() {
+  /** Parses an affect statement. */
+  private Optional<Node.Affect> parse_expression_based() {
     Optional<Node.Expression> expression = parse_expression();
     if (expression.isEmpty()) { return Optional.empty(); }
-    Node.ExpressionBased result = new Node.Discard(expression.get());
+    Node.Affect affect = new Node.Discard(expression.get());
     if (expression.get() instanceof Node.SymbolAccess target) {
       Optional<AssignmentParser> assignment_parser =
         parse_assignment_operator();
@@ -138,20 +138,20 @@ public final class Parser {
             this::parse_expression,
             "source of the %s statement"
               .formatted(assignment_parser.get().name()));
-        result = assignment_parser.get().initializer().apply(target, source);
+        affect = assignment_parser.get().initializer().apply(target, source);
       }
       else
         if (parse_token(Token.PlusPlus.class).isPresent()) {
-          result = new Node.Increment(target);
+          affect = new Node.Increment(target);
         }
         else
           if (parse_token(Token.MinusMinus.class).isPresent()) {
-            result = new Node.Decrement(target);
+            affect = new Node.Decrement(target);
           }
     }
     expect_token(
       Token.Semicolon.class,
-      "terminator `;` of the %s statement".formatted(switch (result)
+      "terminator `;` of the %s statement".formatted(switch (affect)
       {
         case Node.Increment i -> "increment";
         case Node.Decrement d -> "decrement";
@@ -169,7 +169,7 @@ public final class Parser {
         case Node.OrBitwiseAssign a -> "or bitwise assign";
         case Node.Discard d -> "discard";
       }));
-    return Optional.of(result);
+    return Optional.of(affect);
   }
 
   /** Parses an assignment operator. */
