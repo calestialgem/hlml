@@ -58,7 +58,26 @@ public final class Parser {
 
   /** Parses a definition. */
   private Optional<Node.Definition> parse_definition() {
-    return first_of(this::parse_var);
+    return first_of(this::parse_const, this::parse_var);
+  }
+
+  /** Parses a const. */
+  private Optional<Node.Const> parse_const() {
+    if (parse_token(Token.Const.class).isEmpty()) { return Optional.empty(); }
+    Token.LowercaseIdentifier identifier =
+      expect_token(
+        Token.LowercaseIdentifier.class,
+        "identifier of the const declaration");
+    expect_token(
+      Token.Equal.class,
+      "value separator `=` of the const declaration");
+    Node.Expression initial_value =
+      expect(this::parse_expression, "value of the const declaration");
+    expect_token(
+      Token.Semicolon.class,
+      "terminator `;` of the const declaration");
+    Node.Const var = new Node.Const(identifier, initial_value);
+    return Optional.of(var);
   }
 
   /** Parses a var. */
