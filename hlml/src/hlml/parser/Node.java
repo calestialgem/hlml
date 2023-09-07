@@ -57,7 +57,7 @@ public sealed interface Node {
   /** Instructions that can be given to the processor. */
   sealed interface Statement extends Node {}
 
-  /** Sequentially executed collection of instructions. */
+  /** Sequentially executed collection of statements. */
   record Block(int first, List<Statement> inner_statements)
     implements Statement
   {
@@ -74,8 +74,23 @@ public sealed interface Node {
     }
   }
 
-  /** Statements that evaluates an expression and discards it. */
-  record Discard(Expression discarded) implements Statement {
+  /** Statements that manipulate expressions. Useful for parsing as all the
+   * initial tokens of these statements are same as expressions. */
+  sealed interface ExpressionBased extends Statement {}
+
+  /** Statements that change the value hold in a variable. */
+  record Assignment(VariableAccess variable, Expression new_value)
+    implements ExpressionBased
+  {
+    @Override
+    public int first(List<Token> tokens) { return variable.first(tokens); }
+
+    @Override
+    public int last(List<Token> tokens) { return new_value.last(tokens) + 1; }
+  }
+
+  /** Statements that evaluate an expression and discards it. */
+  record Discard(Expression discarded) implements ExpressionBased {
     @Override
     public int first(List<Token> tokens) { return discarded.first(tokens); }
 

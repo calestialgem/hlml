@@ -106,6 +106,11 @@ final class SourceChecker {
         scope.introduce(local);
         yield local;
       }
+      case Node.Assignment a -> {
+        Semantic.VariableAccess variable = check_variable_access(scope, a.variable());
+        Semantic.Expression new_value = check_expression(scope, a.new_value());
+        yield new Semantic.Assignment(variable, new_value);
+      }
       case Node.Discard discard ->
         new Semantic.Discard(check_expression(scope, discard.discarded()));
     };
@@ -199,42 +204,48 @@ final class SourceChecker {
         new Semantic.LogicalNot(check_expression(scope, o));
       case Node.NumberConstant number_constant ->
         new Semantic.NumberConstant(number_constant.value());
-      case Node.VariableAccess v -> {
-        Optional<Semantic.Definition> local = scope.find(v.identifier());
-        if (local.isPresent()) {
-          if (!(local.get() instanceof Semantic.Var accessed)) {
-            throw source
-              .subject(node)
-              .to_diagnostic(
-                "error",
-                "Accessed symbol `%s` is not a variable!",
-                v.identifier())
-              .to_exception();
-          }
-          yield new Semantic.LocalVariableAccess(accessed.identifier());
-        }
-        Optional<Semantic.Definition> global = find_global(v.identifier());
-        if (global.isPresent()) {
-          if (!(global.get() instanceof Semantic.Var accessed)) {
-            throw source
-              .subject(node)
-              .to_diagnostic(
-                "error",
-                "Accessed symbol `%s` is not a variable!",
-                v.identifier())
-              .to_exception();
-          }
-          yield new Semantic.GlobalVariableAccess(
-            new Name(source.name(), accessed.identifier()));
-        }
+      case Node.VariableAccess v -> check_variable_access(scope, v);
+    };
+  }
+
+  /** Checks a variable access. */
+  private Semantic.VariableAccess check_variable_access(
+    Scope scope,
+    Node.VariableAccess node)
+  {
+    Optional<Semantic.Definition> local = scope.find(node.identifier());
+    if (local.isPresent()) {
+      if (!(local.get() instanceof Semantic.Var accessed)) {
         throw source
           .subject(node)
           .to_diagnostic(
             "error",
-            "Could not find a symbol named `%s`!",
-            v.identifier())
+            "Accessed symbol `%s` is not a variable!",
+            node.identifier())
           .to_exception();
       }
-    };
+      return new Semantic.LocalVariableAccess(accessed.identifier());
+    }
+    Optional<Semantic.Definition> global = find_global(node.identifier());
+    if (global.isPresent()) {
+      if (!(global.get() instanceof Semantic.Var accessed)) {
+        throw source
+          .subject(node)
+          .to_diagnostic(
+            "error",
+            "Accessed symbol `%s` is not a variable!",
+            node.identifier())
+          .to_exception();
+      }
+      return new Semantic.GlobalVariableAccess(
+        new Name(source.name(), accessed.identifier()));
+    }
+    throw source
+      .subject(node)
+      .to_diagnostic(
+        "error",
+        "Could not find a symbol named `%s`!",
+        node.identifier())
+      .to_exception();
   }
 }

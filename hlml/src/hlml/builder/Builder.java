@@ -97,6 +97,11 @@ public final class Builder {
           .of("compiler")
           .to_diagnostic("failure", "Unimplemented!")
           .to_exception();
+      case Semantic.Assignment local ->
+        throw Subject
+          .of("compiler")
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
       case Semantic.Discard discard -> build_expression(discard.discarded());
     }
   }

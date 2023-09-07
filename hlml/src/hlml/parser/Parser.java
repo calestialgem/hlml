@@ -85,7 +85,10 @@ public final class Parser {
 
   /** Parses a statement. */
   private Optional<Node.Statement> parse_statement() {
-    return first_of(this::parse_block, this::parse_var, this::parse_discard);
+    return first_of(
+      this::parse_block,
+      this::parse_var,
+      this::parse_expression_based);
   }
 
   /** Parses a block. */
@@ -102,15 +105,27 @@ public final class Parser {
     return Optional.of(block);
   }
 
-  /** Parses a discard. */
-  private Optional<Node.Discard> parse_discard() {
-    Optional<Node.Expression> discarded = parse_expression();
-    if (discarded.isEmpty()) { return Optional.empty(); }
+  /** Parses an expression based statement. */
+  private Optional<Node.ExpressionBased> parse_expression_based() {
+    Optional<Node.Expression> expression = parse_expression();
+    if (expression.isEmpty())
+      return Optional.empty();
+    Node.ExpressionBased result = (new Node.Discard(expression.get()));
+    if (expression.get() instanceof Node.VariableAccess variable
+      && parse_token(Token.Equal.class).isPresent())
+    {
+      Node.Expression new_value =
+        expect(this::parse_expression, "new value of the assignment statement");
+      result = (new Node.Assignment(variable, new_value));
+    }
     expect_token(
       Token.Semicolon.class,
-      "terminator `;` of the discard statement");
-    Node.Discard discard = new Node.Discard(discarded.get());
-    return Optional.of(discard);
+      "terminator `;` of the %s statement".formatted(switch (result)
+      {
+        case Node.Assignment a -> "assignment";
+        case Node.Discard d -> "discard";
+      }));
+    return Optional.of(result);
   }
 
   /** Parses an expression. */

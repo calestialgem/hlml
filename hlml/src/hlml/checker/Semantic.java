@@ -35,6 +35,11 @@ public sealed interface Semantic {
   /** Statements that are sequentially executed. */
   record Block(List<Statement> inner_statements) implements Statement {}
 
+  /** Statements that mutate a variable's value. */
+  record Assignment(VariableAccess variable, Expression new_value)
+    implements Statement
+  {}
+
   /** Statements that evaluate an expression and discard the value. */
   record Discard(Expression discarded) implements Statement {}
 
@@ -178,9 +183,12 @@ public sealed interface Semantic {
   /** Expression that evaluates to a hard-coded numeric value. */
   record NumberConstant(double value) implements Expression {}
 
+  /** Expression that evaluates to an unknown. */
+  sealed interface VariableAccess extends Expression {}
+
   /** Expression that evaluates to an unknown in the global scope. */
-  record GlobalVariableAccess(Name name) implements Expression {}
+  record GlobalVariableAccess(Name name) implements VariableAccess {}
 
   /** Expression that evaluates to an unknown in the local scope. */
-  record LocalVariableAccess(String identifier) implements Expression {}
+  record LocalVariableAccess(String identifier) implements VariableAccess {}
 }
