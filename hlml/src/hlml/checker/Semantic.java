@@ -89,6 +89,15 @@ public sealed interface Semantic {
     Set<Name> dependencies();
   }
 
+  /** Expression that has a known value. */
+  sealed interface Constant extends Expression {
+    /** Value that is denoted by this expression. */
+    double value();
+
+    @Override
+    default Set<Name> dependencies() { return Set.of(); }
+  }
+
   /** Expression made up of one operand and an operator at the left. */
   sealed interface UnaryOperation extends Expression {
     /** Operand of the operator. */
@@ -233,21 +242,24 @@ public sealed interface Semantic {
   record LogicalNot(Expression operand) implements UnaryOperation {}
 
   /** Expression that evaluates to a hard-coded numeric value. */
-  record NumberConstant(double value) implements Expression {
-    @Override
-    public Set<Name> dependencies() { return Set.of(); }
-  }
+  record NumberConstant(double value) implements Constant {}
 
-  /** Expression that evaluates to an unknown. */
-  sealed interface VariableAccess extends Expression {}
+  /** Expression that evaluates to the value held by a symbol. */
+  sealed interface SymbolAccess extends Expression {}
 
-  /** Expression that evaluates to an unknown in the global scope. */
+  /** Expression that evaluates to the value held by a constant. */
+  record ConstantAccess(double value) implements SymbolAccess, Constant {}
+
+  /** Expression that evaluates to the value held by a variable. */
+  sealed interface VariableAccess extends SymbolAccess {}
+
+  /** Expression that evaluates to a global variable's value. */
   record GlobalVariableAccess(Name name) implements VariableAccess {
     @Override
     public Set<Name> dependencies() { return Set.of(name); }
   }
 
-  /** Expression that evaluates to an unknown in the local scope. */
+  /** Expression that evaluates to a local variable's value. */
   record LocalVariableAccess(String identifier) implements VariableAccess {
     @Override
     public Set<Name> dependencies() { return Set.of(); }

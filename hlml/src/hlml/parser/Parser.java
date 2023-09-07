@@ -129,7 +129,7 @@ public final class Parser {
     Optional<Node.Expression> expression = parse_expression();
     if (expression.isEmpty()) { return Optional.empty(); }
     Node.ExpressionBased result = new Node.Discard(expression.get());
-    if (expression.get() instanceof Node.VariableAccess variable
+    if (expression.get() instanceof Node.SymbolAccess variable
       && parse_token(Token.Equal.class).isPresent())
     {
       Node.Expression new_value =
@@ -354,7 +354,7 @@ public final class Parser {
 
   /** Parses an expression at precedence level 0. */
   private Optional<Node.Precedence0> parse_precedence_0() {
-    return first_of(this::parse_number_constant, this::parse_variable_access);
+    return first_of(this::parse_number_constant, this::parse_symbol_access);
   }
 
   /** Parses a number constant. */
@@ -368,15 +368,15 @@ public final class Parser {
     return Optional.of(number_constant);
   }
 
-  /** Parses a variable access. */
-  private Optional<Node.VariableAccess> parse_variable_access() {
+  /** Parses a symbol access. */
+  private Optional<Node.SymbolAccess> parse_symbol_access() {
     int first = current;
     Optional<Token.LowercaseIdentifier> token =
       parse_token(Token.LowercaseIdentifier.class);
     if (token.isEmpty()) { return Optional.empty(); }
-    Node.VariableAccess variable_access =
-      new Node.VariableAccess(first, token.get().text());
-    return Optional.of(variable_access);
+    Node.SymbolAccess symbol_access =
+      new Node.SymbolAccess(first, token.get().text());
+    return Optional.of(symbol_access);
   }
 
   /** Runs the given parser repeatedly and collects the parsed constructs as a

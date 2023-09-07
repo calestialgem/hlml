@@ -74,11 +74,16 @@ final class SourceChecker {
     }
     currently_checked.add(identifier);
     Semantic.Definition definition = switch (node) {
-      case Node.Const c ->
-        throw source
-          .subject(node)
-          .to_diagnostic("error", "Unimplemented!")
-          .to_exception();
+      case Node.Const c -> {
+        Semantic.Expression value = check_expression(Scope.create(), c.value());
+        if (!(value instanceof Semantic.Constant constant)) {
+          throw source
+            .subject(c.value())
+            .to_diagnostic("error", "Constant's value must be a constant!")
+            .to_exception();
+        }
+        yield new Semantic.Const(identifier, constant.value());
+      }
       case Node.Var var -> check_var(Optional.empty(), var);
     };
     currently_checked.remove(identifier);
@@ -117,8 +122,13 @@ final class SourceChecker {
         yield local;
       }
       case Node.Assignment a -> {
-        Semantic.VariableAccess variable =
+        Semantic.SymbolAccess access =
           check_variable_access(scope, a.variable());
+        if (!(access instanceof Semantic.VariableAccess variable))
+          throw source
+            .subject(a.variable())
+            .to_diagnostic("error", "Assigned symbol is not a variable!")
+            .to_exception();
         Semantic.Expression new_value = check_expression(scope, a.new_value());
         yield new Semantic.Assignment(variable, new_value);
       }
@@ -259,7 +269,7 @@ final class SourceChecker {
           a -> a != 0 ? 1 : 0);
       case Node.NumberConstant number_constant ->
         new Semantic.NumberConstant(number_constant.value());
-      case Node.VariableAccess v -> check_variable_access(scope, v);
+      case Node.SymbolAccess v -> check_variable_access(scope, v);
     };
   }
 
@@ -268,10 +278,11 @@ final class SourceChecker {
     Semantic.BinaryOperation operation,
     DoubleBinaryOperator operator)
   {
-    if (!(operation.left_operand() instanceof Semantic.NumberConstant(var l)
-      && operation.right_operand() instanceof Semantic.NumberConstant(var r)))
+    if (!(operation.left_operand() instanceof Semantic.Constant l
+      && operation.right_operand() instanceof Semantic.Constant r))
       return operation;
-    return new Semantic.NumberConstant(operator.applyAsDouble(l, r));
+    return new Semantic.NumberConstant(
+      operator.applyAsDouble(l.value(), r.value()));
   }
 
   /** Folds a unary operation if the operand is constant. */
@@ -279,15 +290,15 @@ final class SourceChecker {
     Semantic.UnaryOperation operation,
     DoubleUnaryOperator operator)
   {
-    if (!(operation.operand() instanceof Semantic.NumberConstant(var o)))
+    if (!(operation.operand() instanceof Semantic.Constant o))
       return operation;
-    return new Semantic.NumberConstant(operator.applyAsDouble(o));
+    return new Semantic.NumberConstant(operator.applyAsDouble(o.value()));
   }
 
   /** Checks a variable access. */
-  private Semantic.VariableAccess check_variable_access(
+  private Semantic.SymbolAccess check_variable_access(
     Scope scope,
-    Node.VariableAccess node)
+    Node.SymbolAccess node)
   {
     Optional<Semantic.Definition> local = scope.find(node.identifier());
     if (local.isPresent()) {
@@ -304,6 +315,9 @@ final class SourceChecker {
     }
     Optional<Semantic.Definition> global = find_global(node.identifier());
     if (global.isPresent()) {
+      if (global.get() instanceof Semantic.Const accessed) {
+        return new Semantic.ConstantAccess(accessed.value());
+      }
       if (!(global.get() instanceof Semantic.Var accessed)) {
         throw source
           .subject(node)

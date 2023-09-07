@@ -93,7 +93,7 @@ public sealed interface Node {
   sealed interface ExpressionBased extends Statement {}
 
   /** Statements that change the value hold in a variable. */
-  record Assignment(VariableAccess variable, Expression new_value)
+  record Assignment(SymbolAccess variable, Expression new_value)
     implements ExpressionBased
   {
     @Override
@@ -313,8 +313,8 @@ public sealed interface Node {
     public int last(List<Token> tokens) { return first; }
   }
 
-  /** Expression that denotes an unknown by its name. */
-  record VariableAccess(int first, String identifier) implements Precedence0 {
+  /** Expression that denotes the value held by a symbol. */
+  record SymbolAccess(int first, String identifier) implements Precedence0 {
     @Override
     public int first(List<Token> tokens) { return first; }
 

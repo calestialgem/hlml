@@ -202,6 +202,7 @@ public final class Builder {
       case Semantic.LogicalNot u -> build_unary_operation(u, "notEqual");
       case Semantic.NumberConstant number_constant ->
         new Evaluation.Immediate(number_constant.value());
+      case Semantic.ConstantAccess c -> new Evaluation.Immediate(c.value());
       case Semantic.GlobalVariableAccess g ->
         new Evaluation.GlobalVariable(global_variable_indices.get(g.name()));
       case Semantic.LocalVariableAccess l ->
