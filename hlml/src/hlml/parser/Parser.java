@@ -354,7 +354,10 @@ public final class Parser {
 
   /** Parses an expression at precedence level 0. */
   private Optional<Node.Precedence0> parse_precedence_0() {
-    return first_of(this::parse_number_constant, this::parse_symbol_access);
+    return first_of(
+      this::parse_number_constant,
+      this::parse_symbol_access,
+      this::parse_grouping);
   }
 
   /** Parses a number constant. */
@@ -377,6 +380,21 @@ public final class Parser {
     Node.SymbolAccess symbol_access =
       new Node.SymbolAccess(first, token.get().text());
     return Optional.of(symbol_access);
+  }
+
+  /** Parses a grouping. */
+  private Optional<Node.Grouping> parse_grouping() {
+    if (parse_token(Token.OpeningParenthesis.class).isEmpty())
+      return Optional.empty();
+    Node.Expression grouped =
+      expect(
+        this::parse_expression,
+        "grouped expression of the grouping expression");
+    expect_token(
+      Token.ClosingParenthesis.class,
+      "closer `)` of the grouping expression");
+    Node.Grouping grouping = new Node.Grouping(grouped);
+    return Optional.of(grouping);
   }
 
   /** Runs the given parser repeatedly and collects the parsed constructs as a

@@ -322,6 +322,16 @@ public sealed interface Node {
     public int last(List<Token> tokens) { return first; }
   }
 
+  /** Expression that enforces a specific order of evaluation for
+   * subexpressions. */
+  record Grouping(Expression grouped) implements Precedence0 {
+    @Override
+    public int first(List<Token> tokens) { return grouped.first(tokens) - 1; }
+
+    @Override
+    public int last(List<Token> tokens) { return grouped.last(tokens) + 1; }
+  }
+
   /** Index of the node's first token. Used for reporting diagnostics with a
    * source location. */
   int first(List<Token> tokens);

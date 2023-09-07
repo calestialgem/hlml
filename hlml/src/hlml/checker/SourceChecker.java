@@ -270,6 +270,7 @@ final class SourceChecker {
       case Node.NumberConstant number_constant ->
         new Semantic.NumberConstant(number_constant.value());
       case Node.SymbolAccess v -> check_variable_access(scope, v);
+      case Node.Grouping g -> check_expression(scope, g.grouped());
     };
   }
 
