@@ -48,8 +48,9 @@ public sealed interface Node {
 
     @Override
     public int last(List<Token> tokens) {
-      if (initial_value.isPresent())
+      if (initial_value.isPresent()) {
         return initial_value.get().last(tokens) + 1;
+      }
       return tokens.indexOf(identifier) + 1;
     }
   }

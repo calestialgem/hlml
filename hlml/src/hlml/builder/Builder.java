@@ -116,8 +116,7 @@ public final class Builder {
 
   /** Builds a dependency. */
   private void build_dependency(Name name) {
-    if (built.contains(name))
-      return;
+    if (built.contains(name)) { return; }
     built.add(name);
     Semantic.Source source = target.sources().get(name.source());
     Semantic.Definition definition = source.globals().get(name.identifier());
