@@ -36,6 +36,19 @@ public sealed interface Node {
     default Token representative(List<Token> tokens) { return identifier(); }
   }
 
+  /** Defining a symbol that holds an known value. */
+  record Const(Token.LowercaseIdentifier identifier, Expression value)
+    implements Definition
+  {
+    @Override
+    public int first(List<Token> tokens) {
+      return tokens.indexOf(identifier) - 1;
+    }
+
+    @Override
+    public int last(List<Token> tokens) { return value.last(tokens) + 1; }
+  }
+
   /** Defining a symbol that holds an unknown value. */
   record Var(
     Token.LowercaseIdentifier identifier,

@@ -74,6 +74,11 @@ final class SourceChecker {
     }
     currently_checked.add(node);
     Semantic.Definition definition = switch (node) {
+      case Node.Const c ->
+        throw source
+          .subject(node)
+          .to_diagnostic("error", "Unimplemented!")
+          .to_exception();
       case Node.Var var -> check_var(Optional.empty(), var);
     };
     currently_checked.remove(node);
