@@ -56,16 +56,13 @@ final class SourceChecker {
     }
     if (!source.globals().containsKey(identifier)) { return Optional.empty(); }
     Semantic.Definition global =
-      check_definition(Scope.create(), source.globals().get(identifier));
+      check_definition(source.globals().get(identifier));
     globals.put(identifier, global);
     return Optional.of(global);
   }
 
   /** Check a definition. */
-  private Semantic.Definition check_definition(
-    Scope scope,
-    Node.Definition node)
-  {
+  private Semantic.Definition check_definition(Node.Definition node) {
     if (currently_checked.contains(node)) {
       throw source
         .subject(node)
@@ -77,17 +74,25 @@ final class SourceChecker {
     }
     currently_checked.add(node);
     Semantic.Definition definition = switch (node) {
-      case Node.Var var -> check_var(scope, var);
+      case Node.Var var -> check_var(Optional.empty(), var);
     };
     currently_checked.remove(node);
     return definition;
   }
 
   /** Check a variable definition. */
-  private Semantic.Var check_var(Scope scope, Node.Var node) {
+  private Semantic.Var check_var(Optional<Scope> scope, Node.Var node) {
+    if (scope.isEmpty() && node.initial_value().isPresent()) {
+      throw source
+        .subject(node.initial_value().get())
+        .to_diagnostic(
+          "error",
+          "Global variables cannot have an initial value!")
+        .to_exception();
+    }
     return new Semantic.Var(
       node.identifier().text(),
-      node.initial_value().map(i -> check_expression(scope, i)));
+      node.initial_value().map(i -> check_expression(scope.get(), i)));
   }
 
   /** Checks a statement. */
@@ -102,12 +107,13 @@ final class SourceChecker {
         yield new Semantic.Block(inner_statements);
       }
       case Node.Var v -> {
-        Semantic.Var local = check_var(scope, v);
+        Semantic.Var local = check_var(Optional.of(scope), v);
         scope.introduce(local);
         yield local;
       }
       case Node.Assignment a -> {
-        Semantic.VariableAccess variable = check_variable_access(scope, a.variable());
+        Semantic.VariableAccess variable =
+          check_variable_access(scope, a.variable());
         Semantic.Expression new_value = check_expression(scope, a.new_value());
         yield new Semantic.Assignment(variable, new_value);
       }
