@@ -1,8 +1,9 @@
 # Tests variables.
 
-var global = 56;
+var global;
 
 entrypoint {
+  global = 56;
   var local = 17;
   local + global - 45;
   {
