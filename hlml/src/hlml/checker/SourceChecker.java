@@ -121,19 +121,23 @@ final class SourceChecker {
         scope.introduce(local);
         yield local;
       }
-      case Node.Assignment a -> {
-        Semantic.SymbolAccess access =
-          check_variable_access(scope, a.variable());
+      case Node.DirectlyAssign a -> {
+        Semantic.SymbolAccess access = check_variable_access(scope, a.target());
         if (!(access instanceof Semantic.VariableAccess variable))
           throw source
-            .subject(a.variable())
+            .subject(a.target())
             .to_diagnostic("error", "Assigned symbol is not a variable!")
             .to_exception();
-        Semantic.Expression new_value = check_expression(scope, a.new_value());
+        Semantic.Expression new_value = check_expression(scope, a.source());
         yield new Semantic.Assignment(variable, new_value);
       }
       case Node.Discard discard ->
         new Semantic.Discard(check_expression(scope, discard.discarded()));
+      default ->
+        throw source
+          .subject(node)
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
     };
   }
 

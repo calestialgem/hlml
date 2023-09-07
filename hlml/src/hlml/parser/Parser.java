@@ -129,21 +129,114 @@ public final class Parser {
     Optional<Node.Expression> expression = parse_expression();
     if (expression.isEmpty()) { return Optional.empty(); }
     Node.ExpressionBased result = new Node.Discard(expression.get());
-    if (expression.get() instanceof Node.SymbolAccess variable
-      && parse_token(Token.Equal.class).isPresent())
-    {
-      Node.Expression new_value =
-        expect(this::parse_expression, "new value of the assignment statement");
-      result = new Node.Assignment(variable, new_value);
+    if (expression.get() instanceof Node.SymbolAccess target) {
+      Optional<AssignmentParser> assignment_parser =
+        parse_assignment_operator();
+      if (assignment_parser.isPresent()) {
+        Node.Expression source =
+          expect(
+            this::parse_expression,
+            "source of the %s statement"
+              .formatted(assignment_parser.get().name()));
+        result = assignment_parser.get().initializer().apply(target, source);
+      }
+      else
+        if (parse_token(Token.PlusPlus.class).isPresent()) {
+          result = new Node.Increment(target);
+        }
+        else
+          if (parse_token(Token.MinusMinus.class).isPresent()) {
+            result = new Node.Decrement(target);
+          }
     }
     expect_token(
       Token.Semicolon.class,
       "terminator `;` of the %s statement".formatted(switch (result)
       {
-        case Node.Assignment a -> "assignment";
+        case Node.Increment i -> "increment";
+        case Node.Decrement d -> "decrement";
+        case Node.DirectlyAssign a -> "assign";
+        case Node.MultiplyAssign a -> "multiply assign";
+        case Node.DivideAssign a -> "divide assign";
+        case Node.DivideIntegerAssign a -> "divide integer assign";
+        case Node.ModulusAssign a -> "modulus assign";
+        case Node.AddAssign a -> "add assign";
+        case Node.SubtractAssign a -> "subtract assign";
+        case Node.ShiftLeftAssign a -> "shift left assign";
+        case Node.ShiftRightAssign a -> "shift right assign";
+        case Node.AndBitwiseAssign a -> "and bitwise assign";
+        case Node.XorBitwiseAssign a -> "xor bitwise assign";
+        case Node.OrBitwiseAssign a -> "or bitwise assign";
         case Node.Discard d -> "discard";
       }));
     return Optional.of(result);
+  }
+
+  /** Parses an assignment operator. */
+  private Optional<AssignmentParser> parse_assignment_operator() {
+    if (parse_token(Token.Equal.class).isPresent()) {
+      return Optional
+        .of(new AssignmentParser(Node.DirectlyAssign::new, "assign"));
+    }
+    if (parse_token(Token.StarEqual.class).isPresent()) {
+      return Optional
+        .of(new AssignmentParser(Node.MultiplyAssign::new, "multiply assign"));
+    }
+    if (parse_token(Token.SlashEqual.class).isPresent()) {
+      return Optional
+        .of(new AssignmentParser(Node.DivideAssign::new, "divide assign"));
+    }
+    if (parse_token(Token.SlashSlashEqual.class).isPresent()) {
+      return Optional
+        .of(
+          new AssignmentParser(
+            Node.DivideIntegerAssign::new,
+            "divide integer assign"));
+    }
+    if (parse_token(Token.PercentEqual.class).isPresent()) {
+      return Optional
+        .of(new AssignmentParser(Node.ModulusAssign::new, "modulus assign"));
+    }
+    if (parse_token(Token.PlusEqual.class).isPresent()) {
+      return Optional
+        .of(new AssignmentParser(Node.AddAssign::new, "add assign"));
+    }
+    if (parse_token(Token.MinusEqual.class).isPresent()) {
+      return Optional
+        .of(new AssignmentParser(Node.SubtractAssign::new, "subtract assign"));
+    }
+    if (parse_token(Token.LeftLeftEqual.class).isPresent()) {
+      return Optional
+        .of(
+          new AssignmentParser(Node.ShiftLeftAssign::new, "shift left assign"));
+    }
+    if (parse_token(Token.RightRightEqual.class).isPresent()) {
+      return Optional
+        .of(
+          new AssignmentParser(
+            Node.ShiftRightAssign::new,
+            "shift right assign"));
+    }
+    if (parse_token(Token.AmpersandEqual.class).isPresent()) {
+      return Optional
+        .of(
+          new AssignmentParser(
+            Node.AndBitwiseAssign::new,
+            "and bitwise assign"));
+    }
+    if (parse_token(Token.CaretEqual.class).isPresent()) {
+      return Optional
+        .of(
+          new AssignmentParser(
+            Node.XorBitwiseAssign::new,
+            "xor bitwise assign"));
+    }
+    if (parse_token(Token.PipeEqual.class).isPresent()) {
+      return Optional
+        .of(
+          new AssignmentParser(Node.OrBitwiseAssign::new, "or bitwise assign"));
+    }
+    return Optional.empty();
   }
 
   /** Parses an expression. */
