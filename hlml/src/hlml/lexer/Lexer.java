@@ -60,27 +60,43 @@ public final class Lexer {
         case '(' -> lex_single(Token.OpeningParenthesis::new);
         case ')' -> lex_single(Token.ClosingParenthesis::new);
         case ';' -> lex_single(Token.Semicolon::new);
-        case '+' -> lex_single(Token.Plus::new);
-        case '-' -> lex_single(Token.Minus::new);
         case '~' -> lex_single(Token.Tilde::new);
-        case '*' -> lex_single(Token.Star::new);
-        case '%' -> lex_single(Token.Percent::new);
-        case '&' -> lex_single(Token.Ampersand::new);
-        case '^' -> lex_single(Token.Caret::new);
-        case '|' -> lex_single(Token.Pipe::new);
-        case '/' -> lex_repeatable(Token.Slash::new, Token.SlashSlash::new);
+        case '*' -> lex_extensible(Token.Star::new, Token.StarEqual::new);
+        case '%' -> lex_extensible(Token.Percent::new, Token.PercentEqual::new);
+        case '&' ->
+          lex_extensible(Token.Ampersand::new, Token.AmpersandEqual::new);
+        case '^' -> lex_extensible(Token.Caret::new, Token.CaretEqual::new);
+        case '|' -> lex_extensible(Token.Pipe::new, Token.PipeEqual::new);
         case '!' ->
           lex_extensible(Token.Exclamation::new, Token.ExclamationEqual::new);
-        case '<' ->
+        case '+' ->
           lex_repeatable_or_extensible(
+            Token.Plus::new,
+            Token.PlusPlus::new,
+            Token.PlusEqual::new);
+        case '-' ->
+          lex_repeatable_or_extensible(
+            Token.Minus::new,
+            Token.MinusMinus::new,
+            Token.MinusEqual::new);
+        case '/' ->
+          lex_repeatable_and_extensible(
+            Token.Slash::new,
+            Token.SlashSlash::new,
+            Token.SlashEqual::new,
+            Token.SlashSlashEqual::new);
+        case '<' ->
+          lex_repeatable_and_extensible(
             Token.Left::new,
             Token.LeftLeft::new,
-            Token.LeftEqual::new);
+            Token.LeftEqual::new,
+            Token.LeftLeftEqual::new);
         case '>' ->
-          lex_repeatable_or_extensible(
+          lex_repeatable_and_extensible(
             Token.Right::new,
             Token.RightRight::new,
-            Token.RightEqual::new);
+            Token.RightEqual::new,
+            Token.RightRightEqual::new);
         case '=' ->
           lex_repeatable_and_extensible(
             Token.Equal::new,
@@ -173,19 +189,6 @@ public final class Lexer {
   private void lex_single(IntFunction<Token> lexer_function) {
     Token token = lexer_function.apply(start);
     tokens.add(token);
-  }
-
-  /** Lexes a single or repeated punctuation. */
-  private void lex_repeatable(
-    IntFunction<Token> lexer_function,
-    IntFunction<Token> repeated_lexer_function)
-  {
-    if (has_current() && get_current() == initial) {
-      advance();
-      lex_single(repeated_lexer_function);
-      return;
-    }
-    lex_single(lexer_function);
   }
 
   /** Lexes a single or extended punctuation. */
