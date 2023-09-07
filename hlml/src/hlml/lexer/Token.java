@@ -47,6 +47,24 @@ public sealed interface Token {
     public String explanation() { return "punctuation `}`"; }
   }
 
+  /** Punctuation `(`. */
+  record OpeningParenthesis(int start) implements Token {
+    @Override
+    public int end() { return start + "(".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `(`"; }
+  }
+
+  /** Punctuation `)`. */
+  record ClosingParenthesis(int start) implements Token {
+    @Override
+    public int end() { return start + ")".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `)`"; }
+  }
+
   /** Punctuation `;`. */
   record Semicolon(int start) implements Token {
     @Override

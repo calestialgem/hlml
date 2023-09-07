@@ -57,6 +57,8 @@ public final class Lexer {
         }
         case '{' -> lex_single(Token.OpeningBrace::new);
         case '}' -> lex_single(Token.ClosingBrace::new);
+        case '(' -> lex_single(Token.OpeningParenthesis::new);
+        case ')' -> lex_single(Token.ClosingParenthesis::new);
         case ';' -> lex_single(Token.Semicolon::new);
         case '+' -> lex_single(Token.Plus::new);
         case '-' -> lex_single(Token.Minus::new);
