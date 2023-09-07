@@ -86,8 +86,8 @@ final class SourceChecker {
   /** Check a variable definition. */
   private Semantic.Var check_var(Scope scope, Node.Var node) {
     return new Semantic.Var(
-      node.identifier(),
-      check_expression(scope, node.initial_value()));
+      node.identifier().text(),
+      node.initial_value().map(i -> check_expression(scope, i)));
   }
 
   /** Checks a statement. */

@@ -13,6 +13,11 @@ public record LexedSource(LoadedSource source, List<Token> tokens) {
     return source.name();
   }
 
+  /** Returns a subject as a declaration in this source file. */
+  public Subject subject(Node.Declaration declaration) {
+    return subject(declaration.representative(tokens));
+  }
+
   /** Returns a subject as a node in this source file. */
   public Subject subject(Node node) {
     return subject(node.start(tokens), node.end(tokens));

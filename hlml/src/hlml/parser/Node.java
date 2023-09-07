@@ -1,13 +1,17 @@
 package hlml.parser;
 
 import java.util.List;
+import java.util.Optional;
 
 import hlml.lexer.Token;
 
 /** Hierarchical collection of tokens in the source file. */
 public sealed interface Node {
   /** Asserting a fact about the program. */
-  sealed interface Declaration extends Node {}
+  sealed interface Declaration extends Node {
+    /** Returns the token that can be used to report this declaration. */
+    Token representative(List<Token> tokens);
+  }
 
   /** Declaration of the program's first instructions. */
   record Entrypoint(Statement body) implements Declaration {
@@ -16,26 +20,37 @@ public sealed interface Node {
 
     @Override
     public int last(List<Token> tokens) { return body.last(tokens); }
+
+    @Override
+    public Token representative(List<Token> tokens) {
+      return tokens.get(first(tokens));
+    }
   }
 
   /** Creation of a new symbol by the user. */
   sealed interface Definition extends Declaration {
     /** Identifier of the defined symbol. */
-    String identifier();
+    Token.Identifier identifier();
+
+    @Override
+    default Token representative(List<Token> tokens) { return identifier(); }
   }
 
   /** Defining a symbol that holds an unknown value. */
-  record Var(String identifier, Expression initial_value)
-    implements Definition, Statement
+  record Var(
+    Token.LowercaseIdentifier identifier,
+    Optional<Expression> initial_value) implements Definition, Statement
   {
     @Override
     public int first(List<Token> tokens) {
-      return initial_value.first(tokens) - 3;
+      return tokens.indexOf(identifier) - 1;
     }
 
     @Override
     public int last(List<Token> tokens) {
-      return initial_value.last(tokens) + 1;
+      if (initial_value.isPresent())
+        return initial_value.get().last(tokens) + 1;
+      return tokens.indexOf(identifier) + 1;
     }
   }
 

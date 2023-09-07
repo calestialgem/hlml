@@ -25,7 +25,7 @@ public sealed interface Semantic {
   }
 
   /** Definition of a variable. */
-  record Var(String identifier, Expression initial_value)
+  record Var(String identifier, Optional<Expression> initial_value)
     implements Definition, Statement
   {}
 

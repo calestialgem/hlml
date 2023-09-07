@@ -68,17 +68,18 @@ public final class Parser {
       expect_token(
         Token.LowercaseIdentifier.class,
         "identifier of the variable declaration");
-    expect_token(
-      Token.Equal.class,
-      "initial value introducer `=` of the variable declaration");
-    Node.Expression initial_value =
-      expect(
-        this::parse_expression,
-        "initial value of the variable declaration");
+    Optional<Node.Expression> initial_value = Optional.empty();
+    if (parse_token(Token.Equal.class).isPresent()) {
+      Node.Expression given_initial_value =
+        expect(
+          this::parse_expression,
+          "initial value of the variable declaration");
+      initial_value = Optional.of(given_initial_value);
+    }
     expect_token(
       Token.Semicolon.class,
       "terminator `;` of the variable declaration");
-    Node.Var var = new Node.Var(identifier.text(), initial_value);
+    Node.Var var = new Node.Var(identifier, initial_value);
     return Optional.of(var);
   }
 

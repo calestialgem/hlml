@@ -64,10 +64,10 @@ public final class Resolver {
           entrypoint = Optional.of(e);
         }
         case Node.Definition g -> {
-          String identifier = g.identifier();
+          String identifier = g.identifier().text();
           if (globals.containsKey(identifier)) {
             throw parsed_source
-              .subject(node)
+              .subject(g)
               .to_diagnostic("error", "Redeclaration of `%s`!", identifier)
               .to_exception();
           }
