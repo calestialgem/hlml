@@ -3,6 +3,7 @@ package hlml.checker;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /** Meaningful constructs in the program. */
 public sealed interface Semantic {
@@ -15,11 +16,21 @@ public sealed interface Semantic {
     Map<String, Definition> globals) implements Semantic
   {}
 
+  /** Asserting a fact about the program. */
+  sealed interface Declaration extends Semantic {
+    /** Returns the names of definitions this entity needs before it can be
+     * understood. */
+    Set<Name> dependencies();
+  }
+
   /** First instructions that are executed by the processor. */
-  record Entrypoint(Statement body) implements Semantic {}
+  record Entrypoint(Statement body) implements Declaration {
+    @Override
+    public Set<Name> dependencies() { return body.dependencies(); }
+  }
 
   /** Definition of a construct in code. */
-  sealed interface Definition extends Semantic {
+  sealed interface Definition extends Declaration {
     /** Word that designates this definition. */
     String identifier();
   }
@@ -27,29 +38,58 @@ public sealed interface Semantic {
   /** Definition of a variable. */
   record Var(String identifier, Optional<Expression> initial_value)
     implements Definition, Statement
-  {}
+  {
+    @Override
+    public Set<Name> dependencies() {
+      return initial_value.map(Expression::dependencies).orElse(Set.of());
+    }
+  }
 
   /** Instructions to be executed by the processor. */
-  sealed interface Statement extends Semantic {}
+  sealed interface Statement extends Semantic {
+    /** Returns the names of definitions this entity needs before it can be
+     * understood. */
+    Set<Name> dependencies();
+  }
 
   /** Statements that are sequentially executed. */
-  record Block(List<Statement> inner_statements) implements Statement {}
+  record Block(List<Statement> inner_statements) implements Statement {
+    @Override
+    public Set<Name> dependencies() {
+      return Sets.union(inner_statements.stream().map(Statement::dependencies));
+    }
+  }
 
   /** Statements that mutate a variable's value. */
   record Assignment(VariableAccess variable, Expression new_value)
     implements Statement
-  {}
+  {
+    @Override
+    public Set<Name> dependencies() {
+      return Sets.union(variable.dependencies(), new_value.dependencies());
+    }
+  }
 
   /** Statements that evaluate an expression and discard the value. */
-  record Discard(Expression discarded) implements Statement {}
+  record Discard(Expression discarded) implements Statement {
+    @Override
+    public Set<Name> dependencies() { return discarded.dependencies(); }
+  }
 
   /** Value calculations to be evaluated by the processor. */
-  sealed interface Expression extends Semantic {}
+  sealed interface Expression extends Semantic {
+    /** Returns the names of definitions this entity needs before it can be
+     * understood. */
+    Set<Name> dependencies();
+  }
 
   /** Expression made up of one operand and an operator at the left. */
   sealed interface UnaryOperation extends Expression {
     /** Operand of the operator. */
     Expression operand();
+
+    @Override
+    default Set<Name> dependencies() { return operand().dependencies(); }
   }
 
   /** Expression made up of two operands and an operator in the middle. */
@@ -59,6 +99,12 @@ public sealed interface Semantic {
 
     /** Operand that is at the right of the operator. */
     Expression right_operand();
+
+    @Override
+    default Set<Name> dependencies() {
+      return Sets
+        .union(left_operand().dependencies(), right_operand().dependencies());
+    }
   }
 
   /** Expression that yields one when the left operand is equal to the right
@@ -181,14 +227,23 @@ public sealed interface Semantic {
   record LogicalNot(Expression operand) implements UnaryOperation {}
 
   /** Expression that evaluates to a hard-coded numeric value. */
-  record NumberConstant(double value) implements Expression {}
+  record NumberConstant(double value) implements Expression {
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
 
   /** Expression that evaluates to an unknown. */
   sealed interface VariableAccess extends Expression {}
 
   /** Expression that evaluates to an unknown in the global scope. */
-  record GlobalVariableAccess(Name name) implements VariableAccess {}
+  record GlobalVariableAccess(Name name) implements VariableAccess {
+    @Override
+    public Set<Name> dependencies() { return Set.of(name); }
+  }
 
   /** Expression that evaluates to an unknown in the local scope. */
-  record LocalVariableAccess(String identifier) implements VariableAccess {}
+  record LocalVariableAccess(String identifier) implements VariableAccess {
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
 }
