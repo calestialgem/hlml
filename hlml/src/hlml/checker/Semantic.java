@@ -66,20 +66,115 @@ public sealed interface Semantic {
     }
   }
 
-  /** Statements that mutate a variable's value. */
-  record Assignment(VariableAccess variable, Expression new_value)
-    implements Statement
-  {
+  /** Statements that affect the processors context. Useful for parsing as all
+   * the initial tokens of these statements are same as expressions. */
+  sealed interface Affect extends Statement {}
+
+  /** Statements that mutate a variable. */
+  sealed interface Mutate extends Affect {
+    /** The mutated variable. */
+    VariableAccess target();
+
     @Override
-    public Set<Name> dependencies() {
-      return Sets.union(variable.dependencies(), new_value.dependencies());
+    default Set<Name> dependencies() { return target().dependencies(); }
+  }
+
+  /** Statements that increment the value hold in a variable. */
+  record Increment(VariableAccess target) implements Mutate {}
+
+  /** Statements that decrement the value hold in a variable. */
+  record Decrement(VariableAccess target) implements Mutate {}
+
+  /** Statements that set the value hold in a variable. */
+  sealed interface Assign extends Affect {
+    /** The changed variable. */
+    VariableAccess target();
+
+    /** The new value or the right operand. */
+    Expression source();
+
+    @Override
+    default Set<Name> dependencies() {
+      return Sets.union(target().dependencies(), source().dependencies());
     }
   }
 
-  /** Statements that evaluate an expression and discard the value. */
-  record Discard(Expression discarded) implements Statement {
+  /** Statements that set the target to be the same as the source. */
+  record DirectlyAssign(VariableAccess target, Expression source)
+    implements Assign
+  {}
+
+  /** Statements that set the target to be the multiplication of the target and
+   * the source. */
+  record MultiplyAssign(VariableAccess target, Expression source)
+    implements Assign
+  {}
+
+  /** Statements that set the target to be the division of the target and the
+   * source. */
+  record DivideAssign(VariableAccess target, Expression source)
+    implements Assign
+  {}
+
+  /** Statements that set the target to be the integer division of the target
+   * and the source. */
+  record DivideIntegerAssign(VariableAccess target, Expression source)
+    implements Assign
+  {}
+
+  /** Statements that set the target to be the modulus of the target and the
+   * source. */
+  record ModulusAssign(VariableAccess target, Expression source)
+    implements Assign
+  {}
+
+  /** Statements that set the target to be the addition of the target and the
+   * source. */
+  record AddAssign(VariableAccess target, Expression source)
+    implements Assign
+  {}
+
+  /** Statements that set the target to be the subtract of the target and the
+   * source. */
+  record SubtractAssign(VariableAccess target, Expression source)
+    implements Assign
+  {}
+
+  /** Statements that set the target to be the left shift of the target and the
+   * source. */
+  record ShiftLeftAssign(VariableAccess target, Expression source)
+    implements Assign
+  {}
+
+  /** Statements that set the target to be the right shift of the target and the
+   * source. */
+  record ShiftRightAssign(VariableAccess target, Expression source)
+    implements Assign
+  {}
+
+  /** Statements that set the target to be the bitwise and of the target and the
+   * source. */
+  record AndBitwiseAssign(VariableAccess target, Expression source)
+    implements Assign
+  {}
+
+  /** Statements that set the target to be the bitwise xor of the target and the
+   * source. */
+  record XorBitwiseAssign(VariableAccess target, Expression source)
+    implements Assign
+  {}
+
+  /** Statements that set the target to be the bitwise or of the target and the
+   * source. */
+  record OrBitwiseAssign(VariableAccess target, Expression source)
+    implements Assign
+  {}
+
+  /** Statements that evaluate an expression and discard its value. Useful for
+   * side effects, not the value. */
+  record Discard(Expression source) implements Affect {
     @Override
-    public Set<Name> dependencies() { return discarded.dependencies(); }
+    public Set<Name> dependencies() { return source.dependencies(); }
   }
 
   /** Value calculations to be evaluated by the processor. */

@@ -147,12 +147,17 @@ public final class Builder {
         }
         local_variable_count++;
       }
-      case Semantic.Assignment a -> {
-        Evaluation variable = build_expression(a.variable());
-        Evaluation new_value = build_expression(a.new_value());
+      case Semantic.DirectlyAssign a -> {
+        Evaluation variable = build_expression(a.target());
+        Evaluation new_value = build_expression(a.source());
         build_set(variable, new_value);
       }
-      case Semantic.Discard discard -> build_expression(discard.discarded());
+      case Semantic.Discard d -> build_expression(d.source());
+      default ->
+        throw Subject
+          .of("compiler")
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
     }
   }
 

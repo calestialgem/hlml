@@ -121,23 +121,60 @@ final class SourceChecker {
         scope.introduce(local);
         yield local;
       }
-      case Node.DirectlyAssign a -> {
-        Semantic.SymbolAccess access = check_variable_access(scope, a.target());
-        if (!(access instanceof Semantic.VariableAccess variable))
-          throw source
-            .subject(a.target())
-            .to_diagnostic("error", "Assigned symbol is not a variable!")
-            .to_exception();
-        Semantic.Expression new_value = check_expression(scope, a.source());
-        yield new Semantic.Assignment(variable, new_value);
-      }
-      case Node.Discard discard ->
-        new Semantic.Discard(check_expression(scope, discard.source()));
-      default ->
-        throw source
-          .subject(node)
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
+      case Node.Increment m ->
+        new Semantic.Increment(check_target(scope, m.target()));
+      case Node.Decrement m ->
+        new Semantic.Decrement(check_target(scope, m.target()));
+      case Node.DirectlyAssign a ->
+        new Semantic.DirectlyAssign(
+          check_target(scope, a.target()),
+          check_expression(scope, a.source()));
+      case Node.MultiplyAssign a ->
+        new Semantic.MultiplyAssign(
+          check_target(scope, a.target()),
+          check_expression(scope, a.source()));
+      case Node.DivideAssign a ->
+        new Semantic.DivideAssign(
+          check_target(scope, a.target()),
+          check_expression(scope, a.source()));
+      case Node.DivideIntegerAssign a ->
+        new Semantic.DivideIntegerAssign(
+          check_target(scope, a.target()),
+          check_expression(scope, a.source()));
+      case Node.ModulusAssign a ->
+        new Semantic.ModulusAssign(
+          check_target(scope, a.target()),
+          check_expression(scope, a.source()));
+      case Node.AddAssign a ->
+        new Semantic.AddAssign(
+          check_target(scope, a.target()),
+          check_expression(scope, a.source()));
+      case Node.SubtractAssign a ->
+        new Semantic.SubtractAssign(
+          check_target(scope, a.target()),
+          check_expression(scope, a.source()));
+      case Node.ShiftLeftAssign a ->
+        new Semantic.ShiftLeftAssign(
+          check_target(scope, a.target()),
+          check_expression(scope, a.source()));
+      case Node.ShiftRightAssign a ->
+        new Semantic.ShiftRightAssign(
+          check_target(scope, a.target()),
+          check_expression(scope, a.source()));
+      case Node.AndBitwiseAssign a ->
+        new Semantic.AndBitwiseAssign(
+          check_target(scope, a.target()),
+          check_expression(scope, a.source()));
+      case Node.XorBitwiseAssign a ->
+        new Semantic.XorBitwiseAssign(
+          check_target(scope, a.target()),
+          check_expression(scope, a.source()));
+      case Node.OrBitwiseAssign a ->
+        new Semantic.OrBitwiseAssign(
+          check_target(scope, a.target()),
+          check_expression(scope, a.source()));
+      case Node.Discard d ->
+        new Semantic.Discard(check_expression(scope, d.source()));
     };
   }
 
@@ -273,7 +310,7 @@ final class SourceChecker {
           a -> a != 0 ? 1 : 0);
       case Node.NumberConstant number_constant ->
         new Semantic.NumberConstant(number_constant.value());
-      case Node.SymbolAccess v -> check_variable_access(scope, v);
+      case Node.SymbolAccess v -> check_symbol_access(scope, v);
       case Node.Grouping g -> check_expression(scope, g.grouped());
     };
   }
@@ -301,7 +338,22 @@ final class SourceChecker {
   }
 
   /** Checks a variable access. */
-  private Semantic.SymbolAccess check_variable_access(
+  private Semantic.VariableAccess check_target(
+    Scope scope,
+    Node.SymbolAccess node)
+  {
+    Semantic.SymbolAccess symbol = check_symbol_access(scope, node);
+    if (!(symbol instanceof Semantic.VariableAccess target)) {
+      throw source
+        .subject(node)
+        .to_diagnostic("error", "Accessed symbol is not mutable!")
+        .to_exception();
+    }
+    return target;
+  }
+
+  /** Checks a symbol access. */
+  private Semantic.SymbolAccess check_symbol_access(
     Scope scope,
     Node.SymbolAccess node)
   {
