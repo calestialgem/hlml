@@ -7,6 +7,7 @@ import java.util.Formatter;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.text.DecimalFormat;
 
 import hlml.checker.Name;
 import hlml.checker.Semantic;
@@ -40,11 +41,17 @@ public final class Builder {
   /** Tool to write to the output file. */
   private Formatter formatter;
 
+  /** Tool to write the numbers with necessary precision. */
+  private DecimalFormat decimal_formatter;
+
   /** Global symbols that are already built. */
   private Set<Name> built;
 
   /** Register set. */
   private Registers registers;
+
+  /** Number of emitted instructions. */
+  private int instructions;
 
   /** Constructor. */
   private Builder(Subject subject, Path artifacts, Semantic.Target target) {
@@ -73,13 +80,16 @@ public final class Builder {
         .to_diagnostic("failure", "Could not write to the output file!")
         .to_exception(cause);
     }
+    decimal_formatter = new DecimalFormat("0.#");
+    decimal_formatter.setMaximumFractionDigits(Integer.MAX_VALUE);
     built = new HashSet<>();
     registers = Registers.create();
+    instructions = 0;
     for (Name dependency : entrypoint.get().dependencies()) {
       build_dependency(dependency);
     }
     build_statement(entrypoint.get().body());
-    formatter.format("end%n");
+    build_instruction("end");
     formatter.close();
     if (formatter.ioException() != null) {
       throw Subject
@@ -114,7 +124,7 @@ public final class Builder {
         Register variable = registers.local(l.identifier());
         if (l.initial_value().isPresent()) {
           Register initial_value = build_expression(l.initial_value().get());
-          build_set(variable, initial_value);
+          build_instruction("set", variable, initial_value);
         }
       }
       case Semantic.Increment m -> build_mutate(m, "add");
@@ -122,7 +132,7 @@ public final class Builder {
       case Semantic.DirectlyAssign a -> {
         Register target = build_expression(a.target());
         Register source = build_expression(a.source());
-        build_set(target, source);
+        build_instruction("set", target, source);
       }
       case Semantic.MultiplyAssign a -> build_assign(a, "mul");
       case Semantic.DivideAssign a -> build_assign(a, "div");
@@ -148,20 +158,14 @@ public final class Builder {
   /** Builds a mutate statement. */
   private void build_mutate(Semantic.Mutate statement, String operation_code) {
     Register target = build_expression(statement.target());
-    formatter.format("op %s %s %s 1%n", operation_code, target, target);
+    build_instruction("op", operation_code, target, target);
   }
 
   /** Builds a assign statement. */
   private void build_assign(Semantic.Assign statement, String operation_code) {
     Register target = build_expression(statement.target());
     Register source = build_expression(statement.source());
-    formatter
-      .format("op %s %s %s %s%n", operation_code, target, target, source);
-  }
-
-  /** Builds a `set` instruction. */
-  private void build_set(Register target, Register source) {
-    formatter.format("set %s %s%n", target, source);
+    build_instruction("op", operation_code, target, target, source);
   }
 
   /** Builds an expression. */
@@ -193,7 +197,7 @@ public final class Builder {
       case Semantic.BitwiseNot u -> {
         Register operand = build_expression(u.operand());
         Register result = registers.temporary(operand);
-        formatter.format("op not %s %s 0%n", result, operand);
+        build_instruction("op", "not", result, operand);
         yield result;
       }
       case Semantic.LogicalNot u -> build_unary_operation(u, "notEqual");
@@ -212,13 +216,12 @@ public final class Builder {
     Register left_operand = build_expression(operation.left_operand());
     Register right_operand = build_expression(operation.right_operand());
     Register result = registers.temporary(left_operand, right_operand);
-    formatter
-      .format(
-        "op %s %s %s %s%n",
-        operation_code,
-        result,
-        left_operand,
-        right_operand);
+    build_instruction(
+      "op",
+      operation_code,
+      result,
+      left_operand,
+      right_operand);
     return result;
   }
 
@@ -229,7 +232,48 @@ public final class Builder {
   {
     Register operand = build_expression(operation.operand());
     Register result = registers.temporary(operand);
-    formatter.format("op %s %s 0 %s%n", operation_code, result, operand);
+    build_instruction("op", operation_code, result, operand);
     return result;
+  }
+
+  /** Builds an instruction. Returns the instruction number. */
+  private int build_instruction(
+    String instruction,
+    String subinstruction,
+    Register... operands)
+  {
+    return build_instruction(
+      instruction,
+      Optional.of(subinstruction),
+      operands);
+  }
+
+  /** Builds an instruction. Returns the instruction number. */
+  private int build_instruction(String instruction, Register... operands) {
+    return build_instruction(instruction, Optional.empty(), operands);
+  }
+
+  /** Builds an instruction. Returns the instruction number. */
+  private int build_instruction(
+    String instruction,
+    Optional<String> subinstruction,
+    Register... operands)
+  {
+    formatter.format("%s", instruction);
+    if (subinstruction.isPresent()) {
+      formatter.format(" %s", subinstruction.get());
+    }
+    for (Register operand : operands) {
+      switch (operand) {
+        case Register.Global(var n) ->
+          formatter.format(" %s$%s", n.source(), n.identifier());
+        case Register.Local(var i) -> formatter.format(" $%s", i);
+        case Register.Temporary(var i) -> formatter.format(" $%d", i);
+        case Register.Literal(var v) ->
+          formatter.format(" %s", decimal_formatter.format(v));
+      }
+    }
+    formatter.format("%n");
+    return instructions++;
   }
 }

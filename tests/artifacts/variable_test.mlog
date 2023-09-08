@@ -1,10 +1,10 @@
-set g0 56
-set l0 17
-op add t0 l0 g0
-op sub t0 t0 45
-set l1 5555
-op mul t0 l0 g0
-op add t0 l1 t0
-op idiv t0 l0 g0
-set l2 t0
+set variable_test$global 56
+set $local 17
+op add $0 $local variable_test$global
+op sub $0 $0 45
+set $inner 5555
+op mul $0 $local variable_test$global
+op add $0 $inner $0
+op idiv $0 $local variable_test$global
+set $another $0
 end

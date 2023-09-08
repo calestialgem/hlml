@@ -1,16 +1,16 @@
-set l0 1
-op add l0 l0 1
-op sub l0 l0 1
-set l0 56
-op mul l0 l0 2
-op div l0 l0 2
-op idiv l0 l0 2
-op mod l0 l0 2
-op add l0 l0 2
-op sub l0 l0 2
-op shl l0 l0 2
-op shr l0 l0 2
-op and l0 l0 2
-op xor l0 l0 2
-op or l0 l0 2
+set $local 1
+op add $local $local
+op sub $local $local
+set $local 56
+op mul $local $local 2
+op div $local $local 2
+op idiv $local $local 2
+op mod $local $local 2
+op add $local $local 2
+op sub $local $local 2
+op shl $local $local 2
+op shr $local $local 2
+op and $local $local 2
+op xor $local $local 2
+op or $local $local 2
 end
