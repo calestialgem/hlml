@@ -97,8 +97,7 @@ public record Natural128(long high_part, long low_part) {
   /** Converts the natural to a {@code double} if it fits. */
   public OptionalDouble to_double() {
     if (high_part != 0) { return OptionalDouble.empty(); }
-    if (low_part == 0)
-      return OptionalDouble.of(0);
+    if (low_part == 0) { return OptionalDouble.of(0); }
     int scale_up = Long.numberOfTrailingZeros(low_part);
     long scaled_natural = low_part >>> scale_up;
     int precision = Long.SIZE - Long.numberOfLeadingZeros(scaled_natural);

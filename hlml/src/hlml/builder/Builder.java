@@ -135,16 +135,18 @@ public final class Builder {
         Register first_condition = build_expression(s.condition());
         Waypoint loop = program.waypoint();
         program.instruct(new Instruction.JumpOnTrue(loop, first_condition));
-        if (s.zero_branch().isPresent())
+        if (s.zero_branch().isPresent()) {
           build_statement(s.zero_branch().get());
+        }
         loop_end = program.waypoint();
         program.instruct(new Instruction.JumpAlways(loop_end));
         program.define(loop);
         loop_begin = program.waypoint();
         build_statement(s.loop());
         program.define(loop_begin);
-        if (s.interleaved().isPresent())
+        if (s.interleaved().isPresent()) {
           build_statement(s.interleaved().get());
+        }
         Register remaining_conditions = build_expression(s.condition());
         program
           .instruct(new Instruction.JumpOnTrue(loop, remaining_conditions));
