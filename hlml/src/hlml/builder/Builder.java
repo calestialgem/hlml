@@ -147,18 +147,49 @@ public final class Builder {
         }
         local_variable_count++;
       }
+      case Semantic.Increment m -> build_mutate(m, "add");
+      case Semantic.Decrement m -> build_mutate(m, "sub");
       case Semantic.DirectlyAssign a -> {
-        Evaluation variable = build_expression(a.target());
-        Evaluation new_value = build_expression(a.source());
-        build_set(variable, new_value);
+        Evaluation target = build_expression(a.target());
+        Evaluation source = build_expression(a.source());
+        build_set(target, source);
       }
+      case Semantic.MultiplyAssign a -> build_assign(a, "mul");
+      case Semantic.DivideAssign a -> build_assign(a, "div");
+      case Semantic.DivideIntegerAssign a -> build_assign(a, "idiv");
+      case Semantic.ModulusAssign a -> build_assign(a, "mod");
+      case Semantic.AddAssign a -> build_assign(a, "add");
+      case Semantic.SubtractAssign a -> build_assign(a, "sub");
+      case Semantic.ShiftLeftAssign a -> build_assign(a, "shl");
+      case Semantic.ShiftRightAssign a -> build_assign(a, "shr");
+      case Semantic.AndBitwiseAssign a -> build_assign(a, "and");
+      case Semantic.XorBitwiseAssign a -> build_assign(a, "xor");
+      case Semantic.OrBitwiseAssign a -> build_assign(a, "or");
       case Semantic.Discard d -> build_expression(d.source());
-      default ->
-        throw Subject
-          .of("compiler")
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
     }
+  }
+
+  /** Builds a mutate statement. */
+  private void build_mutate(Semantic.Mutate statement, String operation_code) {
+    Evaluation target = build_expression(statement.target());
+    formatter.format("op %s ", operation_code);
+    build_evaluation(target);
+    formatter.format(" ");
+    build_evaluation(target);
+    formatter.format(" 1%n");
+  }
+
+  /** Builds a assign statement. */
+  private void build_assign(Semantic.Assign statement, String operation_code) {
+    Evaluation target = build_expression(statement.target());
+    Evaluation source = build_expression(statement.source());
+    formatter.format("op %s ", operation_code);
+    build_evaluation(target);
+    formatter.format(" ");
+    build_evaluation(target);
+    formatter.format(" ");
+    build_evaluation(source);
+    formatter.format("%n");
   }
 
   /** Builds a `set` instruction. */
