@@ -75,6 +75,11 @@ final class SourceChecker {
     }
     currently_checked.add(identifier);
     Semantic.Definition definition = switch (node) {
+      case Node.Proc d ->
+        throw source
+          .subject(node)
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
       case Node.Const c -> {
         Semantic.Expression value = check_expression(Scope.create(), c.value());
         if (!(value instanceof Semantic.Constant constant)) {
@@ -374,6 +379,16 @@ final class SourceChecker {
         new Semantic.NumberConstant(number_constant.value());
       case Node.SymbolAccess v -> check_symbol_access(scope, v);
       case Node.Grouping g -> check_expression(scope, g.grouped());
+      case Node.Call e ->
+        throw source
+          .subject(node)
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
+      case Node.MemberCall e ->
+        throw source
+          .subject(node)
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
     };
   }
 

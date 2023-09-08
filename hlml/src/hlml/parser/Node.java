@@ -36,6 +36,22 @@ public sealed interface Node {
     default Token representative(List<Token> tokens) { return identifier(); }
   }
 
+  /** Defining a symbol that is a parametrized set of instructions that resolve
+   * to a value. */
+  record Proc(
+    Token.LowercaseIdentifier identifier,
+    List<Token.LowercaseIdentifier> parameters,
+    Statement body) implements Definition
+  {
+    @Override
+    public int first(List<Token> tokens) {
+      return tokens.indexOf(identifier) - 1;
+    }
+
+    @Override
+    public int last(List<Token> tokens) { return body.last(tokens); }
+  }
+
   /** Defining a symbol that holds an known value. */
   record Const(Token.LowercaseIdentifier identifier, Expression value)
     implements Definition
@@ -473,6 +489,41 @@ public sealed interface Node {
 
     @Override
     public int last(List<Token> tokens) { return grouped.last(tokens) + 1; }
+  }
+
+  /** Expression that calls a procedure. */
+  record Call(int first, String procedure, List<Expression> arguments)
+    implements Precedence0
+  {
+    @Override
+    public int first(List<Token> tokens) { return first; }
+
+    @Override
+    public int last(List<Token> tokens) {
+      if (!arguments.isEmpty())
+        return arguments.get(arguments.size() - 1).last(tokens) + 1;
+      return first + 2;
+    }
+  }
+
+  /** Expression that calls a procedure by passing the first argument at the
+   * beginning as if the procedure was a member of the first argument. */
+  record MemberCall(
+    Expression first_argument,
+    String procedure,
+    List<Expression> arguments) implements Precedence0
+  {
+    @Override
+    public int first(List<Token> tokens) {
+      return first_argument.first(tokens);
+    }
+
+    @Override
+    public int last(List<Token> tokens) {
+      if (!arguments.isEmpty())
+        return arguments.get(arguments.size() - 1).last(tokens) + 1;
+      return first_argument.last(tokens) + 4;
+    }
   }
 
   /** Index of the node's first token. Used for reporting diagnostics with a
