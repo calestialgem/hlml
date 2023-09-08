@@ -3,7 +3,6 @@ package hlml.builder;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Formatter;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -38,8 +37,8 @@ public final class Builder {
   /** Target that is built. */
   private final Semantic.Target target;
 
-  /** Tool to write to the output file. */
-  private Formatter formatter;
+  /** Tool to write to buffer the instructions before writing to the file. */
+  private StringBuilder buffer;
 
   /** Tool to write the numbers with necessary precision. */
   private DecimalFormat decimal_formatter;
@@ -61,7 +60,6 @@ public final class Builder {
   }
 
   /** Builds the target. */
-  @SuppressWarnings("resource")
   private Path build() {
     Optional<Semantic.Entrypoint> entrypoint =
       target.sources().get(target.name()).entrypoint();
@@ -71,15 +69,7 @@ public final class Builder {
         .to_exception();
     }
     Path output = artifacts.resolve("%s%s".formatted(target.name(), extension));
-    try {
-      formatter = new Formatter(Files.newOutputStream(output));
-    }
-    catch (IOException cause) {
-      throw Subject
-        .of(output)
-        .to_diagnostic("failure", "Could not write to the output file!")
-        .to_exception(cause);
-    }
+    buffer = new StringBuilder();
     decimal_formatter = new DecimalFormat("0.#");
     decimal_formatter.setMaximumFractionDigits(Integer.MAX_VALUE);
     built = new HashSet<>();
@@ -90,12 +80,14 @@ public final class Builder {
     }
     build_statement(entrypoint.get().body());
     build_instruction("end");
-    formatter.close();
-    if (formatter.ioException() != null) {
+    try {
+      Files.writeString(output, buffer.toString());
+    }
+    catch (IOException cause) {
       throw Subject
         .of(output)
         .to_diagnostic("failure", "Could not write to the output file!")
-        .to_exception(formatter.ioException());
+        .to_exception(cause);
     }
     return output;
   }
@@ -258,21 +250,36 @@ public final class Builder {
     Optional<String> subinstruction,
     Register... operands)
   {
-    formatter.format("%s", instruction);
+    buffer.append(instruction);
     if (subinstruction.isPresent()) {
-      formatter.format(" %s", subinstruction.get());
+      buffer.append(' ');
+      buffer.append(subinstruction.get());
     }
     for (Register operand : operands) {
       switch (operand) {
-        case Register.Global(var n) ->
-          formatter.format(" %s$%s", n.source(), n.identifier());
-        case Register.Local(var i) -> formatter.format(" $%s", i);
-        case Register.Temporary(var i) -> formatter.format(" $%d", i);
-        case Register.Literal(var v) ->
-          formatter.format(" %s", decimal_formatter.format(v));
+        case Register.Global(var n) -> {
+          buffer.append(' ');
+          buffer.append(n.source());
+          buffer.append('$');
+          buffer.append(n.identifier());
+        }
+        case Register.Local(var i) -> {
+          buffer.append(' ');
+          buffer.append('$');
+          buffer.append(i);
+        }
+        case Register.Temporary(var i) -> {
+          buffer.append(' ');
+          buffer.append('$');
+          buffer.append(i);
+        }
+        case Register.Literal(var v) -> {
+          buffer.append(' ');
+          buffer.append(decimal_formatter.format(v));
+        }
       }
     }
-    formatter.format("%n");
+    buffer.append(System.lineSeparator());
     return instructions++;
   }
 }
