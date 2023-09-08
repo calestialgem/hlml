@@ -1,0 +1,8 @@
+# Simple test using if statements so that the result is human readable.
+
+entrypoint {
+  var tested = 56;
+  var result;
+  if tested == 17 { result = tested * 2; }
+  else { result = tested; }
+}

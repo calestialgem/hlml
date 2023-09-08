@@ -1,0 +1,8 @@
+set $tested 56
+op equal _0 $tested 17
+jump 7 equal false _0
+op mul _1 $tested 2
+set $result _1
+jump 7 always
+set $result $tested
+end
