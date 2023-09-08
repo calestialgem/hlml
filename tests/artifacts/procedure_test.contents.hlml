@@ -1,0 +1,7 @@
+# Tests procedures.
+
+proc multiply(a, b) { return a * b; }
+
+proc double(a) { return multiply(a, 2); }
+
+entrypoint { 5.double(); }
