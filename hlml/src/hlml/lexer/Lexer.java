@@ -17,9 +17,6 @@ public final class Lexer {
   /** Source file that is lexed. */
   private final LoadedSource source;
 
-  /** Contents of the lexed source file. */
-  private String contents;
-
   /** Tokens that were lexed. */
   private List<Token> tokens;
 
@@ -39,7 +36,6 @@ public final class Lexer {
 
   /** Lexes the source file. */
   private LexedSource lex() {
-    contents = source.contents();
     tokens = new ArrayList<Token>();
     current = 0;
     while (has_current()) {
@@ -117,7 +113,7 @@ public final class Lexer {
               if (!is_word_part) { break; }
               advance();
             }
-            String text = contents.substring(start, current);
+            String text = source.contents.substring(start, current);
             Token token;
             switch (text) {
               case "entrypoint" -> { token = new Token.Entrypoint(start); }
@@ -260,16 +256,16 @@ public final class Lexer {
 
   /** Skips over the currently lexed character. */
   private void advance() {
-    current = contents.offsetByCodePoints(current, 1);
+    current = source.contents.offsetByCodePoints(current, 1);
   }
 
   /** Returns the currently lexed character. */
   private int get_current() {
-    return contents.codePointAt(current);
+    return source.contents.codePointAt(current);
   }
 
   /** Returns whether there is a character at the current index. */
   private boolean has_current() {
-    return current != contents.length();
+    return current != source.contents.length();
   }
 }

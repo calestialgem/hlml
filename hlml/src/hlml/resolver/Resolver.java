@@ -21,7 +21,7 @@ import hlml.reporter.Subject;
  * designators. */
 public final class Resolver {
   /** Resolves a source. */
-  public static Resolution.Source resolve(Path file, Path artifacts) {
+  public static ResolvedSource resolve(Path file, Path artifacts) {
     Resolver resolver = new Resolver(file, artifacts);
     return resolver.resolve();
   }
@@ -39,20 +39,20 @@ public final class Resolver {
   }
 
   /** Resolves the source. */
-  private Resolution.Source resolve() {
-    Source source = Source.of(file);
+  private ResolvedSource resolve() {
+    Source source = new Source(file);
     LoadedSource loaded_source = Loader.load(source);
-    record_representation(source.name(), "contents", loaded_source.contents());
+    record_representation(source.name(), "contents", loaded_source.contents);
     LexedSource lexed_source = Lexer.lex(loaded_source);
-    record_representation(source.name(), "tokens", lexed_source.tokens());
+    record_representation(source.name(), "tokens", lexed_source.tokens);
     ParsedSource parsed_source = Parser.parse(lexed_source);
     record_representation(
       source.name(),
       "declarations",
-      parsed_source.declarations());
+      parsed_source.declarations);
     Optional<Node.Entrypoint> entrypoint = Optional.empty();
     Map<String, Node.Definition> globals = new HashMap<>();
-    for (Node.Declaration node : parsed_source.declarations()) {
+    for (Node.Declaration node : parsed_source.declarations) {
       switch (node) {
         case Node.Entrypoint e -> {
           if (entrypoint.isPresent()) {
@@ -75,7 +75,7 @@ public final class Resolver {
         }
       }
     }
-    return new Resolution.Source(parsed_source, entrypoint, globals);
+    return new ResolvedSource(parsed_source, entrypoint, globals);
   }
 
   /** Records a representation of the source file. Used for debugging the

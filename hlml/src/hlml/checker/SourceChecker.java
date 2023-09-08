@@ -13,18 +13,18 @@ import java.util.stream.Stream;
 
 import hlml.lexer.Token;
 import hlml.parser.Node;
-import hlml.resolver.Resolution;
+import hlml.resolver.ResolvedSource;
 
 /** Checks a source. */
 final class SourceChecker {
   /** Checks a source. */
-  static Semantic.Source check(Resolution.Source source) {
+  static Semantic.Source check(ResolvedSource source) {
     SourceChecker checker = new SourceChecker(source);
     return checker.check();
   }
 
   /** Checked source. */
-  private final Resolution.Source source;
+  private final ResolvedSource source;
 
   /** Global symbols that were checked. */
   private Map<String, Semantic.Definition> globals;
@@ -32,8 +32,12 @@ final class SourceChecker {
   /** Global symbols that are being checked. */
   private Set<String> currently_checked;
 
+  /** Representative text of the currently checked global entity. Used for
+   * reporting locals with a namespace under the representative. */
+  private String representative;
+
   /** Constructor. */
-  private SourceChecker(Resolution.Source source) {
+  private SourceChecker(ResolvedSource source) {
     this.source = source;
   }
 
@@ -42,13 +46,14 @@ final class SourceChecker {
     globals = new HashMap<>();
     currently_checked = new HashSet<>();
     Optional<Semantic.Entrypoint> entrypoint = Optional.empty();
-    if (source.entrypoint().isPresent()) {
-      Node.Entrypoint node = source.entrypoint().get();
+    if (source.entrypoint.isPresent()) {
+      Node.Entrypoint node = source.entrypoint.get();
+      representative = source.representative_text(node);
       Semantic.Statement body =
         check_statement(Scope.create(), false, node.body());
       entrypoint = Optional.of(new Semantic.Entrypoint(body));
     }
-    for (String identifier : source.globals().keySet()) {
+    for (String identifier : source.globals.keySet()) {
       find_global(identifier);
     }
     return new Semantic.Source(entrypoint, globals);
@@ -59,9 +64,9 @@ final class SourceChecker {
     if (globals.containsKey(identifier)) {
       return Optional.of(globals.get(identifier));
     }
-    if (!source.globals().containsKey(identifier)) { return Optional.empty(); }
+    if (!source.globals.containsKey(identifier)) { return Optional.empty(); }
     Semantic.Definition global =
-      check_definition(source.globals().get(identifier));
+      check_definition(source.globals.get(identifier));
     globals.put(identifier, global);
     return Optional.of(global);
   }
@@ -76,6 +81,8 @@ final class SourceChecker {
         .to_exception();
     }
     currently_checked.add(identifier);
+    String old_representative = representative;
+    representative = source.representative_text(node);
     Semantic.Definition definition = switch (node) {
       case Node.Proc d -> {
         Scope scope = Scope.create();
@@ -101,6 +108,7 @@ final class SourceChecker {
       }
       case Node.Var var -> check_var(Optional.empty(), var);
     };
+    representative = old_representative;
     currently_checked.remove(identifier);
     return definition;
   }
@@ -260,8 +268,9 @@ final class SourceChecker {
         .subject(node)
         .to_diagnostic(
           "error",
-          "Redeclaration of symbol `%s::entrypoint::%s`",
+          "Redeclaration of symbol `%s::%s::%s`",
           source.name(),
+          representative,
           node.identifier().text())
         .to_exception();
     Semantic.Var local = check_var(Optional.of(scope), node);

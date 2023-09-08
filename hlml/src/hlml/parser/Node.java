@@ -565,4 +565,9 @@ public sealed interface Node {
   default int end(List<Token> tokens) {
     return tokens.get(last(tokens)).end();
   }
+
+  /** Returns the text of the node as it was in the source. */
+  default String text(String contents, List<Token> tokens) {
+    return contents.substring(start(tokens), end(tokens));
+  }
 }

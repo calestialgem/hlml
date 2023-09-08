@@ -496,4 +496,9 @@ public sealed interface Token {
 
   /** Returns a text to report the token to the user. */
   String explanation();
+
+  /** Returns the text of the token as it was in the source. */
+  default String text(String contents) {
+    return contents.substring(start(), end());
+  }
 }

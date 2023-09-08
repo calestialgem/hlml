@@ -5,12 +5,15 @@ import java.nio.file.Path;
 import hlml.reporter.Subject;
 
 /** Representation of a HLML source file. */
-public record Source(Path path) {
+public class Source {
   /** File extension of HLML source files. */
   public static final String extension = ".hlml";
 
-  /** Validates the given path and returns it as a source. */
-  public static Source of(Path path) {
+  /** Path to the source file. */
+  public final Path path;
+
+  /** Constructs. */
+  public Source(Path path) {
     String name = path.getFileName().toString();
     if (!name.endsWith(extension)) {
       throw Subject
@@ -65,7 +68,7 @@ public record Source(Path path) {
           .to_exception();
       default -> {}
     }
-    return new Source(path);
+    this.path = path;
   }
 
   /** Returns the source file's name. */

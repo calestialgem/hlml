@@ -9,7 +9,7 @@ import java.util.Map;
 
 import hlml.Source;
 import hlml.reporter.Subject;
-import hlml.resolver.Resolution;
+import hlml.resolver.ResolvedSource;
 import hlml.resolver.Resolver;
 
 /** Semantically analyzes a target. */
@@ -89,7 +89,7 @@ public final class Checker {
   private Semantic.Source check_source(Subject subject, String name) {
     if (sources.containsKey(name)) { return sources.get(name); }
     Path file = find_source(subject, name);
-    Resolution.Source resolution = Resolver.resolve(file, artifacts);
+    ResolvedSource resolution = Resolver.resolve(file, artifacts);
     Semantic.Source source = SourceChecker.check(resolution);
     sources.put(name, source);
     return source;

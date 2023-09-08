@@ -23,7 +23,7 @@ public final class Loader {
   private LoadedSource load() {
     String contents;
     try {
-      contents = Files.readString(source.path());
+      contents = Files.readString(source.path);
     }
     catch (IOException cause) {
       throw source

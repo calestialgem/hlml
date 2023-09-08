@@ -32,7 +32,7 @@ public final class Parser {
   private ParsedSource parse() {
     current = 0;
     List<Node.Declaration> declarations = new ArrayList<Node.Declaration>();
-    while (current != source.tokens().size()) {
+    while (current != source.tokens.size()) {
       Node.Declaration declaration =
         expect(this::parse_declaration, "top level declaration");
       declarations.add(declaration);
@@ -699,8 +699,8 @@ public final class Parser {
   private <TokenType extends Token> Optional<TokenType> parse_token(
     Class<TokenType> token_class)
   {
-    if (current == source.tokens().size()) { return Optional.empty(); }
-    Token token = source.tokens().get(current);
+    if (current == source.tokens.size()) { return Optional.empty(); }
+    Token token = source.tokens.get(current);
     if (!token_class.isInstance(token)) { return Optional.empty(); }
     current++;
     return Optional.of((TokenType) token);
@@ -714,8 +714,8 @@ public final class Parser {
   {
     Optional<ConstructType> construct = parse_function.get();
     if (construct.isPresent()) { return construct.get(); }
-    if (current == source.tokens().size()) {
-      Token reported_token = source.tokens().get(current - 1);
+    if (current == source.tokens.size()) {
+      Token reported_token = source.tokens.get(current - 1);
       throw source
         .subject(reported_token)
         .to_diagnostic(
@@ -725,7 +725,7 @@ public final class Parser {
           reported_token.explanation())
         .to_exception();
     }
-    Token reported_token = source.tokens().get(current);
+    Token reported_token = source.tokens.get(current);
     throw source
       .subject(reported_token)
       .to_diagnostic(
