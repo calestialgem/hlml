@@ -106,8 +106,12 @@ public final class Parser {
   private Optional<Node.Statement> parse_statement() {
     return first_of(
       this::parse_block,
+      this::parse_if,
+      this::parse_while,
+      this::parse_break,
+      this::parse_continue,
       this::parse_var,
-      this::parse_expression_based);
+      this::parse_affect);
   }
 
   /** Parses a block. */
@@ -124,8 +128,110 @@ public final class Parser {
     return Optional.of(block);
   }
 
+  /** Parses an if statement. */
+  private Optional<Node.If> parse_if() {
+    if (parse_token(Token.If.class).isEmpty()) { return Optional.empty(); }
+    Node.Expression condition =
+      expect(this::parse_expression, "condition of the if statement");
+    Node.Statement true_branch =
+      expect(this::parse_block, "true branch of the if statement");
+    Optional<Node.Statement> false_branch = Optional.empty();
+    if (parse_token(Token.Else.class).isPresent()) {
+      false_branch =
+        Optional
+          .of(
+            expect(
+              () -> first_of(this::parse_block, this::parse_if),
+              "false branch of the if statement"));
+    }
+    Node.If if_statement = new Node.If(condition, true_branch, false_branch);
+    return Optional.of(if_statement);
+  }
+
+  /** Parses a while statement. */
+  private Optional<Node.While> parse_while() {
+    if (parse_token(Token.While.class).isEmpty())
+      return Optional.empty();
+    Node.Expression condition =
+      expect(this::parse_expression, "condition of the while statement");
+    Optional<Node.Statement> interleaved = Optional.empty();
+    if (parse_token(Token.Semicolon.class).isPresent()) {
+      interleaved =
+        Optional
+          .of(
+            expect(
+              this::parse_unterminated_affect,
+              "interleaved of the while statement"));
+    }
+    Node.Statement loop =
+      expect(this::parse_statement, "loop of the while statement");
+    Optional<Node.Statement> zero_branch = Optional.empty();
+    if (parse_token(Token.Else.class).isPresent()) {
+      zero_branch =
+        Optional
+          .of(
+            expect(
+              () -> first_of(this::parse_block, this::parse_if),
+              "zero branch of the while statement"));
+    }
+    Node.While while_statement =
+      new Node.While(condition, interleaved, loop, zero_branch);
+    return Optional.of(while_statement);
+  }
+
+  /** Parses a break statement. */
+  private Optional<Node.Break> parse_break() {
+    int first = current;
+    if (parse_token(Token.Break.class).isEmpty())
+      return Optional.empty();
+    expect_token(
+      Token.Semicolon.class,
+      "terminator `;` of the break statement");
+    Node.Break break_statement = new Node.Break(first);
+    return Optional.of(break_statement);
+  }
+
+  /** Parses a continue statement. */
+  private Optional<Node.Continue> parse_continue() {
+    int first = current;
+    if (parse_token(Token.Continue.class).isEmpty())
+      return Optional.empty();
+    expect_token(
+      Token.Semicolon.class,
+      "terminator `;` of the continue statement");
+    Node.Continue continue_statement = new Node.Continue(first);
+    return Optional.of(continue_statement);
+  }
+
   /** Parses an affect statement. */
-  private Optional<Node.Affect> parse_expression_based() {
+  private Optional<Node.Affect> parse_affect() {
+    Optional<Node.Affect> affect = parse_unterminated_affect();
+    if (affect.isPresent())
+      expect_token(
+        Token.Semicolon.class,
+        "terminator `;` of the %s statement".formatted(switch (affect.get())
+        {
+          case Node.Increment i -> "increment";
+          case Node.Decrement d -> "decrement";
+          case Node.DirectlyAssign a -> "assign";
+          case Node.MultiplyAssign a -> "multiply assign";
+          case Node.DivideAssign a -> "divide assign";
+          case Node.DivideIntegerAssign a -> "divide integer assign";
+          case Node.ModulusAssign a -> "modulus assign";
+          case Node.AddAssign a -> "add assign";
+          case Node.SubtractAssign a -> "subtract assign";
+          case Node.ShiftLeftAssign a -> "shift left assign";
+          case Node.ShiftRightAssign a -> "shift right assign";
+          case Node.AndBitwiseAssign a -> "and bitwise assign";
+          case Node.XorBitwiseAssign a -> "xor bitwise assign";
+          case Node.OrBitwiseAssign a -> "or bitwise assign";
+          case Node.Discard d -> "discard";
+        }));
+    return affect;
+  }
+
+  /** Parses an affect statement without a terminator. */
+  private Optional<Node.Affect> parse_unterminated_affect() {
     Optional<Node.Expression> expression = parse_expression();
     if (expression.isEmpty()) { return Optional.empty(); }
     Node.Affect affect = new Node.Discard(expression.get());
@@ -149,26 +255,6 @@ public final class Parser {
             affect = new Node.Decrement(target);
           }
     }
-    expect_token(
-      Token.Semicolon.class,
-      "terminator `;` of the %s statement".formatted(switch (affect)
-      {
-        case Node.Increment i -> "increment";
-        case Node.Decrement d -> "decrement";
-        case Node.DirectlyAssign a -> "assign";
-        case Node.MultiplyAssign a -> "multiply assign";
-        case Node.DivideAssign a -> "divide assign";
-        case Node.DivideIntegerAssign a -> "divide integer assign";
-        case Node.ModulusAssign a -> "modulus assign";
-        case Node.AddAssign a -> "add assign";
-        case Node.SubtractAssign a -> "subtract assign";
-        case Node.ShiftLeftAssign a -> "shift left assign";
-        case Node.ShiftRightAssign a -> "shift right assign";
-        case Node.AndBitwiseAssign a -> "and bitwise assign";
-        case Node.XorBitwiseAssign a -> "xor bitwise assign";
-        case Node.OrBitwiseAssign a -> "or bitwise assign";
-        case Node.Discard d -> "discard";
-      }));
     return Optional.of(affect);
   }
 

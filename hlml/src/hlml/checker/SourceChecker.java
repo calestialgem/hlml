@@ -175,6 +175,11 @@ final class SourceChecker {
           check_expression(scope, a.source()));
       case Node.Discard d ->
         new Semantic.Discard(check_expression(scope, d.source()));
+      default ->
+        throw source
+          .subject(node)
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
     };
   }
 

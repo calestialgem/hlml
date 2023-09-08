@@ -88,6 +88,57 @@ public sealed interface Node {
     }
   }
 
+  /** Statements that branch the control flow. */
+  record If(
+    Expression condition,
+    Statement true_branch,
+    Optional<Statement> false_branch) implements Statement
+  {
+    @Override
+    public int first(List<Token> tokens) { return condition.first(tokens) - 1; }
+
+    @Override
+    public int last(List<Token> tokens) {
+      if (false_branch.isPresent()) { return false_branch.get().last(tokens); }
+      return true_branch.last(tokens);
+    }
+  }
+
+  /** Statements that loop the control flow. */
+  record While(
+    Expression condition,
+    Optional<Statement> interleaved,
+    Statement loop,
+    Optional<Statement> zero_branch) implements Statement
+  {
+    @Override
+    public int first(List<Token> tokens) { return condition.first(tokens) - 1; }
+
+    @Override
+    public int last(List<Token> tokens) {
+      if (zero_branch.isPresent()) { return zero_branch.get().last(tokens); }
+      return loop.last(tokens);
+    }
+  }
+
+  /** Statements that exit a loop. */
+  record Break(int first) implements Statement {
+    @Override
+    public int first(List<Token> tokens) { return first; }
+
+    @Override
+    public int last(List<Token> tokens) { return first + 1; }
+  }
+
+  /** Statements that skip the remaining in a loop. */
+  record Continue(int first) implements Statement {
+    @Override
+    public int first(List<Token> tokens) { return first; }
+
+    @Override
+    public int last(List<Token> tokens) { return first + 1; }
+  }
+
   /** Statements that affect the processors context. Useful for parsing as all
    * the initial tokens of these statements are same as expressions. */
   sealed interface Affect extends Statement {}
