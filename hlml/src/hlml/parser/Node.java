@@ -155,6 +155,19 @@ public sealed interface Node {
     public int last(List<Token> tokens) { return first + 1; }
   }
 
+  /** Statements that provide a value to the procedures caller. */
+  record Return(int first, Optional<Expression> value) implements Statement {
+    @Override
+    public int first(List<Token> tokens) { return first; }
+
+    @Override
+    public int last(List<Token> tokens) {
+      if (value.isPresent())
+        return value.get().last(tokens) + 1;
+      return first + 1;
+    }
+  }
+
   /** Statements that affect the processors context. Useful for parsing as all
    * the initial tokens of these statements are same as expressions. */
   sealed interface Affect extends Statement {}
@@ -463,24 +476,6 @@ public sealed interface Node {
   /** Expressions at precedence level 0. */
   sealed interface Precedence0 extends Precedence1 {}
 
-  /** Expression that directly denotes a compile-time known number value. */
-  record NumberConstant(int first, double value) implements Precedence0 {
-    @Override
-    public int first(List<Token> tokens) { return first; }
-
-    @Override
-    public int last(List<Token> tokens) { return first; }
-  }
-
-  /** Expression that denotes the value held by a symbol. */
-  record SymbolAccess(int first, String identifier) implements Precedence0 {
-    @Override
-    public int first(List<Token> tokens) { return first; }
-
-    @Override
-    public int last(List<Token> tokens) { return first; }
-  }
-
   /** Expression that enforces a specific order of evaluation for
    * subexpressions. */
   record Grouping(Expression grouped) implements Precedence0 {
@@ -491,9 +486,21 @@ public sealed interface Node {
     public int last(List<Token> tokens) { return grouped.last(tokens) + 1; }
   }
 
+  /** Expression that start with a symbol. */
+  sealed interface SymbolBased extends Precedence0 {}
+
+  /** Expression that denotes the value held by a symbol. */
+  record SymbolAccess(int first, String identifier) implements SymbolBased {
+    @Override
+    public int first(List<Token> tokens) { return first; }
+
+    @Override
+    public int last(List<Token> tokens) { return first; }
+  }
+
   /** Expression that calls a procedure. */
   record Call(int first, String procedure, List<Expression> arguments)
-    implements Precedence0
+    implements SymbolBased
   {
     @Override
     public int first(List<Token> tokens) { return first; }
@@ -509,7 +516,7 @@ public sealed interface Node {
   /** Expression that calls a procedure by passing the first argument at the
    * beginning as if the procedure was a member of the first argument. */
   record MemberCall(
-    Expression first_argument,
+    Precedence0 first_argument,
     String procedure,
     List<Expression> arguments) implements Precedence0
   {
@@ -524,6 +531,15 @@ public sealed interface Node {
         return arguments.get(arguments.size() - 1).last(tokens) + 1;
       return first_argument.last(tokens) + 4;
     }
+  }
+
+  /** Expression that directly denotes a compile-time known number value. */
+  record NumberConstant(int first, double value) implements Precedence0 {
+    @Override
+    public int first(List<Token> tokens) { return first; }
+
+    @Override
+    public int last(List<Token> tokens) { return first; }
   }
 
   /** Index of the node's first token. Used for reporting diagnostics with a

@@ -183,6 +183,11 @@ final class SourceChecker {
         }
         yield new Semantic.Continue();
       }
+      case Node.Return s ->
+        throw source
+          .subject(node)
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
       case Node.Var v -> {
         Semantic.Var local = check_var(Optional.of(scope), v);
         scope.introduce(local);

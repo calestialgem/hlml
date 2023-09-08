@@ -129,6 +129,7 @@ public final class Lexer {
               case "while" -> { token = new Token.While(start); }
               case "break" -> { token = new Token.Break(start); }
               case "continue" -> { token = new Token.Continue(start); }
+              case "return" -> { token = new Token.Return(start); }
               default -> { token = new Token.LowercaseIdentifier(start, text); }
             }
             tokens.add(token);

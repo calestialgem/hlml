@@ -83,6 +83,15 @@ public sealed interface Token {
     public String explanation() { return "keyword `continue`"; }
   }
 
+  /** Keyword `return`. */
+  record Return(int start) implements Token {
+    @Override
+    public int end() { return start + "return".length(); }
+
+    @Override
+    public String explanation() { return "keyword `return`"; }
+  }
+
   /** Punctuation `{`. */
   record OpeningBrace(int start) implements Token {
     @Override

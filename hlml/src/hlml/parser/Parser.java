@@ -58,7 +58,29 @@ public final class Parser {
 
   /** Parses a definition. */
   private Optional<Node.Definition> parse_definition() {
-    return first_of(this::parse_const, this::parse_var);
+    return first_of(this::parse_proc, this::parse_const, this::parse_var);
+  }
+
+  /** Parses a proc. */
+  private Optional<Node.Proc> parse_proc() {
+    if (parse_token(Token.Proc.class).isEmpty())
+      return Optional.empty();
+    Token.LowercaseIdentifier identifier =
+      expect_token(
+        Token.LowercaseIdentifier.class,
+        "identifier of the procedure declaration");
+    expect_token(
+      Token.OpeningParenthesis.class,
+      "parameter list opener `(` of the procedure declaration");
+    List<Token.LowercaseIdentifier> parameters =
+      separated_of(() -> parse_token(Token.LowercaseIdentifier.class));
+    expect_token(
+      Token.ClosingParenthesis.class,
+      "parameter list closer `)` of the procedure declaration");
+    Node.Statement body =
+      expect(this::parse_block, "body of the procedure declaration");
+    Node.Proc proc = new Node.Proc(identifier, parameters, body);
+    return Optional.of(proc);
   }
 
   /** Parses a const. */
@@ -67,15 +89,15 @@ public final class Parser {
     Token.LowercaseIdentifier identifier =
       expect_token(
         Token.LowercaseIdentifier.class,
-        "identifier of the const declaration");
+        "identifier of the constant declaration");
     expect_token(
       Token.Equal.class,
-      "value separator `=` of the const declaration");
+      "value separator `=` of the constant declaration");
     Node.Expression initial_value =
-      expect(this::parse_expression, "value of the const declaration");
+      expect(this::parse_expression, "value of the constant declaration");
     expect_token(
       Token.Semicolon.class,
-      "terminator `;` of the const declaration");
+      "terminator `;` of the constant declaration");
     Node.Const var = new Node.Const(identifier, initial_value);
     return Optional.of(var);
   }
@@ -110,6 +132,7 @@ public final class Parser {
       this::parse_while,
       this::parse_break,
       this::parse_continue,
+      this::parse_return,
       this::parse_var,
       this::parse_affect);
   }
@@ -200,6 +223,18 @@ public final class Parser {
       "terminator `;` of the continue statement");
     Node.Continue continue_statement = new Node.Continue(first);
     return Optional.of(continue_statement);
+  }
+
+  /** Parses a return statement. */
+  private Optional<Node.Return> parse_return() {
+    int first = current;
+    if (parse_token(Token.Return.class).isEmpty()) { return Optional.empty(); }
+    Optional<Node.Expression> value = parse_expression();
+    expect_token(
+      Token.Semicolon.class,
+      "terminator `;` of the return statement");
+    Node.Return return_statement = new Node.Return(first, value);
+    return Optional.of(return_statement);
   }
 
   /** Parses an affect statement. */
@@ -533,32 +568,31 @@ public final class Parser {
 
   /** Parses an expression at precedence level 0. */
   private Optional<Node.Precedence0> parse_precedence_0() {
-    return first_of(
-      this::parse_number_constant,
-      this::parse_symbol_access,
-      this::parse_grouping);
-  }
-
-  /** Parses a number constant. */
-  private Optional<Node.NumberConstant> parse_number_constant() {
-    int first = current;
-    Optional<Token.NumberConstant> token =
-      parse_token(Token.NumberConstant.class);
-    if (token.isEmpty()) { return Optional.empty(); }
-    Node.NumberConstant number_constant =
-      new Node.NumberConstant(first, token.get().value());
-    return Optional.of(number_constant);
-  }
-
-  /** Parses a symbol access. */
-  private Optional<Node.SymbolAccess> parse_symbol_access() {
-    int first = current;
-    Optional<Token.LowercaseIdentifier> token =
-      parse_token(Token.LowercaseIdentifier.class);
-    if (token.isEmpty()) { return Optional.empty(); }
-    Node.SymbolAccess symbol_access =
-      new Node.SymbolAccess(first, token.get().text());
-    return Optional.of(symbol_access);
+    Optional<Node.Precedence0> precedence_0 =
+      first_of(
+        this::parse_grouping,
+        this::parse_symbol_based,
+        this::parse_number_constant);
+    if (precedence_0.isEmpty())
+      return precedence_0;
+    Node.Precedence0 result = precedence_0.get();
+    while (true) {
+      if (parse_token(Token.Dot.class).isEmpty())
+        break;
+      Token.LowercaseIdentifier procedure =
+        expect_token(
+          Token.LowercaseIdentifier.class,
+          "procedure name of the member call expression");
+      expect_token(
+        Token.OpeningParenthesis.class,
+        "argument list opener `(` of the member call expression");
+      List<Node.Expression> arguments = separated_of(this::parse_expression);
+      expect_token(
+        Token.ClosingParenthesis.class,
+        "argument list closer `)` of the member call expression");
+      result = new Node.MemberCall(result, procedure.text(), arguments);
+    }
+    return Optional.of(result);
   }
 
   /** Parses a grouping. */
@@ -575,6 +609,52 @@ public final class Parser {
       "closer `)` of the grouping expression");
     Node.Grouping grouping = new Node.Grouping(grouped);
     return Optional.of(grouping);
+  }
+
+  /** Parses a symbol based. */
+  private Optional<Node.SymbolBased> parse_symbol_based() {
+    int first = current;
+    Optional<Token.LowercaseIdentifier> token =
+      parse_token(Token.LowercaseIdentifier.class);
+    if (token.isEmpty()) { return Optional.empty(); }
+    Node.SymbolBased symbol_based =
+      new Node.SymbolAccess(first, token.get().text());
+    if (parse_token(Token.OpeningParenthesis.class).isPresent()) {
+      List<Node.Expression> arguments = separated_of(this::parse_expression);
+      expect_token(
+        Token.ClosingParenthesis.class,
+        "argument list closer `)` of the call expression");
+      symbol_based = new Node.Call(first, token.get().text(), arguments);
+    }
+    return Optional.of(symbol_based);
+  }
+
+  /** Parses a number constant. */
+  private Optional<Node.NumberConstant> parse_number_constant() {
+    int first = current;
+    Optional<Token.NumberConstant> token =
+      parse_token(Token.NumberConstant.class);
+    if (token.isEmpty()) { return Optional.empty(); }
+    Node.NumberConstant number_constant =
+      new Node.NumberConstant(first, token.get().value());
+    return Optional.of(number_constant);
+  }
+
+  /** Runs the given parser repeatedly and collects the parsed constructs as a
+   * list. Parses a separator comma between the constructs. Optionally, there
+   * could be a trailing comma. */
+  private <ConstructType> List<ConstructType> separated_of(
+    Supplier<Optional<ConstructType>> parser_function)
+  {
+    List<ConstructType> constructs = new ArrayList<>();
+    while (true) {
+      Optional<ConstructType> construct = parser_function.get();
+      if (construct.isEmpty()) { break; }
+      constructs.add(construct.get());
+      if (parse_token(Token.Comma.class).isEmpty())
+        break;
+    }
+    return constructs;
   }
 
   /** Runs the given parser repeatedly and collects the parsed constructs as a
