@@ -121,6 +121,11 @@ public final class Lexer {
               case "entrypoint" -> { token = new Token.Entrypoint(start); }
               case "const" -> { token = new Token.Const(start); }
               case "var" -> { token = new Token.Var(start); }
+              case "if" -> { token = new Token.If(start); }
+              case "else" -> { token = new Token.Else(start); }
+              case "while" -> { token = new Token.While(start); }
+              case "break" -> { token = new Token.Break(start); }
+              case "continue" -> { token = new Token.Continue(start); }
               default -> { token = new Token.LowercaseIdentifier(start, text); }
             }
             tokens.add(token);

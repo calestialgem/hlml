@@ -29,6 +29,51 @@ public sealed interface Token {
     public String explanation() { return "keyword `var`"; }
   }
 
+  /** Keyword `if`. */
+  record If(int start) implements Token {
+    @Override
+    public int end() { return start + "if".length(); }
+
+    @Override
+    public String explanation() { return "keyword `if`"; }
+  }
+
+  /** Keyword `else`. */
+  record Else(int start) implements Token {
+    @Override
+    public int end() { return start + "else".length(); }
+
+    @Override
+    public String explanation() { return "keyword `else`"; }
+  }
+
+  /** Keyword `while`. */
+  record While(int start) implements Token {
+    @Override
+    public int end() { return start + "while".length(); }
+
+    @Override
+    public String explanation() { return "keyword `while`"; }
+  }
+
+  /** Keyword `break`. */
+  record Break(int start) implements Token {
+    @Override
+    public int end() { return start + "break".length(); }
+
+    @Override
+    public String explanation() { return "keyword `break`"; }
+  }
+
+  /** Keyword `continue`. */
+  record Continue(int start) implements Token {
+    @Override
+    public int end() { return start + "continue".length(); }
+
+    @Override
+    public String explanation() { return "keyword `continue`"; }
+  }
+
   /** Punctuation `{`. */
   record OpeningBrace(int start) implements Token {
     @Override
