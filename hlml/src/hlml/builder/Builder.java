@@ -47,8 +47,8 @@ public final class Builder {
   /** Global symbols that are already built. */
   private Set<Name> built;
 
-  /** Register set. */
-  private Registers registers;
+  /** Temporary register list. */
+  private Stack stack;
 
   /** Number of emitted instructions. */
   private int instructions;
@@ -83,7 +83,7 @@ public final class Builder {
     decimal_formatter = new DecimalFormat("0.#");
     decimal_formatter.setMaximumFractionDigits(Integer.MAX_VALUE);
     built = new HashSet<>();
-    registers = Registers.create();
+    stack = Stack.create();
     instructions = 0;
     for (Name dependency : entrypoint.get().dependencies()) {
       build_dependency(dependency);
@@ -111,7 +111,7 @@ public final class Builder {
     }
     switch (definition) {
       case Semantic.Const c -> {}
-      case Semantic.Var v -> registers.global(name);
+      case Semantic.Var v -> {}
     }
   }
 
@@ -121,7 +121,7 @@ public final class Builder {
       case Semantic.Block block ->
         block.inner_statements().forEach(this::build_statement);
       case Semantic.Var l -> {
-        Register variable = registers.local(l.identifier());
+        Register variable = new Register.Local(l.identifier());
         if (l.initial_value().isPresent()) {
           Register initial_value = build_expression(l.initial_value().get());
           build_instruction("set", variable, initial_value);
@@ -145,8 +145,7 @@ public final class Builder {
       case Semantic.AndBitwiseAssign a -> build_assign(a, "and");
       case Semantic.XorBitwiseAssign a -> build_assign(a, "xor");
       case Semantic.OrBitwiseAssign a -> build_assign(a, "or");
-      case Semantic.Discard d ->
-        registers.discard(build_expression(d.source()));
+      case Semantic.Discard d -> stack.pop(build_expression(d.source()));
       default ->
         throw Subject
           .of("compiler")
@@ -196,15 +195,15 @@ public final class Builder {
       case Semantic.Negation u -> build_unary_operation(u, "sub");
       case Semantic.BitwiseNot u -> {
         Register operand = build_expression(u.operand());
-        Register result = registers.temporary(operand);
+        Register result = stack.push(operand);
         build_instruction("op", "not", result, operand);
         yield result;
       }
       case Semantic.LogicalNot u -> build_unary_operation(u, "notEqual");
-      case Semantic.NumberConstant c -> registers.literal(c.value());
-      case Semantic.ConstantAccess c -> registers.literal(c.value());
-      case Semantic.GlobalVariableAccess g -> registers.global(g.name());
-      case Semantic.LocalVariableAccess l -> registers.local(l.identifier());
+      case Semantic.NumberConstant c -> new Register.Literal(c.value());
+      case Semantic.ConstantAccess c -> new Register.Literal(c.value());
+      case Semantic.GlobalVariableAccess g -> new Register.Global(g.name());
+      case Semantic.LocalVariableAccess l -> new Register.Local(l.identifier());
     };
   }
 
@@ -215,7 +214,7 @@ public final class Builder {
   {
     Register left_operand = build_expression(operation.left_operand());
     Register right_operand = build_expression(operation.right_operand());
-    Register result = registers.temporary(left_operand, right_operand);
+    Register result = stack.push(left_operand, right_operand);
     build_instruction(
       "op",
       operation_code,
@@ -231,7 +230,7 @@ public final class Builder {
     String operation_code)
   {
     Register operand = build_expression(operation.operand());
-    Register result = registers.temporary(operand);
+    Register result = stack.push(operand);
     build_instruction("op", operation_code, result, operand);
     return result;
   }
