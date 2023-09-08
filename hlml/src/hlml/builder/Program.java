@@ -127,7 +127,7 @@ final class Program {
         appendable.append(r.identifier());
       }
       case Register.Temporary r -> {
-        appendable.append('$');
+        appendable.append('_');
         appendable.append(Integer.toString(r.index()));
       }
       case Register.Literal r -> {

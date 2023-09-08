@@ -1,10 +1,10 @@
 set variable_test$global 56
 set $local 17
-op add $0 $local variable_test$global
-op sub $0 $0 45
+op add _0 $local variable_test$global
+op sub _0 _0 45
 set $inner 5555
-op mul $0 $local variable_test$global
-op add $0 $inner $0
-op idiv $0 $local variable_test$global
-set $another $0
+op mul _0 $local variable_test$global
+op add _0 $inner _0
+op idiv _0 $local variable_test$global
+set $another _0
 end

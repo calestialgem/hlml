@@ -1,53 +1,53 @@
 set $a 145
-op greaterThan $0 $a 200
-jump 5 equal false $0
+op greaterThan _0 $a 200
+jump 5 equal false _0
 op div $a $a 7
 jump 5 always
-op lessThan $1 $a 15
-jump 10 equal false $1
+op lessThan _1 $a 15
+jump 10 equal false _1
 op mul $a $a 4
 jump 10 always
 op mul $a $a 2
-op lessThan $2 $a 10
-jump 27 equal false $2
+op lessThan _2 $a 10
+jump 27 equal false _2
 op sub $a $a 6
 jump 27 always
-op lessThan $3 $a 20
-jump 27 equal false $3
+op lessThan _3 $a 20
+jump 27 equal false _3
 op sub $a $a 8
 jump 27 always
-op lessThan $4 $a 50
-jump 27 equal false $4
+op lessThan _4 $a 50
+jump 27 equal false _4
 op sub $a $a 15
 jump 27 always
-op lessThan $5 $a 1000
-jump 27 equal false $5
+op lessThan _5 $a 1000
+jump 27 equal false _5
 op sub $a $a 20
 jump 27 always
 op sub $a $a 50
-op lessThan $6 $a 2000
-jump 31 equal true $6
-op lessThan $7 $a 2000
-jump 32 equal false $7
+op lessThan _6 $a 2000
+jump 31 equal true _6
+op lessThan _7 $a 2000
+jump 32 equal false _7
 op add $a $a 45
-op lessThan $8 $a 2000
-jump 37 equal true $8
+op lessThan _8 $a 2000
+jump 37 equal true _8
 set $a 1990
-op lessThan $9 $a 2000
-jump 38 equal false $9
+op lessThan _9 $a 2000
+jump 38 equal false _9
 op add $a $a 45
-op lessThan $10 $a 2000
-jump 43 equal true $10
+op lessThan _10 $a 2000
+jump 43 equal true _10
 op add $a $a 1
-op lessThan $11 $a 2000
-jump 43 equal false $11
+op lessThan _11 $a 2000
+jump 43 equal false _11
 jump 45 equal true $a
 jump 46 equal false $a
 jump 46 always
-op greaterThanEq $12 $a 70
-jump 51 equal true $12
+op greaterThanEq _12 $a 70
+jump 51 equal true _12
 op sub $a $a 56
-op greaterThanEq $13 $a 70
-jump 52 equal false $13
+op greaterThanEq _13 $a 70
+jump 52 equal false _13
 jump 51 always
 end
