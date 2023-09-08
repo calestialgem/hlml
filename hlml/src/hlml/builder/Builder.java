@@ -114,7 +114,7 @@ public final class Builder {
 
   /** Builds a statement if it is there. */
   private void build_statement(Optional<Semantic.Statement> statement) {
-    statement.ifPresent(s -> build_statement(s));
+    statement.ifPresent(this::build_statement);
   }
 
   /** Builds a statement. */
