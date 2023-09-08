@@ -3,6 +3,7 @@ package hlml.builder;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,18 +12,22 @@ import java.util.Map;
 final class Program {
   /** Returns an empty program. */
   static Program create() {
-    return new Program(new ArrayList<>());
+    return new Program(new ArrayList<>(), new HashMap<>());
   }
 
   /** Instructions that are added to the program. */
-  private List<Instruction> instructions;
+  private final List<Instruction> instructions;
 
   /** Instruction indices that can be used to jump to an instruction. */
-  private Map<Waypoint, Integer> waypoints;
+  private final Map<Waypoint, Integer> waypoints;
 
   /** Constructs. */
-  private Program(List<Instruction> instructions) {
+  private Program(
+    List<Instruction> instructions,
+    Map<Waypoint, Integer> waypoints)
+  {
     this.instructions = instructions;
+    this.waypoints = waypoints;
   }
 
   /** Add an instruction the the end of the program. */
