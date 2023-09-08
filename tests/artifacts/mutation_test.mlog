@@ -1,6 +1,6 @@
 set $local 1
-op add $local $local
-op sub $local $local
+op add $local $local 1
+op sub $local $local 1
 set $local 56
 op mul $local $local 2
 op div $local $local 2

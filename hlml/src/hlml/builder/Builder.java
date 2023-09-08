@@ -1,12 +1,13 @@
 package hlml.builder;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.text.DecimalFormat;
 
 import hlml.checker.Name;
 import hlml.checker.Semantic;
@@ -37,20 +38,14 @@ public final class Builder {
   /** Target that is built. */
   private final Semantic.Target target;
 
-  /** Tool to write to buffer the instructions before writing to the file. */
-  private StringBuilder buffer;
-
-  /** Tool to write the numbers with necessary precision. */
-  private DecimalFormat decimal_formatter;
-
   /** Global symbols that are already built. */
   private Set<Name> built;
 
+  /** Instruction list. */
+  private Program program;
+
   /** Temporary register list. */
   private Stack stack;
-
-  /** Number of emitted instructions. */
-  private int instructions;
 
   /** Constructor. */
   private Builder(Subject subject, Path artifacts, Semantic.Target target) {
@@ -68,28 +63,31 @@ public final class Builder {
         .to_diagnostic("error", "There is no entrypoint in the target!")
         .to_exception();
     }
-    Path output = artifacts.resolve("%s%s".formatted(target.name(), extension));
-    buffer = new StringBuilder();
-    decimal_formatter = new DecimalFormat("0.#");
-    decimal_formatter.setMaximumFractionDigits(Integer.MAX_VALUE);
     built = new HashSet<>();
+    program = Program.create();
     stack = Stack.create();
-    instructions = 0;
     for (Name dependency : entrypoint.get().dependencies()) {
       build_dependency(dependency);
     }
     build_statement(entrypoint.get().body());
-    build_instruction("end");
-    try {
-      Files.writeString(output, buffer.toString());
+    Instruction instruction = new Instruction.End();
+    program.instruct(instruction);
+    Path output_path =
+      artifacts.resolve("%s%s".formatted(target.name(), extension));
+    try (
+      BufferedWriter output =
+        new BufferedWriter(
+          new OutputStreamWriter(Files.newOutputStream(output_path))))
+    {
+      program.append_to(output);
     }
     catch (IOException cause) {
       throw Subject
-        .of(output)
+        .of(output_path)
         .to_diagnostic("failure", "Could not write to the output file!")
         .to_exception(cause);
     }
-    return output;
+    return output_path;
   }
 
   /** Builds a dependency. */
@@ -113,30 +111,44 @@ public final class Builder {
       case Semantic.Block block ->
         block.inner_statements().forEach(this::build_statement);
       case Semantic.Var l -> {
-        Register variable = new Register.Local(l.identifier());
+        Register variable = Register.local(l.identifier());
         if (l.initial_value().isPresent()) {
           Register initial_value = build_expression(l.initial_value().get());
-          build_instruction("set", variable, initial_value);
+          Instruction instruction =
+            new Instruction.Set(variable, initial_value);
+          program.instruct(instruction);
         }
       }
-      case Semantic.Increment m -> build_mutate(m, "add");
-      case Semantic.Decrement m -> build_mutate(m, "sub");
+      case Semantic.Increment m -> build_mutate(m, Instruction.Addition::new);
+      case Semantic.Decrement m ->
+        build_mutate(m, Instruction.Subtraction::new);
       case Semantic.DirectlyAssign a -> {
         Register target = build_expression(a.target());
         Register source = build_expression(a.source());
-        build_instruction("set", target, source);
+        Instruction instruction = new Instruction.Set(target, source);
+        program.instruct(instruction);
       }
-      case Semantic.MultiplyAssign a -> build_assign(a, "mul");
-      case Semantic.DivideAssign a -> build_assign(a, "div");
-      case Semantic.DivideIntegerAssign a -> build_assign(a, "idiv");
-      case Semantic.ModulusAssign a -> build_assign(a, "mod");
-      case Semantic.AddAssign a -> build_assign(a, "add");
-      case Semantic.SubtractAssign a -> build_assign(a, "sub");
-      case Semantic.ShiftLeftAssign a -> build_assign(a, "shl");
-      case Semantic.ShiftRightAssign a -> build_assign(a, "shr");
-      case Semantic.AndBitwiseAssign a -> build_assign(a, "and");
-      case Semantic.XorBitwiseAssign a -> build_assign(a, "xor");
-      case Semantic.OrBitwiseAssign a -> build_assign(a, "or");
+      case Semantic.MultiplyAssign a ->
+        build_assign(a, Instruction.Multiplication::new);
+      case Semantic.DivideAssign a ->
+        build_assign(a, Instruction.Division::new);
+      case Semantic.DivideIntegerAssign a ->
+        build_assign(a, Instruction.IntegerDivision::new);
+      case Semantic.ModulusAssign a ->
+        build_assign(a, Instruction.Modulus::new);
+      case Semantic.AddAssign a -> build_assign(a, Instruction.Addition::new);
+      case Semantic.SubtractAssign a ->
+        build_assign(a, Instruction.Subtraction::new);
+      case Semantic.ShiftLeftAssign a ->
+        build_assign(a, Instruction.LeftShift::new);
+      case Semantic.ShiftRightAssign a ->
+        build_assign(a, Instruction.RightShift::new);
+      case Semantic.AndBitwiseAssign a ->
+        build_assign(a, Instruction.BitwiseAnd::new);
+      case Semantic.XorBitwiseAssign a ->
+        build_assign(a, Instruction.BitwiseXor::new);
+      case Semantic.OrBitwiseAssign a ->
+        build_assign(a, Instruction.BitwiseOr::new);
       case Semantic.Discard d -> stack.pop(build_expression(d.source()));
       default ->
         throw Subject
@@ -147,139 +159,110 @@ public final class Builder {
   }
 
   /** Builds a mutate statement. */
-  private void build_mutate(Semantic.Mutate statement, String operation_code) {
+  private void build_mutate(
+    Semantic.Mutate statement,
+    BinaryOperationInitializer initializer)
+  {
     Register target = build_expression(statement.target());
-    build_instruction("op", operation_code, target, target);
+    Instruction instruction =
+      initializer.initialize(target, target, Register.literal(1));
+    program.instruct(instruction);
   }
 
   /** Builds a assign statement. */
-  private void build_assign(Semantic.Assign statement, String operation_code) {
+  private void build_assign(
+    Semantic.Assign statement,
+    BinaryOperationInitializer initializer)
+  {
     Register target = build_expression(statement.target());
     Register source = build_expression(statement.source());
-    build_instruction("op", operation_code, target, target, source);
+    Instruction instruction = initializer.initialize(target, target, source);
+    program.instruct(instruction);
   }
 
   /** Builds an expression. */
   private Register build_expression(Semantic.Expression expression) {
     return switch (expression) {
-      case Semantic.EqualTo b -> build_binary_operation(b, "equal");
-      case Semantic.NotEqualTo b -> build_binary_operation(b, "notEqual");
+      case Semantic.EqualTo b ->
+        build_binary_operation(b, Instruction.EqualTo::new);
+      case Semantic.NotEqualTo b ->
+        build_binary_operation(b, Instruction.NotEqualTo::new);
       case Semantic.StrictlyEqualTo b ->
-        build_binary_operation(b, "strictEqual");
-      case Semantic.LessThan b -> build_binary_operation(b, "lessThan");
+        build_binary_operation(b, Instruction.StrictlyEqualTo::new);
+      case Semantic.LessThan b ->
+        build_binary_operation(b, Instruction.LessThan::new);
       case Semantic.LessThanOrEqualTo b ->
-        build_binary_operation(b, "lessThanEq");
-      case Semantic.GreaterThan b -> build_binary_operation(b, "greaterThan");
+        build_binary_operation(b, Instruction.LessThanOrEqualTo::new);
+      case Semantic.GreaterThan b ->
+        build_binary_operation(b, Instruction.GreaterThan::new);
       case Semantic.GreaterThanOrEqualTo b ->
-        build_binary_operation(b, "greaterThanEq");
-      case Semantic.BitwiseOr b -> build_binary_operation(b, "or");
-      case Semantic.BitwiseXor b -> build_binary_operation(b, "xor");
-      case Semantic.BitwiseAnd b -> build_binary_operation(b, "and");
-      case Semantic.LeftShift b -> build_binary_operation(b, "shl");
-      case Semantic.RightShift b -> build_binary_operation(b, "shr");
-      case Semantic.Addition b -> build_binary_operation(b, "add");
-      case Semantic.Subtraction b -> build_binary_operation(b, "sub");
-      case Semantic.Multiplication b -> build_binary_operation(b, "mul");
-      case Semantic.Division b -> build_binary_operation(b, "div");
-      case Semantic.IntegerDivision b -> build_binary_operation(b, "idiv");
-      case Semantic.Modulus b -> build_binary_operation(b, "mod");
-      case Semantic.Promotion u -> build_unary_operation(u, "add");
-      case Semantic.Negation u -> build_unary_operation(u, "sub");
+        build_binary_operation(b, Instruction.GreaterThanOrEqualTo::new);
+      case Semantic.BitwiseOr b ->
+        build_binary_operation(b, Instruction.BitwiseOr::new);
+      case Semantic.BitwiseXor b ->
+        build_binary_operation(b, Instruction.BitwiseXor::new);
+      case Semantic.BitwiseAnd b ->
+        build_binary_operation(b, Instruction.BitwiseAnd::new);
+      case Semantic.LeftShift b ->
+        build_binary_operation(b, Instruction.LeftShift::new);
+      case Semantic.RightShift b ->
+        build_binary_operation(b, Instruction.RightShift::new);
+      case Semantic.Addition b ->
+        build_binary_operation(b, Instruction.Addition::new);
+      case Semantic.Subtraction b ->
+        build_binary_operation(b, Instruction.Subtraction::new);
+      case Semantic.Multiplication b ->
+        build_binary_operation(b, Instruction.Multiplication::new);
+      case Semantic.Division b ->
+        build_binary_operation(b, Instruction.Division::new);
+      case Semantic.IntegerDivision b ->
+        build_binary_operation(b, Instruction.IntegerDivision::new);
+      case Semantic.Modulus b ->
+        build_binary_operation(b, Instruction.Modulus::new);
+      case Semantic.Promotion u ->
+        build_unary_operation(u, Instruction.Addition::new);
+      case Semantic.Negation u ->
+        build_unary_operation(u, Instruction.Subtraction::new);
       case Semantic.BitwiseNot u -> {
         Register operand = build_expression(u.operand());
-        Register result = stack.push(operand);
-        build_instruction("op", "not", result, operand);
-        yield result;
+        Register target = stack.push(operand);
+        Instruction instruction = new Instruction.BitwiseNot(target, operand);
+        program.instruct(instruction);
+        yield target;
       }
-      case Semantic.LogicalNot u -> build_unary_operation(u, "notEqual");
-      case Semantic.NumberConstant c -> new Register.Literal(c.value());
-      case Semantic.ConstantAccess c -> new Register.Literal(c.value());
-      case Semantic.GlobalVariableAccess g -> new Register.Global(g.name());
-      case Semantic.LocalVariableAccess l -> new Register.Local(l.identifier());
+      case Semantic.LogicalNot u ->
+        build_unary_operation(u, Instruction.NotEqualTo::new);
+      case Semantic.NumberConstant c -> Register.literal(c.value());
+      case Semantic.ConstantAccess c -> Register.literal(c.value());
+      case Semantic.GlobalVariableAccess g -> Register.global(g.name());
+      case Semantic.LocalVariableAccess l -> Register.local(l.identifier());
     };
   }
 
   /** Builds a binary operation. */
   private Register build_binary_operation(
     Semantic.BinaryOperation operation,
-    String operation_code)
+    BinaryOperationInitializer initializer)
   {
     Register left_operand = build_expression(operation.left_operand());
     Register right_operand = build_expression(operation.right_operand());
-    Register result = stack.push(left_operand, right_operand);
-    build_instruction(
-      "op",
-      operation_code,
-      result,
-      left_operand,
-      right_operand);
-    return result;
+    Register target = stack.push(left_operand, right_operand);
+    Instruction instruction =
+      initializer.initialize(target, left_operand, right_operand);
+    program.instruct(instruction);
+    return target;
   }
 
   /** Builds a unary operation. */
   private Register build_unary_operation(
     Semantic.UnaryOperation operation,
-    String operation_code)
+    BinaryOperationInitializer initializer)
   {
     Register operand = build_expression(operation.operand());
-    Register result = stack.push(operand);
-    build_instruction("op", operation_code, result, operand);
-    return result;
-  }
-
-  /** Builds an instruction. Returns the instruction number. */
-  private int build_instruction(
-    String instruction,
-    String subinstruction,
-    Register... operands)
-  {
-    return build_instruction(
-      instruction,
-      Optional.of(subinstruction),
-      operands);
-  }
-
-  /** Builds an instruction. Returns the instruction number. */
-  private int build_instruction(String instruction, Register... operands) {
-    return build_instruction(instruction, Optional.empty(), operands);
-  }
-
-  /** Builds an instruction. Returns the instruction number. */
-  private int build_instruction(
-    String instruction,
-    Optional<String> subinstruction,
-    Register... operands)
-  {
-    buffer.append(instruction);
-    if (subinstruction.isPresent()) {
-      buffer.append(' ');
-      buffer.append(subinstruction.get());
-    }
-    for (Register operand : operands) {
-      switch (operand) {
-        case Register.Global(var n) -> {
-          buffer.append(' ');
-          buffer.append(n.source());
-          buffer.append('$');
-          buffer.append(n.identifier());
-        }
-        case Register.Local(var i) -> {
-          buffer.append(' ');
-          buffer.append('$');
-          buffer.append(i);
-        }
-        case Register.Temporary(var i) -> {
-          buffer.append(' ');
-          buffer.append('$');
-          buffer.append(i);
-        }
-        case Register.Literal(var v) -> {
-          buffer.append(' ');
-          buffer.append(decimal_formatter.format(v));
-        }
-      }
-    }
-    buffer.append(System.lineSeparator());
-    return instructions++;
+    Register target = stack.push(operand);
+    Instruction instruction =
+      initializer.initialize(target, Register.literal(0), operand);
+    program.instruct(instruction);
+    return target;
   }
 }

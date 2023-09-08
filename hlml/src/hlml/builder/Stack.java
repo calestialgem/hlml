@@ -9,9 +9,7 @@ final class Stack {
   private int length;
 
   /** Constructor. */
-  private Stack(int temporaries) {
-    this.length = temporaries;
-  }
+  private Stack(int length) { this.length = length; }
 
   /** Returns a temporary register for a calculation involving the given
    * registers. Used for optimizing the register usage when the operands are
