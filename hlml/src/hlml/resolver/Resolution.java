@@ -3,6 +3,7 @@ package hlml.resolver;
 import java.util.Map;
 import java.util.Optional;
 
+import hlml.lexer.Token;
 import hlml.parser.Node;
 import hlml.parser.ParsedSource;
 import hlml.reporter.Subject;
@@ -23,6 +24,11 @@ public sealed interface Resolution {
     /** Returns a subject as a node in this source file. */
     public Subject subject(Node node) {
       return source.subject(node);
+    }
+
+    /** Returns a subject as a token in this source file. */
+    public Subject subject(Token token) {
+      return source.subject(token);
     }
   }
 }

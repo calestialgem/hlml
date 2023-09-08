@@ -499,7 +499,7 @@ public sealed interface Node {
   }
 
   /** Expression that calls a procedure. */
-  record Call(int first, String procedure, List<Expression> arguments)
+  record Call(int first, String called, List<Expression> arguments)
     implements SymbolBased
   {
     @Override
@@ -517,8 +517,8 @@ public sealed interface Node {
    * beginning as if the procedure was a member of the first argument. */
   record MemberCall(
     Precedence0 first_argument,
-    String procedure,
-    List<Expression> arguments) implements Precedence0
+    String called,
+    List<Expression> remaining_arguments) implements Precedence0
   {
     @Override
     public int first(List<Token> tokens) {
@@ -527,8 +527,11 @@ public sealed interface Node {
 
     @Override
     public int last(List<Token> tokens) {
-      if (!arguments.isEmpty())
-        return arguments.get(arguments.size() - 1).last(tokens) + 1;
+      if (!remaining_arguments.isEmpty())
+        return remaining_arguments
+          .get(remaining_arguments.size() - 1)
+          .last(tokens)
+          + 1;
       return first_argument.last(tokens) + 4;
     }
   }

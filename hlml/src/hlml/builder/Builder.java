@@ -107,6 +107,11 @@ public final class Builder {
       build_dependency(dependency);
     }
     switch (definition) {
+      case Semantic.Proc d ->
+        throw Subject
+          .of("compiler")
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
       case Semantic.Const c -> {}
       case Semantic.Var v -> {}
     }
@@ -158,6 +163,11 @@ public final class Builder {
         program.instruct(new Instruction.JumpAlways(loop_end));
       case Semantic.Continue s ->
         program.instruct(new Instruction.JumpAlways(loop_begin));
+      case Semantic.Return s ->
+        throw Subject
+          .of("compiler")
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
       case Semantic.Var l -> {
         Register variable = Register.local(l.identifier());
         if (l.initial_value().isPresent()) {
@@ -273,6 +283,11 @@ public final class Builder {
       case Semantic.ConstantAccess c -> Register.literal(c.value());
       case Semantic.GlobalVariableAccess g -> Register.global(g.name());
       case Semantic.LocalVariableAccess l -> Register.local(l.identifier());
+      case Semantic.Call e ->
+        throw Subject
+          .of("compiler")
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
     };
   }
 

@@ -9,7 +9,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.DoubleUnaryOperator;
+import java.util.stream.Stream;
 
+import hlml.lexer.Token;
 import hlml.parser.Node;
 import hlml.resolver.Resolution;
 
@@ -75,11 +77,18 @@ final class SourceChecker {
     }
     currently_checked.add(identifier);
     Semantic.Definition definition = switch (node) {
-      case Node.Proc d ->
-        throw source
-          .subject(node)
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
+      case Node.Proc d -> {
+        Scope scope = Scope.create();
+        for (Token.LowercaseIdentifier p : d.parameters()) {
+          Node.Var local = new Node.Var(p, Optional.empty());
+          check_local(scope, local);
+        }
+        Semantic.Statement body = check_statement(scope, false, d.body());
+        yield new Semantic.Proc(
+          identifier,
+          d.parameters().stream().map(Token.LowercaseIdentifier::text).toList(),
+          body);
+      }
       case Node.Const c -> {
         Semantic.Expression value = check_expression(Scope.create(), c.value());
         if (!(value instanceof Semantic.Constant constant)) {
@@ -184,15 +193,8 @@ final class SourceChecker {
         yield new Semantic.Continue();
       }
       case Node.Return s ->
-        throw source
-          .subject(node)
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
-      case Node.Var v -> {
-        Semantic.Var local = check_var(Optional.of(scope), v);
-        scope.introduce(local);
-        yield local;
-      }
+        new Semantic.Return(s.value().map(e -> check_expression(scope, e)));
+      case Node.Var v -> check_local(scope, v);
       case Node.Increment m ->
         new Semantic.Increment(check_target(scope, m.target()));
       case Node.Decrement m ->
@@ -248,6 +250,23 @@ final class SourceChecker {
       case Node.Discard d ->
         new Semantic.Discard(check_expression(scope, d.source()));
     };
+  }
+
+  /** Introduces a local variable with the given name to the scope. */
+  private Semantic.Var check_local(Scope scope, Node.Var node) {
+    Optional<Semantic.Var> old_local = scope.find(node.identifier().text());
+    if (old_local.isPresent())
+      throw source
+        .subject(node)
+        .to_diagnostic(
+          "error",
+          "Redeclaration of symbol `%s::entrypoint::%s`",
+          source.name(),
+          node.identifier().text())
+        .to_exception();
+    Semantic.Var local = check_var(Optional.of(scope), node);
+    scope.introduce(local);
+    return local;
   }
 
   /** Checks an expression. */
@@ -384,16 +403,38 @@ final class SourceChecker {
         new Semantic.NumberConstant(number_constant.value());
       case Node.SymbolAccess v -> check_symbol_access(scope, v);
       case Node.Grouping g -> check_expression(scope, g.grouped());
-      case Node.Call e ->
-        throw source
-          .subject(node)
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
-      case Node.MemberCall e ->
-        throw source
-          .subject(node)
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
+      case Node.Call e -> {
+        Optional<Semantic.Definition> called = find_global(e.called());
+        if (called.isEmpty())
+          throw source
+            .subject(node)
+            .to_diagnostic(
+              "error",
+              "Could not find the symbol named `%s::%s`!",
+              source.name(),
+              e.called())
+            .to_exception();
+        yield check_call(called.get(), e.arguments(), scope, node);
+      }
+      case Node.MemberCall e -> {
+        Optional<Semantic.Definition> called = find_global(e.called());
+        if (called.isEmpty())
+          throw source
+            .subject(node)
+            .to_diagnostic(
+              "error",
+              "Could not find the symbol named `%s::%s`!",
+              source.name(),
+              e.called())
+            .to_exception();
+        List<Node.Expression> arguments =
+          Stream
+            .concat(
+              Stream.of(e.first_argument()),
+              e.remaining_arguments().stream())
+            .toList();
+        yield check_call(called.get(), arguments, scope, node);
+      }
     };
   }
 
@@ -431,7 +472,11 @@ final class SourceChecker {
     if (!(symbol instanceof Semantic.VariableAccess target)) {
       throw source
         .subject(node)
-        .to_diagnostic("error", "Accessed symbol is not mutable!")
+        .to_diagnostic(
+          "error",
+          "Accessed symbol `%s::%s` is not mutable!",
+          source.name(),
+          node.identifier())
         .to_exception();
     }
     return target;
@@ -442,18 +487,9 @@ final class SourceChecker {
     Scope scope,
     Node.SymbolAccess node)
   {
-    Optional<Semantic.Definition> local = scope.find(node.identifier());
+    Optional<Semantic.Var> local = scope.find(node.identifier());
     if (local.isPresent()) {
-      if (!(local.get() instanceof Semantic.Var accessed)) {
-        throw source
-          .subject(node)
-          .to_diagnostic(
-            "error",
-            "Accessed symbol `%s` is not a variable!",
-            node.identifier())
-          .to_exception();
-      }
-      return new Semantic.LocalVariableAccess(accessed.identifier());
+      return new Semantic.LocalVariableAccess(local.get().identifier());
     }
     Optional<Semantic.Definition> global = find_global(node.identifier());
     if (global.isPresent()) {
@@ -465,8 +501,9 @@ final class SourceChecker {
           .subject(node)
           .to_diagnostic(
             "error",
-            "Accessed symbol `%s` is not a variable!",
-            node.identifier())
+            "Accessed symbol `%s::%s` is not a variable!",
+            source.name(),
+            global.get().identifier())
           .to_exception();
       }
       return new Semantic.GlobalVariableAccess(
@@ -476,8 +513,41 @@ final class SourceChecker {
       .subject(node)
       .to_diagnostic(
         "error",
-        "Could not find a symbol named `%s`!",
+        "Could not find the symbol named `%s::%s`!",
+        source.name(),
         node.identifier())
       .to_exception();
+  }
+
+  /** Checks a procedure call. */
+  private Semantic.Call check_call(
+    Semantic.Definition called,
+    List<Node.Expression> arguments,
+    Scope scope,
+    Node.Expression node)
+  {
+    if (!(called instanceof Semantic.Proc procedure))
+      throw source
+        .subject(node)
+        .to_diagnostic(
+          "error",
+          "Called symbol `%s::%s` is not a procedure!",
+          source.name(),
+          called.identifier())
+        .to_exception();
+    if (procedure.parameters().size() > arguments.size())
+      throw source
+        .subject(node)
+        .to_diagnostic(
+          "error",
+          "Providing more arguments (%d) than parameters (%d) for calling procedure `%s::%s`!",
+          arguments.size(),
+          procedure.parameters().size(),
+          source.name(),
+          procedure.identifier())
+        .to_exception();
+    return new Semantic.Call(
+      new Name(source.name(), procedure.identifier()),
+      arguments.stream().map(a -> check_expression(scope, a)).toList());
   }
 }

@@ -35,6 +35,14 @@ public sealed interface Semantic {
     String identifier();
   }
 
+  /** Definition of a procedure. */
+  record Proc(String identifier, List<String> parameters, Statement body)
+    implements Definition
+  {
+    @Override
+    public Set<Name> dependencies() { return body.dependencies(); }
+  }
+
   /** Definition of a constant. */
   record Const(String identifier, double value) implements Definition {
     @Override
@@ -110,6 +118,14 @@ public sealed interface Semantic {
   record Continue() implements Statement {
     @Override
     public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Statements that provide a value to the procedures caller. */
+  record Return(Optional<Expression> value) implements Statement {
+    @Override
+    public Set<Name> dependencies() {
+      return value.map(Expression::dependencies).orElseGet(Set::of);
+    }
   }
 
   /** Statements that affect the processors context. Useful for parsing as all
@@ -404,5 +420,16 @@ public sealed interface Semantic {
   record LocalVariableAccess(String identifier) implements VariableAccess {
     @Override
     public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Expression that evaluates to the return value of executing a procedure
+   * with a given argument list. */
+  record Call(Name procedure, List<Expression> arguments)
+    implements Expression
+  {
+    @Override
+    public Set<Name> dependencies() {
+      return Sets.union(arguments.stream().map(Expression::dependencies));
+    }
   }
 }

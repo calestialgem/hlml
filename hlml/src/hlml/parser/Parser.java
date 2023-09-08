@@ -579,18 +579,19 @@ public final class Parser {
     while (true) {
       if (parse_token(Token.Dot.class).isEmpty())
         break;
-      Token.LowercaseIdentifier procedure =
+      Token.LowercaseIdentifier called =
         expect_token(
           Token.LowercaseIdentifier.class,
           "procedure name of the member call expression");
       expect_token(
         Token.OpeningParenthesis.class,
-        "argument list opener `(` of the member call expression");
-      List<Node.Expression> arguments = separated_of(this::parse_expression);
+        "remaining argument list opener `(` of the member call expression");
+      List<Node.Expression> remaining_arguments =
+        separated_of(this::parse_expression);
       expect_token(
         Token.ClosingParenthesis.class,
-        "argument list closer `)` of the member call expression");
-      result = new Node.MemberCall(result, procedure.text(), arguments);
+        "remaining argument list closer `)` of the member call expression");
+      result = new Node.MemberCall(result, called.text(), remaining_arguments);
     }
     return Optional.of(result);
   }
