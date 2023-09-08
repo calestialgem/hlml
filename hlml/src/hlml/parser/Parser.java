@@ -477,8 +477,9 @@ public final class Parser {
 
   /** Parses a grouping. */
   private Optional<Node.Grouping> parse_grouping() {
-    if (parse_token(Token.OpeningParenthesis.class).isEmpty())
+    if (parse_token(Token.OpeningParenthesis.class).isEmpty()) {
       return Optional.empty();
+    }
     Node.Expression grouped =
       expect(
         this::parse_expression,

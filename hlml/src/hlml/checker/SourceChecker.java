@@ -320,9 +320,11 @@ final class SourceChecker {
     Semantic.BinaryOperation operation,
     DoubleBinaryOperator operator)
   {
-    if (!(operation.left_operand() instanceof Semantic.Constant l
-      && operation.right_operand() instanceof Semantic.Constant r))
+    if (!(operation.left_operand() instanceof Semantic.Constant l)
+      || !(operation.right_operand() instanceof Semantic.Constant r))
+    {
       return operation;
+    }
     return new Semantic.NumberConstant(
       operator.applyAsDouble(l.value(), r.value()));
   }
@@ -332,8 +334,9 @@ final class SourceChecker {
     Semantic.UnaryOperation operation,
     DoubleUnaryOperator operator)
   {
-    if (!(operation.operand() instanceof Semantic.Constant o))
+    if (!(operation.operand() instanceof Semantic.Constant o)) {
       return operation;
+    }
     return new Semantic.NumberConstant(operator.applyAsDouble(o.value()));
   }
 
