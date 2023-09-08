@@ -60,6 +60,8 @@ public final class Lexer {
         case '(' -> lex_single(Token.OpeningParenthesis::new);
         case ')' -> lex_single(Token.ClosingParenthesis::new);
         case ';' -> lex_single(Token.Semicolon::new);
+        case '.' -> lex_single(Token.Dot::new);
+        case ',' -> lex_single(Token.Comma::new);
         case '~' -> lex_single(Token.Tilde::new);
         case '*' -> lex_extensible(Token.Star::new, Token.StarEqual::new);
         case '%' -> lex_extensible(Token.Percent::new, Token.PercentEqual::new);
@@ -119,6 +121,7 @@ public final class Lexer {
             Token token;
             switch (text) {
               case "entrypoint" -> { token = new Token.Entrypoint(start); }
+              case "proc" -> { token = new Token.Proc(start); }
               case "const" -> { token = new Token.Const(start); }
               case "var" -> { token = new Token.Var(start); }
               case "if" -> { token = new Token.If(start); }

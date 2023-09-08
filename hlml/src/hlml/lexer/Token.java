@@ -11,6 +11,15 @@ public sealed interface Token {
     public String explanation() { return "keyword `entrypoint`"; }
   }
 
+  /** Keyword `proc`. */
+  record Proc(int start) implements Token {
+    @Override
+    public int end() { return start + "proc".length(); }
+
+    @Override
+    public String explanation() { return "keyword `proc`"; }
+  }
+
   /** Keyword `const`. */
   record Const(int start) implements Token {
     @Override
@@ -117,6 +126,24 @@ public sealed interface Token {
 
     @Override
     public String explanation() { return "punctuation `;`"; }
+  }
+
+  /** Punctuation `.`. */
+  record Dot(int start) implements Token {
+    @Override
+    public int end() { return start + ".".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `.`"; }
+  }
+
+  /** Punctuation `,`. */
+  record Comma(int start) implements Token {
+    @Override
+    public int end() { return start + ",".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `,`"; }
   }
 
   /** Punctuation `~`. */
