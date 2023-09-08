@@ -16,7 +16,10 @@ entrypoint {
 
   while a < 2000 { a += 45; }
 
-  while a < 2010; a++ {}
+  while a < 2000 { a += 45; }
+  else { a = 1990; }
+
+  while a < 2000; a++ {}
 
   while a { break; }
 
