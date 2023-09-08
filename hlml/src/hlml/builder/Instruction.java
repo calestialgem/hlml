@@ -1,30 +1,19 @@
 package hlml.builder;
 
-import java.io.IOException;
-
 /** Command that can be executed by a processor. */
 sealed interface Instruction {
+  /** Instruction that makes the currently run instruction to change out of
+   * sequence. */
+  record Jump(Waypoint waypoint) implements Instruction {}
+
   /** Instruction that marks the end of the program. Practically equivalent to
    * jumping back to the first instruction as the processor loops the program
    * when it runs out of instructions or comes to this instruction. */
-  record End() implements Instruction {
-    @Override
-    public void append_to(Appendable appendable) throws IOException {
-      appendable.append("end");
-    }
-  }
+  record End() implements Instruction {}
 
   /** Sets the value in the target register to be the same as the value in the
    * source register. */
-  record Set(Register target, Register source) implements Instruction {
-    @Override
-    public void append_to(Appendable appendable) throws IOException {
-      appendable.append("set ");
-      target.append_to(appendable);
-      appendable.append(' ');
-      source.append_to(appendable);
-    }
-  }
+  record Set(Register target, Register source) implements Instruction {}
 
   /** Instruction that operates on values. */
   sealed interface Operation extends Instruction {
@@ -39,16 +28,6 @@ sealed interface Instruction {
   sealed interface UnaryOperation extends Operation {
     /** Register that holds the operand of this operation. */
     Register operand();
-
-    @Override
-    default void append_to(Appendable appendable) throws IOException {
-      appendable.append("op ");
-      appendable.append(operation_code());
-      appendable.append(' ');
-      target().append_to(appendable);
-      appendable.append(' ');
-      operand().append_to(appendable);
-    }
   }
 
   /** Unary operation that evaluates the NOT of the value bitwise. */
@@ -66,18 +45,6 @@ sealed interface Instruction {
 
     /** Register that holds the right operand of this operation. */
     Register right_operand();
-
-    @Override
-    default void append_to(Appendable appendable) throws IOException {
-      appendable.append("op ");
-      appendable.append(operation_code());
-      appendable.append(' ');
-      target().append_to(appendable);
-      appendable.append(' ');
-      left_operand().append_to(appendable);
-      appendable.append(' ');
-      right_operand().append_to(appendable);
-    }
   }
 
   /** Binary operation that multiplies the values. */
@@ -265,8 +232,4 @@ sealed interface Instruction {
     @Override
     public String operation_code() { return "strictEqual"; }
   }
-
-  /** Appends the instruction to an appendable. Instructions require a line
-   * separator at the end before they can be run! */
-  void append_to(Appendable appendable) throws IOException;
 }

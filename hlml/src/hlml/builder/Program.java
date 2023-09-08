@@ -1,8 +1,10 @@
 package hlml.builder;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /** Ordered collection of instructions are executed sequentially for a
  * meaningful usage of the processor. */
@@ -15,6 +17,9 @@ final class Program {
   /** Instructions that are added to the program. */
   private List<Instruction> instructions;
 
+  /** Instruction indices that can be used to jump to an instruction. */
+  private Map<Waypoint, Integer> waypoints;
+
   /** Constructs. */
   private Program(List<Instruction> instructions) {
     this.instructions = instructions;
@@ -25,11 +30,94 @@ final class Program {
     instructions.add(instruction);
   }
 
+  /** Returns a new waypoint at an unknown position. */
+  Waypoint waypoint() {
+    Waypoint waypoint = new Waypoint(waypoints.size());
+    return waypoint;
+  }
+
+  /** Makes the given waypoint point to the next instruction that will be
+   * given. */
+  void define(Waypoint waypoint) {
+    waypoints.put(waypoint, instructions.size());
+  }
+
+  /** Returns the index of the instruction that is pointed to by a waypoint. */
+  int resolve(Waypoint waypoint) {
+    return waypoints.get(waypoint);
+  }
+
   /** Appends the program to an appendable. */
   void append_to(Appendable appendable) throws IOException {
     for (Instruction instruction : instructions) {
-      instruction.append_to(appendable);
+      append_instruction(appendable, instruction);
       appendable.append(System.lineSeparator());
+    }
+  }
+
+  /** Appends an instruction. */
+  private void append_instruction(
+    Appendable appendable,
+    Instruction instruction)
+    throws IOException
+  {
+    switch (instruction) {
+      case Instruction.Jump i -> {
+        appendable.append("jump ");
+        appendable.append(Integer.toString(resolve(i.waypoint())));
+        appendable.append(" always");
+      }
+      case Instruction.End i -> appendable.append("end");
+      case Instruction.Set i -> {
+        appendable.append("set ");
+        append_register(appendable, i.target());
+        appendable.append(' ');
+        append_register(appendable, i.source());
+      }
+      case Instruction.UnaryOperation i -> {
+        appendable.append("op ");
+        appendable.append(i.operation_code());
+        appendable.append(' ');
+        append_register(appendable, i.target());
+        appendable.append(' ');
+        append_register(appendable, i.operand());
+      }
+      case Instruction.BinaryOperation i -> {
+        appendable.append("op ");
+        appendable.append(i.operation_code());
+        appendable.append(' ');
+        append_register(appendable, i.target());
+        appendable.append(' ');
+        append_register(appendable, i.left_operand());
+        appendable.append(' ');
+        append_register(appendable, i.right_operand());
+      }
+    }
+  }
+
+  /** Appends a register. */
+  private void append_register(Appendable appendable, Register register)
+    throws IOException
+  {
+    switch (register) {
+      case Register.Global r -> {
+        appendable.append(r.name().source());
+        appendable.append('$');
+        appendable.append(r.name().identifier());
+      }
+      case Register.Local r -> {
+        appendable.append('$');
+        appendable.append(r.identifier());
+      }
+      case Register.Temporary r -> {
+        appendable.append('$');
+        appendable.append(Integer.toString(r.index()));
+      }
+      case Register.Literal r -> {
+        DecimalFormat decimal_formatter = new DecimalFormat("0.#");
+        decimal_formatter.setMaximumFractionDigits(Integer.MAX_VALUE);
+        appendable.append(decimal_formatter.format(r.value()));
+      }
     }
   }
 }
