@@ -138,12 +138,13 @@ public final class Builder {
           .instruct(new Instruction.JumpOnTrue(after_check, first_condition));
         if (s.zero_branch().isPresent())
           build_statement(s.zero_branch().get());
+        loop_end = program.waypoint();
+        program.instruct(new Instruction.JumpAlways(loop_end));
         loop_begin = program.waypoint();
         program.define(loop_begin);
         if (s.interleaved().isPresent())
           build_statement(s.interleaved().get());
         Register remaining_conditions = build_expression(s.condition());
-        loop_end = program.waypoint();
         program
           .instruct(
             new Instruction.JumpOnFalse(loop_end, remaining_conditions));
