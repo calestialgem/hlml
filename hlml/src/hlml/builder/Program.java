@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 
 /** Ordered collection of instructions are executed sequentially for a
  * meaningful usage of the processor. */
@@ -19,12 +20,12 @@ final class Program {
   private final List<Instruction> instructions;
 
   /** Instruction indices that can be used to jump to an instruction. */
-  private final Map<Waypoint, Integer> waypoints;
+  private final Map<Waypoint, OptionalInt> waypoints;
 
   /** Constructs. */
   private Program(
     List<Instruction> instructions,
-    Map<Waypoint, Integer> waypoints)
+    Map<Waypoint, OptionalInt> waypoints)
   {
     this.instructions = instructions;
     this.waypoints = waypoints;
@@ -38,18 +39,19 @@ final class Program {
   /** Returns a new waypoint at an unknown position. */
   Waypoint waypoint() {
     Waypoint waypoint = new Waypoint(waypoints.size());
+    waypoints.put(waypoint, OptionalInt.empty());
     return waypoint;
   }
 
   /** Makes the given waypoint point to the next instruction that will be
    * given. */
   void define(Waypoint waypoint) {
-    waypoints.put(waypoint, instructions.size());
+    waypoints.put(waypoint, OptionalInt.of(instructions.size()));
   }
 
   /** Returns the index of the instruction that is pointed to by a waypoint. */
   int resolve(Waypoint waypoint) {
-    return waypoints.get(waypoint);
+    return waypoints.get(waypoint).getAsInt();
   }
 
   /** Appends the program to an appendable. */
