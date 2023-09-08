@@ -166,6 +166,11 @@ public final class Builder {
       case Semantic.XorBitwiseAssign a -> build_assign(a, "xor");
       case Semantic.OrBitwiseAssign a -> build_assign(a, "or");
       case Semantic.Discard d -> build_expression(d.source());
+      default ->
+        throw Subject
+          .of("compiler")
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
     }
   }
 

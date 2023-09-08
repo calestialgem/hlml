@@ -47,7 +47,7 @@ public sealed interface Semantic {
   {
     @Override
     public Set<Name> dependencies() {
-      return initial_value.map(Expression::dependencies).orElse(Set.of());
+      return initial_value.map(Expression::dependencies).orElseGet(Set::of);
     }
   }
 
@@ -64,6 +64,52 @@ public sealed interface Semantic {
     public Set<Name> dependencies() {
       return Sets.union(inner_statements.stream().map(Statement::dependencies));
     }
+  }
+
+  /** Statements that branch the control flow. */
+  record If(
+    Expression condition,
+    Statement true_branch,
+    Optional<Statement> false_branch) implements Statement
+  {
+    @Override
+    public Set<Name> dependencies() {
+      return Sets
+        .union(
+          condition.dependencies(),
+          true_branch.dependencies(),
+          false_branch.map(Statement::dependencies).orElseGet(Set::of));
+    }
+  }
+
+  /** Statements that loop the control flow. */
+  record While(
+    Expression condition,
+    Optional<Statement> interleaved,
+    Statement loop,
+    Optional<Statement> zero_branch) implements Statement
+  {
+    @Override
+    public Set<Name> dependencies() {
+      return Sets
+        .union(
+          condition.dependencies(),
+          interleaved.map(Statement::dependencies).orElseGet(Set::of),
+          loop.dependencies(),
+          zero_branch.map(Statement::dependencies).orElseGet(Set::of));
+    }
+  }
+
+  /** Statements that exit a loop. */
+  record Break() implements Statement {
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Statements that skip the remaining in a loop. */
+  record Continue() implements Statement {
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
   }
 
   /** Statements that affect the processors context. Useful for parsing as all
