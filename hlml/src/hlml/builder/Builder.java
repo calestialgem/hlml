@@ -133,23 +133,21 @@ public final class Builder {
       }
       case Semantic.While s -> {
         Register first_condition = build_expression(s.condition());
-        Waypoint after_check = program.waypoint();
-        program
-          .instruct(new Instruction.JumpOnTrue(after_check, first_condition));
+        Waypoint loop = program.waypoint();
+        program.instruct(new Instruction.JumpOnTrue(loop, first_condition));
         if (s.zero_branch().isPresent())
           build_statement(s.zero_branch().get());
         loop_end = program.waypoint();
         program.instruct(new Instruction.JumpAlways(loop_end));
+        program.define(loop);
         loop_begin = program.waypoint();
+        build_statement(s.loop());
         program.define(loop_begin);
         if (s.interleaved().isPresent())
           build_statement(s.interleaved().get());
         Register remaining_conditions = build_expression(s.condition());
         program
-          .instruct(
-            new Instruction.JumpOnFalse(loop_end, remaining_conditions));
-        program.define(after_check);
-        build_statement(s.loop());
+          .instruct(new Instruction.JumpOnTrue(loop, remaining_conditions));
         program.define(loop_end);
       }
       case Semantic.Break s ->

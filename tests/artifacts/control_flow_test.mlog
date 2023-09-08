@@ -26,33 +26,33 @@ op sub $a $a 20
 jump 27 always
 op sub $a $a 50
 op lessThan _6 $a 2000
-jump 32 equal true _6
+jump 30 equal true _6
 jump 33 always
-op lessThan _7 $a 2000
-jump 33 equal false _7
 op add $a $a 45
+op lessThan _7 $a 2000
+jump 30 equal true _7
 op lessThan _8 $a 2000
-jump 39 equal true _8
+jump 37 equal true _8
 set $a 1990
 jump 40 always
-op lessThan _9 $a 2000
-jump 40 equal false _9
 op add $a $a 45
+op lessThan _9 $a 2000
+jump 37 equal true _9
 op lessThan _10 $a 2000
-jump 46 equal true _10
+jump 43 equal true _10
 jump 46 always
 op add $a $a 1
 op lessThan _11 $a 2000
-jump 46 equal false _11
-jump 49 equal true $a
+jump 43 equal true _11
+jump 48 equal true $a
 jump 50 always
-jump 50 equal false $a
 jump 50 always
+jump 48 equal true $a
 op greaterThanEq _12 $a 70
-jump 56 equal true _12
+jump 53 equal true _12
 jump 57 always
+jump 54 always
 op sub $a $a 56
 op greaterThanEq _13 $a 70
-jump 57 equal false _13
-jump 53 always
+jump 53 equal true _13
 end
