@@ -112,6 +112,11 @@ public final class Builder {
     }
   }
 
+  /** Builds a statement if it is there. */
+  private void build_statement(Optional<Semantic.Statement> statement) {
+    statement.ifPresent(s -> build_statement(s));
+  }
+
   /** Builds a statement. */
   private void build_statement(Semantic.Statement statement) {
     switch (statement) {
@@ -127,9 +132,7 @@ public final class Builder {
         Waypoint after_false_branch = program.waypoint();
         program.instruct(new Instruction.JumpAlways(after_false_branch));
         program.define(after_true_branch);
-        if (s.false_branch().isPresent()) {
-          build_statement(s.false_branch().get());
-        }
+        build_statement(s.false_branch());
         program.define(after_false_branch);
       }
       case Semantic.While s -> {
@@ -137,18 +140,14 @@ public final class Builder {
         Waypoint loop = program.waypoint();
         program.instruct(new Instruction.JumpOnTrue(loop, first_condition));
         stack.pop(first_condition);
-        if (s.zero_branch().isPresent()) {
-          build_statement(s.zero_branch().get());
-        }
+        build_statement(s.zero_branch());
         loop_end = program.waypoint();
         program.instruct(new Instruction.JumpAlways(loop_end));
         program.define(loop);
         loop_begin = program.waypoint();
         build_statement(s.loop());
         program.define(loop_begin);
-        if (s.interleaved().isPresent()) {
-          build_statement(s.interleaved().get());
-        }
+        build_statement(s.interleaved());
         Register remaining_conditions = build_expression(s.condition());
         program
           .instruct(new Instruction.JumpOnTrue(loop, remaining_conditions));
