@@ -62,10 +62,22 @@ final class Program {
     throws IOException
   {
     switch (instruction) {
-      case Instruction.Jump i -> {
+      case Instruction.JumpAlways i -> {
         appendable.append("jump ");
-        appendable.append(Integer.toString(resolve(i.waypoint())));
+        appendable.append(Integer.toString(resolve(i.goal())));
         appendable.append(" always");
+      }
+      case Instruction.JumpOnTrue i -> {
+        appendable.append("jump ");
+        appendable.append(Integer.toString(resolve(i.goal())));
+        appendable.append(" equal true ");
+        append_register(appendable, i.condition());
+      }
+      case Instruction.JumpOnFalse i -> {
+        appendable.append("jump ");
+        appendable.append(Integer.toString(resolve(i.goal())));
+        appendable.append(" equal false ");
+        append_register(appendable, i.condition());
       }
       case Instruction.End i -> appendable.append("end");
       case Instruction.Set i -> {

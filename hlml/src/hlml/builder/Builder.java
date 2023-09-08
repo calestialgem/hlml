@@ -47,6 +47,14 @@ public final class Builder {
   /** Temporary register list. */
   private Stack stack;
 
+  /** Waypoint to the currently built loop's condition check's first
+   * instruction. Used for building continue statements. */
+  private Waypoint loop_begin;
+
+  /** Waypoint to the instruction that is executed after the currently built
+   * loop. Used for building break statements. */
+  private Waypoint loop_end;
+
   /** Constructor. */
   private Builder(Subject subject, Path artifacts, Semantic.Target target) {
     this.subject = subject;
@@ -70,8 +78,7 @@ public final class Builder {
       build_dependency(dependency);
     }
     build_statement(entrypoint.get().body());
-    Instruction instruction = new Instruction.End();
-    program.instruct(instruction);
+    program.instruct(new Instruction.End());
     Path output_path =
       artifacts.resolve("%s%s".formatted(target.name(), extension));
     try (
@@ -110,13 +117,49 @@ public final class Builder {
     switch (statement) {
       case Semantic.Block block ->
         block.inner_statements().forEach(this::build_statement);
+      case Semantic.If s -> {
+        Register condition = build_expression(s.condition());
+        Waypoint after_true_branch = program.waypoint();
+        program
+          .instruct(new Instruction.JumpOnFalse(after_true_branch, condition));
+        build_statement(s.true_branch());
+        Waypoint after_false_branch = program.waypoint();
+        program.instruct(new Instruction.JumpAlways(after_false_branch));
+        program.define(after_true_branch);
+        if (s.false_branch().isPresent()) {
+          build_statement(s.false_branch().get());
+        }
+        program.define(after_false_branch);
+      }
+      case Semantic.While s -> {
+        Register first_condition = build_expression(s.condition());
+        Waypoint after_check = program.waypoint();
+        program
+          .instruct(new Instruction.JumpOnTrue(after_check, first_condition));
+        if (s.zero_branch().isPresent())
+          build_statement(s.zero_branch().get());
+        loop_begin = program.waypoint();
+        program.define(loop_begin);
+        if (s.interleaved().isPresent())
+          build_statement(s.interleaved().get());
+        Register remaining_conditions = build_expression(s.condition());
+        loop_end = program.waypoint();
+        program
+          .instruct(
+            new Instruction.JumpOnFalse(loop_end, remaining_conditions));
+        program.define(after_check);
+        build_statement(s.loop());
+        program.define(loop_end);
+      }
+      case Semantic.Break s ->
+        program.instruct(new Instruction.JumpAlways(loop_end));
+      case Semantic.Continue s ->
+        program.instruct(new Instruction.JumpAlways(loop_begin));
       case Semantic.Var l -> {
         Register variable = Register.local(l.identifier());
         if (l.initial_value().isPresent()) {
           Register initial_value = build_expression(l.initial_value().get());
-          Instruction instruction =
-            new Instruction.Set(variable, initial_value);
-          program.instruct(instruction);
+          program.instruct(new Instruction.Set(variable, initial_value));
         }
       }
       case Semantic.Increment m -> build_mutate(m, Instruction.Addition::new);
@@ -125,8 +168,7 @@ public final class Builder {
       case Semantic.DirectlyAssign a -> {
         Register target = build_expression(a.target());
         Register source = build_expression(a.source());
-        Instruction instruction = new Instruction.Set(target, source);
-        program.instruct(instruction);
+        program.instruct(new Instruction.Set(target, source));
       }
       case Semantic.MultiplyAssign a ->
         build_assign(a, Instruction.Multiplication::new);
@@ -150,11 +192,6 @@ public final class Builder {
       case Semantic.OrBitwiseAssign a ->
         build_assign(a, Instruction.BitwiseOr::new);
       case Semantic.Discard d -> stack.pop(build_expression(d.source()));
-      default ->
-        throw Subject
-          .of("compiler")
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
     }
   }
 
@@ -164,9 +201,8 @@ public final class Builder {
     BinaryOperationInitializer initializer)
   {
     Register target = build_expression(statement.target());
-    Instruction instruction =
-      initializer.initialize(target, target, Register.literal(1));
-    program.instruct(instruction);
+    program
+      .instruct(initializer.initialize(target, target, Register.literal(1)));
   }
 
   /** Builds a assign statement. */
@@ -176,8 +212,7 @@ public final class Builder {
   {
     Register target = build_expression(statement.target());
     Register source = build_expression(statement.source());
-    Instruction instruction = initializer.initialize(target, target, source);
-    program.instruct(instruction);
+    program.instruct(initializer.initialize(target, target, source));
   }
 
   /** Builds an expression. */
@@ -226,8 +261,7 @@ public final class Builder {
       case Semantic.BitwiseNot u -> {
         Register operand = build_expression(u.operand());
         Register target = stack.push(operand);
-        Instruction instruction = new Instruction.BitwiseNot(target, operand);
-        program.instruct(instruction);
+        program.instruct(new Instruction.BitwiseNot(target, operand));
         yield target;
       }
       case Semantic.LogicalNot u ->
@@ -247,9 +281,8 @@ public final class Builder {
     Register left_operand = build_expression(operation.left_operand());
     Register right_operand = build_expression(operation.right_operand());
     Register target = stack.push(left_operand, right_operand);
-    Instruction instruction =
-      initializer.initialize(target, left_operand, right_operand);
-    program.instruct(instruction);
+    program
+      .instruct(initializer.initialize(target, left_operand, right_operand));
     return target;
   }
 
@@ -260,9 +293,8 @@ public final class Builder {
   {
     Register operand = build_expression(operation.operand());
     Register target = stack.push(operand);
-    Instruction instruction =
-      initializer.initialize(target, Register.literal(0), operand);
-    program.instruct(instruction);
+    program
+      .instruct(initializer.initialize(target, Register.literal(0), operand));
     return target;
   }
 }

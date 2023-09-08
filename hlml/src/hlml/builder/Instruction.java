@@ -4,7 +4,19 @@ package hlml.builder;
 sealed interface Instruction {
   /** Instruction that makes the currently run instruction to change out of
    * sequence. */
-  record Jump(Waypoint waypoint) implements Instruction {}
+  sealed interface Jump extends Instruction {
+    /** Waypoint to the instruction the jump will happen to. */
+    Waypoint goal();
+  }
+
+  /** Jumps that are always taken. */
+  record JumpAlways(Waypoint goal) implements Jump {}
+
+  /** Jumps that happen when the condition is true. */
+  record JumpOnTrue(Waypoint goal, Register condition) implements Jump {}
+
+  /** Jumps that happen when the condition is false. */
+  record JumpOnFalse(Waypoint goal, Register condition) implements Jump {}
 
   /** Instruction that marks the end of the program. Practically equivalent to
    * jumping back to the first instruction as the processor loops the program
