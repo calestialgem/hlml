@@ -1,0 +1,7 @@
+set $counter 9223372036854776000
+op lessThan _0 $counter 100
+jump 6 equal true _0
+op add $counter $counter 1
+op lessThan _1 $counter 100
+jump 6 equal false _1
+end
