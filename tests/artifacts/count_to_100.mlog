@@ -3,6 +3,6 @@ op lessThan _0 $counter 100
 jump 4 equal true _0
 jump 7 always
 op add $counter $counter 1
-op lessThan _1 $counter 100
-jump 4 equal true _1
+op lessThan _0 $counter 100
+jump 4 equal true _0
 end

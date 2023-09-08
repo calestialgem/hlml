@@ -122,6 +122,7 @@ public final class Builder {
         Waypoint after_true_branch = program.waypoint();
         program
           .instruct(new Instruction.JumpOnFalse(after_true_branch, condition));
+        stack.pop(condition);
         build_statement(s.true_branch());
         Waypoint after_false_branch = program.waypoint();
         program.instruct(new Instruction.JumpAlways(after_false_branch));
@@ -135,6 +136,7 @@ public final class Builder {
         Register first_condition = build_expression(s.condition());
         Waypoint loop = program.waypoint();
         program.instruct(new Instruction.JumpOnTrue(loop, first_condition));
+        stack.pop(first_condition);
         if (s.zero_branch().isPresent()) {
           build_statement(s.zero_branch().get());
         }
@@ -150,6 +152,7 @@ public final class Builder {
         Register remaining_conditions = build_expression(s.condition());
         program
           .instruct(new Instruction.JumpOnTrue(loop, remaining_conditions));
+        stack.pop(remaining_conditions);
         program.define(loop_end);
       }
       case Semantic.Break s ->
