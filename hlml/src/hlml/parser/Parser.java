@@ -150,8 +150,7 @@ public final class Parser {
 
   /** Parses a while statement. */
   private Optional<Node.While> parse_while() {
-    if (parse_token(Token.While.class).isEmpty())
-      return Optional.empty();
+    if (parse_token(Token.While.class).isEmpty()) { return Optional.empty(); }
     Node.Expression condition =
       expect(this::parse_expression, "condition of the while statement");
     Optional<Node.Statement> interleaved = Optional.empty();
@@ -182,8 +181,7 @@ public final class Parser {
   /** Parses a break statement. */
   private Optional<Node.Break> parse_break() {
     int first = current;
-    if (parse_token(Token.Break.class).isEmpty())
-      return Optional.empty();
+    if (parse_token(Token.Break.class).isEmpty()) { return Optional.empty(); }
     expect_token(
       Token.Semicolon.class,
       "terminator `;` of the break statement");
@@ -194,8 +192,9 @@ public final class Parser {
   /** Parses a continue statement. */
   private Optional<Node.Continue> parse_continue() {
     int first = current;
-    if (parse_token(Token.Continue.class).isEmpty())
+    if (parse_token(Token.Continue.class).isEmpty()) {
       return Optional.empty();
+    }
     expect_token(
       Token.Semicolon.class,
       "terminator `;` of the continue statement");
@@ -206,7 +205,7 @@ public final class Parser {
   /** Parses an affect statement. */
   private Optional<Node.Affect> parse_affect() {
     Optional<Node.Affect> affect = parse_unterminated_affect();
-    if (affect.isPresent())
+    if (affect.isPresent()) {
       expect_token(
         Token.Semicolon.class,
         "terminator `;` of the %s statement".formatted(switch (affect.get())
@@ -227,6 +226,7 @@ public final class Parser {
           case Node.OrBitwiseAssign a -> "or bitwise assign";
           case Node.Discard d -> "discard";
         }));
+    }
     return affect;
   }
 

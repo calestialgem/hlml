@@ -1,8 +1,8 @@
 package hlml.builder;
 
+import java.text.DecimalFormat;
 import java.util.Formattable;
 import java.util.Formatter;
-import java.text.DecimalFormat;
 
 /** Memory location on a processor. */
 sealed interface Register extends Formattable {
