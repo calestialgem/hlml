@@ -1,4 +1,24 @@
 set label_test$entrypoint$i 0
 op lessThan _0 label_test$entrypoint$i 10
 jump 4 equal true _0
-jump 
+jump 23 always
+set label_test$entrypoint$j 0
+op lessThan _0 label_test$entrypoint$j 10
+jump 8 equal true _0
+jump 20 always
+set label_test$entrypoint$k 0
+op lessThan _0 label_test$entrypoint$k 10
+jump 12 equal true _0
+jump 16 always
+jump 20 always
+op add label_test$entrypoint$k label_test$entrypoint$k 1
+op lessThan _0 label_test$entrypoint$k 10
+jump 12 equal true _0
+jump 20 always
+op add label_test$entrypoint$j label_test$entrypoint$j 1
+op lessThan _0 label_test$entrypoint$j 10
+jump 8 equal true _0
+op add label_test$entrypoint$i label_test$entrypoint$i 1
+op lessThan _0 label_test$entrypoint$i 10
+jump 4 equal true _0
+end

@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -52,14 +54,6 @@ public final class Builder {
   /** Temporary register list. */
   private Stack stack;
 
-  /** Waypoint to the currently built loop's condition check's first
-   * instruction. Used for building continue statements. */
-  private Waypoint loop_begin;
-
-  /** Waypoint to the instruction that is executed after the currently built
-   * loop. Used for building break statements. */
-  private Waypoint loop_end;
-
   /** Global variables in the program with initial values. */
   private Set<Name> initialized;
 
@@ -104,7 +98,7 @@ public final class Builder {
       program.instruct(new Instruction.Set(global, value));
     }
     current = new Name(target.name(), "entrypoint");
-    build_statement(entrypoint.get().body());
+    build_statement(new ArrayList<>(), entrypoint.get().body());
     program.instruct(new Instruction.End());
     for (Name procedure : addresses.keySet()) {
       current = procedure;
@@ -115,7 +109,7 @@ public final class Builder {
           .globals()
           .get(procedure.identifier());
       program.define(addresses.get(procedure));
-      build_statement(proc.body());
+      build_statement(new ArrayList<>(), proc.body());
       Register value = Register.null_();
       Register return_value = Register.local(current, "return$value");
       program.instruct(new Instruction.Set(return_value, value));
@@ -159,26 +153,32 @@ public final class Builder {
   }
 
   /** Builds a statement if it is there. */
-  private void build_statement(Optional<Semantic.Statement> statement) {
-    statement.ifPresent(this::build_statement);
+  private void build_statement(
+    List<LoopWaypoints> loop_waypoints,
+    Optional<Semantic.Statement> statement)
+  {
+    statement.ifPresent(s -> build_statement(loop_waypoints, s));
   }
 
   /** Builds a statement. */
-  private void build_statement(Semantic.Statement statement) {
+  private void build_statement(
+    List<LoopWaypoints> loop_waypoints,
+    Semantic.Statement statement)
+  {
     switch (statement) {
-      case Semantic.Block block ->
-        block.inner_statements().forEach(this::build_statement);
+      case Semantic.Block s ->
+        s.inner_statements().forEach(i -> build_statement(loop_waypoints, i));
       case Semantic.If s -> {
         Register condition = build_expression(s.condition());
         Waypoint after_true_branch = program.waypoint();
         program
           .instruct(new Instruction.JumpOnFalse(after_true_branch, condition));
         stack.pop(condition);
-        build_statement(s.true_branch());
+        build_statement(loop_waypoints, s.true_branch());
         Waypoint after_false_branch = program.waypoint();
         program.instruct(new Instruction.JumpAlways(after_false_branch));
         program.define(after_true_branch);
-        build_statement(s.false_branch());
+        build_statement(loop_waypoints, s.false_branch());
         program.define(after_false_branch);
       }
       case Semantic.While s -> {
@@ -186,24 +186,30 @@ public final class Builder {
         Waypoint loop = program.waypoint();
         program.instruct(new Instruction.JumpOnTrue(loop, first_condition));
         stack.pop(first_condition);
-        build_statement(s.zero_branch());
-        loop_end = program.waypoint();
-        program.instruct(new Instruction.JumpAlways(loop_end));
+        build_statement(loop_waypoints, s.zero_branch());
+        Waypoint end = program.waypoint();
+        program.instruct(new Instruction.JumpAlways(end));
         program.define(loop);
-        loop_begin = program.waypoint();
-        build_statement(s.loop());
-        program.define(loop_begin);
-        build_statement(s.interleaved());
+        Waypoint begin = program.waypoint();
+        loop_waypoints.add(new LoopWaypoints(begin, end));
+        build_statement(loop_waypoints, s.loop());
+        loop_waypoints.remove(loop_waypoints.size() - 1);
+        program.define(begin);
+        build_statement(loop_waypoints, s.interleaved());
         Register remaining_conditions = build_expression(s.condition());
         program
           .instruct(new Instruction.JumpOnTrue(loop, remaining_conditions));
         stack.pop(remaining_conditions);
-        program.define(loop_end);
+        program.define(end);
       }
       case Semantic.Break s ->
-        program.instruct(new Instruction.JumpAlways(loop_end));
+        program
+          .instruct(
+            new Instruction.JumpAlways(loop_waypoints.get(s.loop()).end()));
       case Semantic.Continue s ->
-        program.instruct(new Instruction.JumpAlways(loop_begin));
+        program
+          .instruct(
+            new Instruction.JumpAlways(loop_waypoints.get(s.loop()).begin()));
       case Semantic.Return s -> {
         if (s.value().isPresent()) {
           Register value = build_expression(s.value().get());
