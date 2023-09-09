@@ -263,7 +263,7 @@ final class SourceChecker {
   /** Introduces a local variable with the given name to the scope. */
   private Semantic.Var check_local(Scope scope, Node.Var node) {
     Optional<Semantic.Var> old_local = scope.find(node.identifier().text());
-    if (old_local.isPresent())
+    if (old_local.isPresent()) {
       throw source
         .subject(node)
         .to_diagnostic(
@@ -273,6 +273,7 @@ final class SourceChecker {
           representative,
           node.identifier().text())
         .to_exception();
+    }
     Semantic.Var local = check_var(Optional.of(scope), node);
     scope.introduce(local);
     return local;
@@ -414,7 +415,7 @@ final class SourceChecker {
       case Node.Grouping g -> check_expression(scope, g.grouped());
       case Node.Call e -> {
         Optional<Semantic.Definition> called = find_global(e.called());
-        if (called.isEmpty())
+        if (called.isEmpty()) {
           throw source
             .subject(node)
             .to_diagnostic(
@@ -423,11 +424,12 @@ final class SourceChecker {
               source.name(),
               e.called())
             .to_exception();
+        }
         yield check_call(called.get(), e.arguments(), scope, node);
       }
       case Node.MemberCall e -> {
         Optional<Semantic.Definition> called = find_global(e.called());
-        if (called.isEmpty())
+        if (called.isEmpty()) {
           throw source
             .subject(node)
             .to_diagnostic(
@@ -436,6 +438,7 @@ final class SourceChecker {
               source.name(),
               e.called())
             .to_exception();
+        }
         List<Node.Expression> arguments =
           Stream
             .concat(
@@ -535,7 +538,7 @@ final class SourceChecker {
     Scope scope,
     Node.Expression node)
   {
-    if (!(called instanceof Semantic.Proc procedure))
+    if (!(called instanceof Semantic.Proc procedure)) {
       throw source
         .subject(node)
         .to_diagnostic(
@@ -544,7 +547,8 @@ final class SourceChecker {
           source.name(),
           called.identifier())
         .to_exception();
-    if (procedure.parameters().size() > arguments.size())
+    }
+    if (procedure.parameters().size() > arguments.size()) {
       throw source
         .subject(node)
         .to_diagnostic(
@@ -555,6 +559,7 @@ final class SourceChecker {
           source.name(),
           procedure.identifier())
         .to_exception();
+    }
     return new Semantic.Call(
       new Name(source.name(), procedure.identifier()),
       arguments.stream().map(a -> check_expression(scope, a)).toList());

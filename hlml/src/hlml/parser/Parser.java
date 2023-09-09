@@ -63,8 +63,7 @@ public final class Parser {
 
   /** Parses a proc. */
   private Optional<Node.Proc> parse_proc() {
-    if (parse_token(Token.Proc.class).isEmpty())
-      return Optional.empty();
+    if (parse_token(Token.Proc.class).isEmpty()) { return Optional.empty(); }
     Token.LowercaseIdentifier identifier =
       expect_token(
         Token.LowercaseIdentifier.class,
@@ -573,12 +572,10 @@ public final class Parser {
         this::parse_grouping,
         this::parse_symbol_based,
         this::parse_number_constant);
-    if (precedence_0.isEmpty())
-      return precedence_0;
+    if (precedence_0.isEmpty()) { return precedence_0; }
     Node.Precedence0 result = precedence_0.get();
     while (true) {
-      if (parse_token(Token.Dot.class).isEmpty())
-        break;
+      if (parse_token(Token.Dot.class).isEmpty()) { break; }
       Token.LowercaseIdentifier called =
         expect_token(
           Token.LowercaseIdentifier.class,
@@ -652,8 +649,7 @@ public final class Parser {
       Optional<ConstructType> construct = parser_function.get();
       if (construct.isEmpty()) { break; }
       constructs.add(construct.get());
-      if (parse_token(Token.Comma.class).isEmpty())
-        break;
+      if (parse_token(Token.Comma.class).isEmpty()) { break; }
     }
     return constructs;
   }

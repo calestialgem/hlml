@@ -162,8 +162,7 @@ public sealed interface Node {
 
     @Override
     public int last(List<Token> tokens) {
-      if (value.isPresent())
-        return value.get().last(tokens) + 1;
+      if (value.isPresent()) { return value.get().last(tokens) + 1; }
       return first + 1;
     }
   }
@@ -507,8 +506,9 @@ public sealed interface Node {
 
     @Override
     public int last(List<Token> tokens) {
-      if (!arguments.isEmpty())
+      if (!arguments.isEmpty()) {
         return arguments.get(arguments.size() - 1).last(tokens) + 1;
+      }
       return first + 2;
     }
   }
@@ -527,11 +527,12 @@ public sealed interface Node {
 
     @Override
     public int last(List<Token> tokens) {
-      if (!remaining_arguments.isEmpty())
+      if (!remaining_arguments.isEmpty()) {
         return remaining_arguments
           .get(remaining_arguments.size() - 1)
           .last(tokens)
           + 1;
+      }
       return first_argument.last(tokens) + 4;
     }
   }
