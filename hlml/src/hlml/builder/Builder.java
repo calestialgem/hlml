@@ -146,6 +146,8 @@ public final class Builder {
     }
     switch (definition) {
       case Semantic.Proc d -> addresses.put(name, program.waypoint());
+      case Semantic.Read d -> {}
+      case Semantic.Write d -> {}
       case Semantic.Const d -> {}
       case Semantic.GlobalVar d ->
         d.initial_value().ifPresent(i -> initialized.add(name));
@@ -344,44 +346,84 @@ public final class Builder {
       case Semantic.LocalVariableAccess l ->
         Register.local(current, l.identifier());
       case Semantic.Call e -> {
-        Semantic.Proc proc =
-          (Semantic.Proc) target
+        Semantic.Procedure procedure =
+          (Semantic.Procedure) target
             .sources()
             .get(e.procedure().source())
             .globals()
             .get(e.procedure().identifier());
-        Waypoint after_call = program.waypoint();
-        Register return_address = Register.instruction(after_call);
-        Register return_location =
-          Register.local(e.procedure(), "return$location");
-        program.instruct(new Instruction.Set(return_location, return_address));
-        List<Register> arguments = new ArrayList<>();
-        for (int i = 0; i < e.arguments().size(); i++) {
-          Register argument = build_expression(e.arguments().get(i));
-          arguments.add(argument);
-          Register parameter = Register.parameter(proc, i);
-          stack.pop(argument);
-          program.instruct(new Instruction.Set(parameter, argument));
-        }
-        for (int i = e.arguments().size(); i < proc.parameters().size(); i++) {
-          Register argument = Register.null_();
-          Register parameter = Register.parameter(proc, i);
-          program.instruct(new Instruction.Set(parameter, argument));
-        }
-        Waypoint address = addresses.get(e.procedure());
-        program.instruct(new Instruction.JumpAlways(address));
-        program.define(after_call);
-        for (int i = 0; i < e.arguments().size(); i++) {
-          if (!proc.parameters().get(i).in_out()) { continue; }
-          Register argument = arguments.get(i);
-          if (!argument.is_volatile()) { continue; }
-          Register parameter = Register.parameter(proc, i);
-          program.instruct(new Instruction.Set(argument, parameter));
-        }
-        Register return_value = Register.local(e.procedure(), "return$value");
-        yield return_value;
+        yield switch (procedure) {
+          case Semantic.Proc proc -> {
+            Waypoint after_call = program.waypoint();
+            Register return_address = Register.instruction(after_call);
+            Register return_location =
+              Register.local(e.procedure(), "return$location");
+            program
+              .instruct(new Instruction.Set(return_location, return_address));
+            List<Register> arguments = new ArrayList<>();
+            for (int i = 0; i < e.arguments().size(); i++) {
+              Register argument = build_expression(e.arguments().get(i));
+              arguments.add(argument);
+              Register parameter = Register.parameter(proc, i);
+              stack.pop(argument);
+              program.instruct(new Instruction.Set(parameter, argument));
+            }
+            for (
+              int i = e.arguments().size();
+              i < proc.parameters().size();
+              i++)
+            {
+              Register argument = Register.null_();
+              Register parameter = Register.parameter(proc, i);
+              program.instruct(new Instruction.Set(parameter, argument));
+            }
+            Waypoint address = addresses.get(e.procedure());
+            program.instruct(new Instruction.JumpAlways(address));
+            program.define(after_call);
+            for (int i = 0; i < e.arguments().size(); i++) {
+              if (!proc.parameters().get(i).in_out()) { continue; }
+              Register argument = arguments.get(i);
+              if (!argument.is_volatile()) { continue; }
+              Register parameter = Register.parameter(proc, i);
+              program.instruct(new Instruction.Set(argument, parameter));
+            }
+            Register return_value =
+              Register.local(e.procedure(), "return$value");
+            yield return_value;
+          }
+          case Semantic.Read p -> {
+            program
+              .instruct(
+                new Instruction.Read(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2)));
+            yield Register.null_();
+          }
+          case Semantic.Write p -> {
+            program
+              .instruct(
+                new Instruction.Write(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2)));
+            yield Register.null_();
+          }
+        };
       }
     };
+  }
+
+  /** Builds and pops the argument in the list if it exists. Otherwise returns a
+   * register holding null. */
+  private Register build_argument(
+    List<Semantic.Expression> arguments,
+    int index)
+  {
+    if (index >= arguments.size()) { return Register.null_(); }
+    Register argument = build_expression(arguments.get(index));
+    stack.pop(argument);
+    return argument;
   }
 
   /** Builds a binary operation. */

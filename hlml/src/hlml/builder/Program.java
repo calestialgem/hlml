@@ -69,6 +69,22 @@ final class Program {
     throws IOException
   {
     switch (instruction) {
+      case Instruction.Read i -> {
+        appendable.append("read ");
+        append_register(appendable, i.value());
+        appendable.append(' ');
+        append_register(appendable, i.cell());
+        appendable.append(' ');
+        append_register(appendable, i.location());
+      }
+      case Instruction.Write i -> {
+        appendable.append("write ");
+        append_register(appendable, i.value());
+        appendable.append(' ');
+        append_register(appendable, i.cell());
+        appendable.append(' ');
+        append_register(appendable, i.location());
+      }
       case Instruction.JumpAlways i -> {
         appendable.append("jump ");
         appendable.append(Integer.toString(resolve(i.goal())));

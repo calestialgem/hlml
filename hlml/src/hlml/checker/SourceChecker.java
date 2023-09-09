@@ -621,7 +621,7 @@ final class SourceChecker {
     Scope scope,
     Node.Expression node)
   {
-    if (!(called instanceof Semantic.Proc procedure)) {
+    if (!(called instanceof Semantic.Procedure procedure)) {
       throw source
         .subject(node)
         .to_diagnostic(

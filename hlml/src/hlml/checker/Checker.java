@@ -7,7 +7,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import hlml.Source;
 import hlml.reporter.Subject;
@@ -71,6 +74,17 @@ public final class Checker {
         .to_exception(cause);
     }
     sources = new HashMap<>();
+    sources
+      .put(
+        Semantic.built_in_scope,
+        new Semantic.Source(
+          Optional.empty(),
+          Set
+            .of(new Semantic.Read(), new Semantic.Write())
+            .stream()
+            .collect(
+              Collectors
+                .toMap(d -> d.name().identifier(), Function.identity()))));
     currently_checked = new HashSet<>();
     check_source(subject, name);
     Semantic.Target target = new Semantic.Target(name, sources);

@@ -2,6 +2,16 @@ package hlml.builder;
 
 /** Command that can be executed by a processor. */
 sealed interface Instruction {
+  /** Instruction that reads from a location in a memory cell. */
+  record Read(Register value, Register cell, Register location)
+    implements Instruction
+  {}
+
+  /** Instruction that writes to a location in a memory cell. */
+  record Write(Register value, Register cell, Register location)
+    implements Instruction
+  {}
+
   /** Instruction that makes the currently run instruction to change out of
    * sequence. */
   sealed interface Jump extends Instruction {

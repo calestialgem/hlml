@@ -1,1 +1,1 @@
-Target[name=entrypoint_test, sources={entrypoint_test=Source[entrypoint=Optional[Entrypoint[body=Block[inner_statements=[]]]], globals={}]}]
+Target[name=entrypoint_test, sources={mlog=Source[entrypoint=Optional.empty, globals={read=Read[], write=Write[]}], entrypoint_test=Source[entrypoint=Optional[Entrypoint[body=Block[inner_statements=[]]]], globals={}]}]

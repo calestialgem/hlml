@@ -7,6 +7,9 @@ import java.util.Set;
 
 /** Meaningful constructs in the program. */
 public sealed interface Semantic {
+  /** Scope that the built-in symbols are defined into. */
+  String built_in_scope = "mlog";
+
   /** Collective understanding of a piece of code. */
   record Target(String name, Map<String, Source> sources) implements Semantic {}
 
@@ -35,12 +38,54 @@ public sealed interface Semantic {
     Name name();
   }
 
-  /** Definition of a procedure. */
+  /** Definition of a procedure that could be built-in or user-defined. */
+  sealed interface Procedure extends Definition {
+    /** Parameters this procedure takes. */
+    List<Parameter> parameters();
+  }
+
+  /** Procedures that are user-defined. */
   record Proc(Name name, List<Parameter> parameters, Statement body)
-    implements Definition
+    implements Procedure
   {
     @Override
     public Set<Name> dependencies() { return body.dependencies(); }
+  }
+
+  /** Procedure that compiles to the `read` instruction. */
+  record Read() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "read"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("value", true),
+          new Parameter("cell", false),
+          new Parameter("location", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `write` instruction. */
+  record Write() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "write"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("value", false),
+          new Parameter("cell", false),
+          new Parameter("location", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
   }
 
   /** Definition of a procedure's parameter. */
