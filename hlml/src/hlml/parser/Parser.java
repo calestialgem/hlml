@@ -59,10 +59,34 @@ public final class Parser {
   /** Parses a definition. */
   private Optional<Node.Definition> parse_definition() {
     return first_of(
+      this::parse_link,
       this::parse_using,
       this::parse_proc,
       this::parse_const,
       this::parse_var);
+  }
+
+  /** Parses a link. */
+  private Optional<Node.Link> parse_link() {
+    if (parse_token(Token.Link.class).isEmpty()) { return Optional.empty(); }
+    Token.Identifier building =
+      expect_token(
+        Token.Identifier.class,
+        "building name of the link definition");
+    Optional<Token.Identifier> alias = Optional.empty();
+    if (parse_token(Token.As.class).isPresent()) {
+      alias =
+        Optional
+          .of(
+            expect_token(
+              Token.Identifier.class,
+              "alias identifier of the link definition"));
+    }
+    expect_token(
+      Token.Semicolon.class,
+      "terminator `;` of the alias definition");
+    Node.Link link = new Node.Link(building, alias);
+    return Optional.of(link);
   }
 
   /** Parses a using. */

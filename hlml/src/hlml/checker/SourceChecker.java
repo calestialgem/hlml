@@ -116,6 +116,11 @@ final class SourceChecker {
     String old_representative = representative;
     representative = source.representative_text(node);
     Semantic.Definition definition = switch (node) {
+      case Node.Link d ->
+        throw source
+          .subject(node)
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
       case Node.Using d -> {
         Semantic.Definition alias = check_mention(d.used());
         aliases.put(identifier, alias);

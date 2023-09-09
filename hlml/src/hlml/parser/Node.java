@@ -36,6 +36,24 @@ public sealed interface Node {
     default Token representative(List<Token> tokens) { return identifier(); }
   }
 
+  /** Defining a symbol as building linked to the processor. */
+  record Link(Token.Identifier building, Optional<Token.Identifier> alias)
+    implements Definition
+  {
+    @Override
+    public int first(List<Token> tokens) {
+      return tokens.indexOf(building) - 1;
+    }
+
+    @Override
+    public int last(List<Token> tokens) {
+      return tokens.indexOf(identifier()) + 1;
+    }
+
+    @Override
+    public Token.Identifier identifier() { return alias.orElse(building); }
+  }
+
   /** Defining a symbol as an alias to another one. */
   record Using(Mention used, Optional<Token.Identifier> alias)
     implements Definition
