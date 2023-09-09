@@ -151,6 +151,7 @@ final class Program {
         appendable.append('_');
         appendable.append(Integer.toString(r.index()));
       }
+      case Register.Link r -> appendable.append(r.building());
       case Register.Constant r -> {
         DecimalFormat decimal_formatter = new DecimalFormat("0.#");
         decimal_formatter.setMaximumFractionDigits(Integer.MAX_VALUE);

@@ -116,11 +116,14 @@ final class SourceChecker {
     String old_representative = representative;
     representative = source.representative_text(node);
     Semantic.Definition definition = switch (node) {
-      case Node.Link d ->
-        throw source
-          .subject(node)
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
+      case Node.Link d -> {
+        Semantic.Link global =
+          new Semantic.Link(
+            new Name(source.name(), identifier),
+            d.building().text());
+        globals.put(identifier, global);
+        yield global;
+      }
       case Node.Using d -> {
         Semantic.Definition alias = check_mention(d.used());
         aliases.put(identifier, alias);
@@ -598,20 +601,20 @@ final class SourceChecker {
       return new Semantic.LocalVariableAccess(local.get().identifier());
     }
     Semantic.Definition global = check_mention(node.accessed());
-    if (global instanceof Semantic.Const accessed) {
-      return new Semantic.ConstantAccess(accessed.value());
-    }
-    if (!(global instanceof Semantic.GlobalVar accessed)) {
-      throw source
-        .subject(node)
-        .to_diagnostic(
-          "error",
-          "Accessed symbol `%s::%s` is not a variable!",
-          global.name().source(),
-          global.name().identifier())
-        .to_exception();
-    }
-    return new Semantic.GlobalVariableAccess(global.name());
+    return switch (global) {
+      case Semantic.Link g -> new Semantic.LinkAccess(g.building());
+      case Semantic.Const g -> new Semantic.ConstantAccess(g.value());
+      case Semantic.GlobalVar g -> new Semantic.GlobalVariableAccess(g.name());
+      default ->
+        throw source
+          .subject(node)
+          .to_diagnostic(
+            "error",
+            "Accessed symbol `%s::%s` is not a variable!",
+            global.name().source(),
+            global.name().identifier())
+          .to_exception();
+    };
   }
 
   /** Checks a procedure call. */

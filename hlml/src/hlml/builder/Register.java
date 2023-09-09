@@ -24,6 +24,12 @@ sealed interface Register {
     public boolean is_volatile() { return false; }
   }
 
+  /** Literal that links to a building. */
+  record Link(String building) implements Register {
+    @Override
+    public boolean is_volatile() { return false; }
+  }
+
   /** Literal that holds a constant. */
   record Constant(double value) implements Register {
     @Override
@@ -66,6 +72,11 @@ sealed interface Register {
    * identifier. */
   static Register local(Name symbol, String identifier) {
     return new Local(symbol, identifier);
+  }
+
+  /** Returns a literal linking to the given building. */
+  static Register link(String building) {
+    return new Link(building);
   }
 
   /** Returns a literal holding the given constant. */

@@ -1,0 +1,4 @@
+read read_write_test$entrypoint$value cell1 0
+op add read_write_test$entrypoint$value read_write_test$entrypoint$value 10
+write read_write_test$entrypoint$value cell1 0
+end

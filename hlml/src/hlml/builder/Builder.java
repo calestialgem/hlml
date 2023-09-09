@@ -145,6 +145,7 @@ public final class Builder {
       build_dependency(dependency);
     }
     switch (definition) {
+      case Semantic.Link d -> {}
       case Semantic.Proc d -> addresses.put(name, program.waypoint());
       case Semantic.Read d -> {}
       case Semantic.Write d -> {}
@@ -341,6 +342,7 @@ public final class Builder {
       case Semantic.LogicalNot u ->
         build_unary_operation(u, Instruction.NotEqualTo::new);
       case Semantic.NumberConstant c -> Register.constant(c.value());
+      case Semantic.LinkAccess e -> Register.link(e.building());
       case Semantic.ConstantAccess c -> Register.constant(c.value());
       case Semantic.GlobalVariableAccess g -> Register.global(g.name());
       case Semantic.LocalVariableAccess l ->

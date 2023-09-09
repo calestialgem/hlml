@@ -38,6 +38,12 @@ public sealed interface Semantic {
     Name name();
   }
 
+  /** Defining a symbol as building linked to the processor. */
+  record Link(Name name, String building) implements Definition {
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
   /** Definition of a procedure that could be built-in or user-defined. */
   sealed interface Procedure extends Definition {
     /** Parameters this procedure takes. */
@@ -465,6 +471,12 @@ public sealed interface Semantic {
 
   /** Expression that evaluates to the value held by a symbol. */
   sealed interface SymbolAccess extends Expression {}
+
+  /** Expression that evaluates to a link. */
+  record LinkAccess(String building) implements SymbolAccess {
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
 
   /** Expression that evaluates to the value held by a constant. */
   record ConstantAccess(double value) implements SymbolAccess, Constant {}
