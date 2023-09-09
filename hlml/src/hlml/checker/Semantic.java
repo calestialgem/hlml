@@ -76,6 +76,7 @@ public sealed interface Semantic {
 
   /** Statements that branch the control flow. */
   record If(
+    List<LocalVar> variables,
     Expression condition,
     Statement true_branch,
     Optional<Statement> false_branch) implements Statement
@@ -84,6 +85,7 @@ public sealed interface Semantic {
     public Set<Name> dependencies() {
       return Sets
         .union(
+          Sets.union(variables.stream().map(LocalVar::dependencies)),
           condition.dependencies(),
           true_branch.dependencies(),
           false_branch.map(Statement::dependencies).orElseGet(Set::of));
@@ -92,6 +94,7 @@ public sealed interface Semantic {
 
   /** Statements that loop the control flow. */
   record While(
+    List<LocalVar> variables,
     Expression condition,
     Optional<Statement> interleaved,
     Statement loop,
@@ -101,6 +104,7 @@ public sealed interface Semantic {
     public Set<Name> dependencies() {
       return Sets
         .union(
+          Sets.union(variables.stream().map(LocalVar::dependencies)),
           condition.dependencies(),
           interleaved.map(Statement::dependencies).orElseGet(Set::of),
           loop.dependencies(),

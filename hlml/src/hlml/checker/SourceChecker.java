@@ -194,26 +194,32 @@ final class SourceChecker {
         yield new Semantic.Block(inner_statements);
       }
       case Node.If s -> {
-        Semantic.Expression condition = check_expression(scope, s.condition());
+        Scope inner = scope.create_child();
+        List<Semantic.LocalVar> variables =
+          check_variables(inner, s.variables());
+        Semantic.Expression condition = check_expression(inner, s.condition());
         Semantic.Statement true_branch =
-          check_statement(scope.create_child(), loops, s.true_branch());
+          check_statement(inner.create_child(), loops, s.true_branch());
         Optional<Semantic.Statement> false_branch = Optional.empty();
         if (s.false_branch().isPresent()) {
           Semantic.Statement checked_branch =
             check_statement(
-              scope.create_child(),
+              inner.create_child(),
               loops,
               s.false_branch().get());
           false_branch = Optional.of(checked_branch);
         }
-        yield new Semantic.If(condition, true_branch, false_branch);
+        yield new Semantic.If(variables, condition, true_branch, false_branch);
       }
       case Node.While s -> {
-        Semantic.Expression condition = check_expression(scope, s.condition());
+        Scope inner = scope.create_child();
+        List<Semantic.LocalVar> variables =
+          check_variables(inner, s.variables());
+        Semantic.Expression condition = check_expression(inner, s.condition());
         Optional<Semantic.Statement> interleaved = Optional.empty();
         if (s.interleaved().isPresent()) {
           Semantic.Statement checked_branch =
-            check_statement(scope.create_child(), loops, s.interleaved().get());
+            check_statement(inner.create_child(), loops, s.interleaved().get());
           interleaved = Optional.of(checked_branch);
         }
         Optional<String> label = s.label().map(Token.Identifier::text);
@@ -230,15 +236,20 @@ final class SourceChecker {
         }
         loops.add(label);
         Semantic.Statement loop =
-          check_statement(scope.create_child(), loops, s.loop());
+          check_statement(inner.create_child(), loops, s.loop());
         loops.remove(loops.size() - 1);
         Optional<Semantic.Statement> zero_branch = Optional.empty();
         if (s.zero_branch().isPresent()) {
           Semantic.Statement checked_branch =
-            check_statement(scope.create_child(), loops, s.zero_branch().get());
+            check_statement(inner.create_child(), loops, s.zero_branch().get());
           zero_branch = Optional.of(checked_branch);
         }
-        yield new Semantic.While(condition, interleaved, loop, zero_branch);
+        yield new Semantic.While(
+          variables,
+          condition,
+          interleaved,
+          loop,
+          zero_branch);
       }
       case Node.Break s -> {
         int index = loops.lastIndexOf(s.label().map(Token.Identifier::text));
@@ -340,6 +351,16 @@ final class SourceChecker {
       case Node.Discard d ->
         new Semantic.Discard(check_expression(scope, d.source()));
     };
+  }
+
+  /** Checks inner variables of a statement. */
+  private List<Semantic.LocalVar> check_variables(
+    Scope scope,
+    List<Node.Var> nodes)
+  {
+    List<Semantic.LocalVar> variables = new ArrayList<>();
+    for (Node.Var node : nodes) { variables.add(check_local(scope, node)); }
+    return variables;
   }
 
   /** Introduces a local variable with the given name to the scope. */
