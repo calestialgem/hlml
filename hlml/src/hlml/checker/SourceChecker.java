@@ -81,8 +81,7 @@ final class SourceChecker {
   /** Checks an identifier. */
   private Semantic.Definition check_identifier(Token.Identifier identifier) {
     Optional<Semantic.Definition> global = find_global(identifier.text());
-    if (global.isPresent())
-      return global.get();
+    if (global.isPresent()) { return global.get(); }
     throw source
       .subject(identifier)
       .to_diagnostic(
@@ -157,12 +156,14 @@ final class SourceChecker {
           var.initial_value().map(i -> check_expression(Scope.create(), i));
         if (initial_value.isPresent()
           && !(initial_value.get() instanceof Semantic.Constant))
+        {
           throw source
             .subject(var.initial_value().get())
             .to_diagnostic(
               "error",
               "Global variables cannot have a non-constant expressions as initial values!")
             .to_exception();
+        }
         Semantic.GlobalVar global =
           new Semantic.GlobalVar(
             new Name(source.name(), var.identifier().text()),

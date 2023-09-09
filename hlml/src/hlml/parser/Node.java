@@ -568,8 +568,7 @@ public sealed interface Node {
   {
     @Override
     public int first(List<Token> tokens) {
-      if (source.isPresent())
-        return tokens.indexOf(source.get());
+      if (source.isPresent()) { return tokens.indexOf(source.get()); }
       return tokens.indexOf(identifier);
     }
 

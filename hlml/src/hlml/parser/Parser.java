@@ -67,8 +67,7 @@ public final class Parser {
 
   /** Parses a using. */
   private Optional<Node.Using> parse_using() {
-    if (parse_token(Token.Using.class).isEmpty())
-      return Optional.empty();
+    if (parse_token(Token.Using.class).isEmpty()) { return Optional.empty(); }
     Node.Mention used =
       expect(this::parse_mention, "mention to used of the alias definition");
     Optional<Token.Identifier> alias = Optional.empty();
@@ -673,8 +672,7 @@ public final class Parser {
       return Optional.of(mention);
     }
     Optional<Token.Identifier> identifier = parse_token(Token.Identifier.class);
-    if (identifier.isEmpty())
-      return Optional.empty();
+    if (identifier.isEmpty()) { return Optional.empty(); }
     Node.Mention mention = new Node.Mention(scope, identifier.get());
     return Optional.of(mention);
   }
@@ -683,8 +681,7 @@ public final class Parser {
   private Optional<Token.Identifier> parse_scope() {
     int first = current;
     Optional<Token.Identifier> scope = parse_token(Token.Identifier.class);
-    if (scope.isEmpty())
-      return Optional.empty();
+    if (scope.isEmpty()) { return Optional.empty(); }
     if (parse_token(Token.ColonColon.class).isEmpty()) {
       current = first;
       return Optional.empty();

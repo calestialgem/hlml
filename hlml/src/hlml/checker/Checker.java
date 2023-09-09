@@ -94,8 +94,9 @@ public final class Checker {
   /** Find a global symbol. */
   private Semantic.Definition find_global(Subject subject, Name name) {
     Semantic.Source source = check_source(subject, name.source());
-    if (source.globals().containsKey(name.identifier()))
+    if (source.globals().containsKey(name.identifier())) {
       return source.globals().get(name.identifier());
+    }
     throw subject
       .to_diagnostic(
         "error",
@@ -108,10 +109,11 @@ public final class Checker {
   /** Check a source file. */
   private Semantic.Source check_source(Subject subject, String name) {
     if (sources.containsKey(name)) { return sources.get(name); }
-    if (currently_checked.contains(name))
+    if (currently_checked.contains(name)) {
       throw subject
         .to_diagnostic("error", "Cyclic definition with `%s`!", name)
         .to_exception();
+    }
     currently_checked.add(name);
     Path file = find_source(subject, name);
     ResolvedSource resolution = Resolver.resolve(file, artifacts);
