@@ -41,6 +41,9 @@ public final class Builder {
   /** Global symbols that are already built. */
   private Set<Name> built;
 
+  /** Name of the the currently built symbol. */
+  private Name current;
+
   /** Instruction list. */
   private Program program;
 
@@ -77,6 +80,7 @@ public final class Builder {
     for (Name dependency : entrypoint.get().dependencies()) {
       build_dependency(dependency);
     }
+    current = new Name(target.name(), "entrypoint");
     build_statement(entrypoint.get().body());
     program.instruct(new Instruction.End());
     Path output_path =
@@ -106,6 +110,7 @@ public final class Builder {
     for (Name dependency : definition.dependencies()) {
       build_dependency(dependency);
     }
+    current = name;
     switch (definition) {
       case Semantic.Proc d ->
         throw Subject
@@ -169,7 +174,7 @@ public final class Builder {
           .to_diagnostic("failure", "Unimplemented!")
           .to_exception();
       case Semantic.Var l -> {
-        Register variable = Register.local(l.identifier());
+        Register variable = Register.local(current, l.identifier());
         if (l.initial_value().isPresent()) {
           Register initial_value = build_expression(l.initial_value().get());
           program.instruct(new Instruction.Set(variable, initial_value));
@@ -282,7 +287,8 @@ public final class Builder {
       case Semantic.NumberConstant c -> Register.literal(c.value());
       case Semantic.ConstantAccess c -> Register.literal(c.value());
       case Semantic.GlobalVariableAccess g -> Register.global(g.name());
-      case Semantic.LocalVariableAccess l -> Register.local(l.identifier());
+      case Semantic.LocalVariableAccess l ->
+        Register.local(current, l.identifier());
       case Semantic.Call e ->
         throw Subject
           .of("compiler")

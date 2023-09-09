@@ -1,10 +1,10 @@
 set variable_test$global 56
-set $local 17
-op add _0 $local variable_test$global
+set variable_test$entrypoint$local 17
+op add _0 variable_test$entrypoint$local variable_test$global
 op sub _0 _0 45
-set $inner 5555
-op mul _0 $local variable_test$global
-op add _0 $inner _0
-op idiv _0 $local variable_test$global
-set $another _0
+set variable_test$entrypoint$inner 5555
+op mul _0 variable_test$entrypoint$local variable_test$global
+op add _0 variable_test$entrypoint$inner _0
+op idiv _0 variable_test$entrypoint$local variable_test$global
+set variable_test$entrypoint$another _0
 end

@@ -8,7 +8,7 @@ sealed interface Register {
   record Global(Name name) implements Register {}
 
   /** Register that holds a local variable. */
-  record Local(String identifier) implements Register {}
+  record Local(Name symbol, String identifier) implements Register {}
 
   /** Register that holds a temporary value. */
   record Temporary(int index) implements Register {}
@@ -24,8 +24,8 @@ sealed interface Register {
 
   /** Returns a register holding the local variable with the given
    * identifier. */
-  static Register local(String identifier) {
-    return new Local(identifier);
+  static Register local(Name symbol, String identifier) {
+    return new Local(symbol, identifier);
   }
 
   /** Returns a literal holding the given value. */

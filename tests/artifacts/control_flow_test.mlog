@@ -1,58 +1,58 @@
-set $a 145
-op greaterThan _0 $a 200
+set control_flow_test$entrypoint$a 145
+op greaterThan _0 control_flow_test$entrypoint$a 200
 jump 5 equal false _0
-op div $a $a 7
+op div control_flow_test$entrypoint$a control_flow_test$entrypoint$a 7
 jump 5 always
-op lessThan _0 $a 15
+op lessThan _0 control_flow_test$entrypoint$a 15
 jump 9 equal false _0
-op mul $a $a 4
+op mul control_flow_test$entrypoint$a control_flow_test$entrypoint$a 4
 jump 10 always
-op mul $a $a 2
-op lessThan _0 $a 10
+op mul control_flow_test$entrypoint$a control_flow_test$entrypoint$a 2
+op lessThan _0 control_flow_test$entrypoint$a 10
 jump 14 equal false _0
-op sub $a $a 6
+op sub control_flow_test$entrypoint$a control_flow_test$entrypoint$a 6
 jump 27 always
-op lessThan _0 $a 20
+op lessThan _0 control_flow_test$entrypoint$a 20
 jump 18 equal false _0
-op sub $a $a 8
+op sub control_flow_test$entrypoint$a control_flow_test$entrypoint$a 8
 jump 27 always
-op lessThan _0 $a 50
+op lessThan _0 control_flow_test$entrypoint$a 50
 jump 22 equal false _0
-op sub $a $a 15
+op sub control_flow_test$entrypoint$a control_flow_test$entrypoint$a 15
 jump 27 always
-op lessThan _0 $a 1000
+op lessThan _0 control_flow_test$entrypoint$a 1000
 jump 26 equal false _0
-op sub $a $a 20
+op sub control_flow_test$entrypoint$a control_flow_test$entrypoint$a 20
 jump 27 always
-op sub $a $a 50
-op lessThan _0 $a 2000
+op sub control_flow_test$entrypoint$a control_flow_test$entrypoint$a 50
+op lessThan _0 control_flow_test$entrypoint$a 2000
 jump 30 equal true _0
 jump 33 always
-op add $a $a 45
-op lessThan _0 $a 2000
+op add control_flow_test$entrypoint$a control_flow_test$entrypoint$a 45
+op lessThan _0 control_flow_test$entrypoint$a 2000
 jump 30 equal true _0
-op lessThan _0 $a 2000
+op lessThan _0 control_flow_test$entrypoint$a 2000
 jump 37 equal true _0
-set $a 1990
+set control_flow_test$entrypoint$a 1990
 jump 40 always
-op add $a $a 45
-op lessThan _0 $a 2000
+op add control_flow_test$entrypoint$a control_flow_test$entrypoint$a 45
+op lessThan _0 control_flow_test$entrypoint$a 2000
 jump 37 equal true _0
-op lessThan _0 $a 2000
+op lessThan _0 control_flow_test$entrypoint$a 2000
 jump 43 equal true _0
 jump 46 always
-op add $a $a 1
-op lessThan _0 $a 2000
+op add control_flow_test$entrypoint$a control_flow_test$entrypoint$a 1
+op lessThan _0 control_flow_test$entrypoint$a 2000
 jump 43 equal true _0
-jump 48 equal true $a
+jump 48 equal true control_flow_test$entrypoint$a
 jump 50 always
 jump 50 always
-jump 48 equal true $a
-op greaterThanEq _0 $a 70
+jump 48 equal true control_flow_test$entrypoint$a
+op greaterThanEq _0 control_flow_test$entrypoint$a 70
 jump 53 equal true _0
 jump 57 always
 jump 54 always
-op sub $a $a 56
-op greaterThanEq _0 $a 70
+op sub control_flow_test$entrypoint$a control_flow_test$entrypoint$a 56
+op greaterThanEq _0 control_flow_test$entrypoint$a 70
 jump 53 equal true _0
 end

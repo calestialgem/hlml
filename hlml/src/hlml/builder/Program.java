@@ -125,6 +125,9 @@ final class Program {
         appendable.append(r.name().identifier());
       }
       case Register.Local r -> {
+        appendable.append(r.symbol().source());
+        appendable.append('$');
+        appendable.append(r.symbol().identifier());
         appendable.append('$');
         appendable.append(r.identifier());
       }

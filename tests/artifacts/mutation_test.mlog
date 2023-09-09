@@ -1,16 +1,16 @@
-set $local 1
-op add $local $local 1
-op sub $local $local 1
-set $local 56
-op mul $local $local 2
-op div $local $local 2
-op idiv $local $local 2
-op mod $local $local 2
-op add $local $local 2
-op sub $local $local 2
-op shl $local $local 2
-op shr $local $local 2
-op and $local $local 2
-op xor $local $local 2
-op or $local $local 2
+set mutation_test$entrypoint$local 1
+op add mutation_test$entrypoint$local mutation_test$entrypoint$local 1
+op sub mutation_test$entrypoint$local mutation_test$entrypoint$local 1
+set mutation_test$entrypoint$local 56
+op mul mutation_test$entrypoint$local mutation_test$entrypoint$local 2
+op div mutation_test$entrypoint$local mutation_test$entrypoint$local 2
+op idiv mutation_test$entrypoint$local mutation_test$entrypoint$local 2
+op mod mutation_test$entrypoint$local mutation_test$entrypoint$local 2
+op add mutation_test$entrypoint$local mutation_test$entrypoint$local 2
+op sub mutation_test$entrypoint$local mutation_test$entrypoint$local 2
+op shl mutation_test$entrypoint$local mutation_test$entrypoint$local 2
+op shr mutation_test$entrypoint$local mutation_test$entrypoint$local 2
+op and mutation_test$entrypoint$local mutation_test$entrypoint$local 2
+op xor mutation_test$entrypoint$local mutation_test$entrypoint$local 2
+op or mutation_test$entrypoint$local mutation_test$entrypoint$local 2
 end
