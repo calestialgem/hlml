@@ -70,20 +70,67 @@ final class Program {
   {
     switch (instruction) {
       case Instruction.Read i -> {
-        appendable.append("read ");
-        append_register(appendable, i.value());
-        appendable.append(' ');
-        append_register(appendable, i.cell());
-        appendable.append(' ');
-        append_register(appendable, i.location());
+        appendable.append("read");
+        append_operands(appendable, i.value(), i.cell(), i.location());
       }
       case Instruction.Write i -> {
-        appendable.append("write ");
-        append_register(appendable, i.value());
-        appendable.append(' ');
-        append_register(appendable, i.cell());
-        appendable.append(' ');
-        append_register(appendable, i.location());
+        appendable.append("write");
+        append_operands(appendable, i.value(), i.cell(), i.location());
+      }
+      case Instruction.DrawClear i -> {
+        appendable.append("draw clear");
+        append_operands(appendable, i.r(), i.g(), i.b());
+      }
+      case Instruction.DrawColor i -> {
+        appendable.append("draw color");
+        append_operands(appendable, i.r(), i.g(), i.b(), i.a());
+      }
+      case Instruction.DrawCol i -> {
+        appendable.append("draw col");
+        append_operands(appendable, i.c());
+      }
+      case Instruction.DrawStroke i -> {
+        appendable.append("draw stroke");
+        append_operands(appendable, i.t());
+      }
+      case Instruction.DrawLine i -> {
+        appendable.append("draw line");
+        append_operands(appendable, i.x0(), i.y0(), i.x1(), i.y1());
+      }
+      case Instruction.DrawRect i -> {
+        appendable.append("draw rect");
+        append_operands(appendable, i.x(), i.y(), i.w(), i.h());
+      }
+      case Instruction.DrawLineRect i -> {
+        appendable.append("draw lineRect");
+        append_operands(appendable, i.x(), i.y(), i.w(), i.h());
+      }
+      case Instruction.DrawPoly i -> {
+        appendable.append("draw poly");
+        append_operands(appendable, i.x(), i.y(), i.n(), i.r(), i.a());
+      }
+      case Instruction.DrawLinePoly i -> {
+        appendable.append("draw linePoly");
+        append_operands(appendable, i.x(), i.y(), i.n(), i.r(), i.a());
+      }
+      case Instruction.DrawTriangle i -> {
+        appendable.append("draw triangle");
+        append_operands(
+          appendable,
+          i.x0(),
+          i.y0(),
+          i.x1(),
+          i.y1(),
+          i.x2(),
+          i.y2());
+      }
+      case Instruction.DrawImage i -> {
+        appendable.append("draw image");
+        append_operands(appendable, i.x(), i.y(), i.i(), i.r(), i.a());
+      }
+      case Instruction.DrawFlush i -> {
+        appendable.append("drawflush");
+        append_operands(appendable, i.d());
       }
       case Instruction.JumpAlways i -> {
         appendable.append("jump ");
@@ -104,29 +151,33 @@ final class Program {
       }
       case Instruction.End i -> appendable.append("end");
       case Instruction.Set i -> {
-        appendable.append("set ");
-        append_register(appendable, i.target());
-        appendable.append(' ');
-        append_register(appendable, i.source());
+        appendable.append("set");
+        append_operands(appendable, i.target(), i.source());
       }
       case Instruction.UnaryOperation i -> {
         appendable.append("op ");
         appendable.append(i.operation_code());
-        appendable.append(' ');
-        append_register(appendable, i.target());
-        appendable.append(' ');
-        append_register(appendable, i.operand());
+        append_operands(appendable, i.target(), i.operand());
       }
       case Instruction.BinaryOperation i -> {
         appendable.append("op ");
         appendable.append(i.operation_code());
-        appendable.append(' ');
-        append_register(appendable, i.target());
-        appendable.append(' ');
-        append_register(appendable, i.left_operand());
-        appendable.append(' ');
-        append_register(appendable, i.right_operand());
+        append_operands(
+          appendable,
+          i.target(),
+          i.left_operand(),
+          i.right_operand());
       }
+    }
+  }
+
+  /** Append operands. */
+  private void append_operands(Appendable appendable, Register... operands)
+    throws IOException
+  {
+    for (Register operand : operands) {
+      appendable.append(' ');
+      append_register(appendable, operand);
     }
   }
 

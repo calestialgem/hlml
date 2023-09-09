@@ -80,7 +80,21 @@ public final class Checker {
         new Semantic.Source(
           Optional.empty(),
           Set
-            .of(new Semantic.Read(), new Semantic.Write())
+            .of(
+              new Semantic.Read(),
+              new Semantic.Write(),
+              new Semantic.DrawClear(),
+              new Semantic.DrawColor(),
+              new Semantic.DrawCol(),
+              new Semantic.DrawStroke(),
+              new Semantic.DrawLine(),
+              new Semantic.DrawRect(),
+              new Semantic.DrawLineRect(),
+              new Semantic.DrawPoly(),
+              new Semantic.DrawLinePoly(),
+              new Semantic.DrawTriangle(),
+              new Semantic.DrawImage(),
+              new Semantic.DrawFlush())
             .stream()
             .collect(
               Collectors

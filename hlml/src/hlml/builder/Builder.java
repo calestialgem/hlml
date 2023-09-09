@@ -145,13 +145,10 @@ public final class Builder {
       build_dependency(dependency);
     }
     switch (definition) {
-      case Semantic.Link d -> {}
       case Semantic.Proc d -> addresses.put(name, program.waypoint());
-      case Semantic.Read d -> {}
-      case Semantic.Write d -> {}
-      case Semantic.Const d -> {}
       case Semantic.GlobalVar d ->
         d.initial_value().ifPresent(i -> initialized.add(name));
+      default -> {}
     }
   }
 
@@ -409,6 +406,118 @@ public final class Builder {
                   build_argument(e.arguments(), 0),
                   build_argument(e.arguments(), 1),
                   build_argument(e.arguments(), 2)));
+            yield Register.null_();
+          }
+          case Semantic.DrawClear p -> {
+            program
+              .instruct(
+                new Instruction.DrawClear(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2)));
+            yield Register.null_();
+          }
+          case Semantic.DrawColor p -> {
+            program
+              .instruct(
+                new Instruction.DrawColor(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2),
+                  build_argument(e.arguments(), 3)));
+            yield Register.null_();
+          }
+          case Semantic.DrawCol p -> {
+            program
+              .instruct(
+                new Instruction.DrawCol(build_argument(e.arguments(), 0)));
+            yield Register.null_();
+          }
+          case Semantic.DrawStroke p -> {
+            program
+              .instruct(
+                new Instruction.DrawStroke(build_argument(e.arguments(), 0)));
+            yield Register.null_();
+          }
+          case Semantic.DrawLine p -> {
+            program
+              .instruct(
+                new Instruction.DrawLine(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2),
+                  build_argument(e.arguments(), 3)));
+            yield Register.null_();
+          }
+          case Semantic.DrawRect p -> {
+            program
+              .instruct(
+                new Instruction.DrawRect(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2),
+                  build_argument(e.arguments(), 3)));
+            yield Register.null_();
+          }
+          case Semantic.DrawLineRect p -> {
+            program
+              .instruct(
+                new Instruction.DrawLineRect(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2),
+                  build_argument(e.arguments(), 3)));
+            yield Register.null_();
+          }
+          case Semantic.DrawPoly p -> {
+            program
+              .instruct(
+                new Instruction.DrawPoly(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2),
+                  build_argument(e.arguments(), 3),
+                  build_argument(e.arguments(), 4)));
+            yield Register.null_();
+          }
+          case Semantic.DrawLinePoly p -> {
+            program
+              .instruct(
+                new Instruction.DrawLinePoly(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2),
+                  build_argument(e.arguments(), 3),
+                  build_argument(e.arguments(), 4)));
+            yield Register.null_();
+          }
+          case Semantic.DrawTriangle p -> {
+            program
+              .instruct(
+                new Instruction.DrawTriangle(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2),
+                  build_argument(e.arguments(), 3),
+                  build_argument(e.arguments(), 4),
+                  build_argument(e.arguments(), 5)));
+            yield Register.null_();
+          }
+          case Semantic.DrawImage p -> {
+            program
+              .instruct(
+                new Instruction.DrawImage(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2),
+                  build_argument(e.arguments(), 3),
+                  build_argument(e.arguments(), 4)));
+            yield Register.null_();
+          }
+          case Semantic.DrawFlush p -> {
+            program
+              .instruct(
+                new Instruction.DrawFlush(build_argument(e.arguments(), 0)));
             yield Register.null_();
           }
         };

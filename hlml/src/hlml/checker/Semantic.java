@@ -67,9 +67,9 @@ public sealed interface Semantic {
     public List<Parameter> parameters() {
       return List
         .of(
-          new Parameter("value", true),
-          new Parameter("cell", false),
-          new Parameter("location", false));
+          new Parameter("v", true),
+          new Parameter("c", false),
+          new Parameter("i", false));
     }
 
     @Override
@@ -85,9 +85,237 @@ public sealed interface Semantic {
     public List<Parameter> parameters() {
       return List
         .of(
-          new Parameter("value", false),
-          new Parameter("cell", false),
-          new Parameter("location", false));
+          new Parameter("v", false),
+          new Parameter("c", false),
+          new Parameter("i", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `draw` instruction's `clear`
+   * subinstruction. */
+  record DrawClear() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "draw_clear"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("r", false),
+          new Parameter("g", false),
+          new Parameter("b", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `draw` instruction's `color`
+   * subinstruction. */
+  record DrawColor() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "draw_color"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("r", false),
+          new Parameter("g", false),
+          new Parameter("b", false),
+          new Parameter("a", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `draw` instruction's `col`
+   * subinstruction. */
+  record DrawCol() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "draw_col"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List.of(new Parameter("c", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `draw` instruction's `stroke`
+   * subinstruction. */
+  record DrawStroke() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "draw_stroke"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List.of(new Parameter("t", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `draw` instruction's `line`
+   * subinstruction. */
+  record DrawLine() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "draw_line"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("x0", false),
+          new Parameter("y0", false),
+          new Parameter("x1", false),
+          new Parameter("y1", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `draw` instruction's `rect`
+   * subinstruction. */
+  record DrawRect() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "draw_rect"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("x", false),
+          new Parameter("y", false),
+          new Parameter("w", false),
+          new Parameter("h", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `draw` instruction's `lineRect`
+   * subinstruction. */
+  record DrawLineRect() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "draw_line_rect"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("x", false),
+          new Parameter("y", false),
+          new Parameter("w", false),
+          new Parameter("h", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `draw` instruction's `poly`
+   * subinstruction. */
+  record DrawPoly() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "draw_poly"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("x", false),
+          new Parameter("y", false),
+          new Parameter("n", false),
+          new Parameter("r", false),
+          new Parameter("a", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `draw` instruction's `linePoly`
+   * subinstruction. */
+  record DrawLinePoly() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "draw_line_poly"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("x", false),
+          new Parameter("y", false),
+          new Parameter("n", false),
+          new Parameter("r", false),
+          new Parameter("a", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `draw` instruction's `triangle`
+   * subinstruction. */
+  record DrawTriangle() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "draw_triangle"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("x0", false),
+          new Parameter("y0", false),
+          new Parameter("x1", false),
+          new Parameter("y1", false),
+          new Parameter("x2", false),
+          new Parameter("y2", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `draw` instruction's `image`
+   * subinstruction. */
+  record DrawImage() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "draw_image"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("x", false),
+          new Parameter("y", false),
+          new Parameter("i", false),
+          new Parameter("r", false),
+          new Parameter("a", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `drawflush` instruction. */
+  record DrawFlush() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "draw_flush"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List.of(new Parameter("d", false));
     }
 
     @Override

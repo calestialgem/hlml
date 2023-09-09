@@ -12,6 +12,71 @@ sealed interface Instruction {
     implements Instruction
   {}
 
+  /** Instruction that fills the display with a color. */
+  record DrawClear(Register r, Register g, Register b) implements Instruction {}
+
+  /** Instruction that sets the color for the fallowing drawing instructions.
+   * Takes the color as separated to channels. */
+  record DrawColor(Register r, Register g, Register b, Register a)
+    implements Instruction
+  {}
+
+  /** Instruction that sets the color for the fallowing drawing instructions.
+   * Takes the color as an packed integer. */
+  record DrawCol(Register c) implements Instruction {}
+
+  /** Instruction that sets the thickness of the lines for the fallowing drawing
+   * instructions. */
+  record DrawStroke(Register t) implements Instruction {}
+
+  /** Instruction that draws a line segment. */
+  record DrawLine(Register x0, Register y0, Register x1, Register y1)
+    implements Instruction
+  {}
+
+  /** Instruction that draws a rectangle. */
+  record DrawRect(Register x, Register y, Register w, Register h)
+    implements Instruction
+  {}
+
+  /** Instruction that draws a rectangle outline. */
+  record DrawLineRect(Register x, Register y, Register w, Register h)
+    implements Instruction
+  {}
+
+  /** Instruction that draws a regular polygon. */
+  record DrawPoly(Register x, Register y, Register n, Register r, Register a)
+    implements Instruction
+  {}
+
+  /** Instructions that draws a regular polygon outline */
+  record DrawLinePoly(
+    Register x,
+    Register y,
+    Register n,
+    Register r,
+    Register a) implements Instruction
+  {}
+
+  /** Instruction that draws a triangle. */
+  record DrawTriangle(
+    Register x0,
+    Register y0,
+    Register x1,
+    Register y1,
+    Register x2,
+    Register y2) implements Instruction
+  {}
+
+  /** Instruction that draws an image from the game's contents. */
+  record DrawImage(Register x, Register y, Register i, Register r, Register a)
+    implements Instruction
+  {}
+
+  /** Instruction that sends all the accumulated drawing instructions to a
+   * display. */
+  record DrawFlush(Register d) implements Instruction {}
+
   /** Instruction that makes the currently run instruction to change out of
    * sequence. */
   sealed interface Jump extends Instruction {
