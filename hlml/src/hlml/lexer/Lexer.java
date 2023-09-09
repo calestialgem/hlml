@@ -59,6 +59,7 @@ public final class Lexer {
         case '.' -> lex_single(Token.Dot::new);
         case ',' -> lex_single(Token.Comma::new);
         case '~' -> lex_single(Token.Tilde::new);
+        case ':' -> lex_repeatable(Token.Colon::new, Token.ColonColon::new);
         case '*' -> lex_extensible(Token.Star::new, Token.StarEqual::new);
         case '%' -> lex_extensible(Token.Percent::new, Token.PercentEqual::new);
         case '&' ->
@@ -117,6 +118,8 @@ public final class Lexer {
             Token token;
             switch (text) {
               case "entrypoint" -> { token = new Token.Entrypoint(start); }
+              case "using" -> { token = new Token.Using(start); }
+              case "as" -> { token = new Token.As(start); }
               case "proc" -> { token = new Token.Proc(start); }
               case "const" -> { token = new Token.Const(start); }
               case "var" -> { token = new Token.Var(start); }
@@ -194,6 +197,19 @@ public final class Lexer {
   private void lex_single(IntFunction<Token> lexer_function) {
     Token token = lexer_function.apply(start);
     tokens.add(token);
+  }
+
+  /** Lexes a single or repeated punctuation. */
+  private void lex_repeatable(
+    IntFunction<Token> lexer_function,
+    IntFunction<Token> repeated_lexer_function)
+  {
+    if (has_current() && get_current() == initial) {
+      advance();
+      lex_single(repeated_lexer_function);
+      return;
+    }
+    lex_single(lexer_function);
   }
 
   /** Lexes a single or extended punctuation. */

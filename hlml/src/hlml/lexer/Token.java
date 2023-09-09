@@ -11,6 +11,24 @@ public sealed interface Token {
     public String explanation() { return "keyword `entrypoint`"; }
   }
 
+  /** Keyword `using`. */
+  record Using(int start) implements Token {
+    @Override
+    public int end() { return start + "using".length(); }
+
+    @Override
+    public String explanation() { return "keyword `using`"; }
+  }
+
+  /** Keyword `as`. */
+  record As(int start) implements Token {
+    @Override
+    public int end() { return start + "as".length(); }
+
+    @Override
+    public String explanation() { return "keyword `as`"; }
+  }
+
   /** Keyword `proc`. */
   record Proc(int start) implements Token {
     @Override
@@ -162,6 +180,24 @@ public sealed interface Token {
 
     @Override
     public String explanation() { return "punctuation `~`"; }
+  }
+
+  /** Punctuation `:`. */
+  record Colon(int start) implements Token {
+    @Override
+    public int end() { return start + ":".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `:`"; }
+  }
+
+  /** Punctuation `::`. */
+  record ColonColon(int start) implements Token {
+    @Override
+    public int end() { return start + "::".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `::`"; }
   }
 
   /** Punctuation `*`. */
