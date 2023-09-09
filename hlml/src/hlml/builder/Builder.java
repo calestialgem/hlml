@@ -169,6 +169,7 @@ public final class Builder {
       case Semantic.Block s ->
         s.inner_statements().forEach(i -> build_statement(loop_waypoints, i));
       case Semantic.If s -> {
+        s.variables().forEach(this::build_variable);
         Register condition = build_expression(s.condition());
         Waypoint after_true_branch = program.waypoint();
         program
@@ -182,6 +183,7 @@ public final class Builder {
         program.define(after_false_branch);
       }
       case Semantic.While s -> {
+        s.variables().forEach(this::build_variable);
         Register first_condition = build_expression(s.condition());
         Waypoint loop = program.waypoint();
         program.instruct(new Instruction.JumpOnTrue(loop, first_condition));
@@ -221,13 +223,7 @@ public final class Builder {
         Register program_counter = Register.counter();
         program.instruct(new Instruction.Set(program_counter, return_location));
       }
-      case Semantic.LocalVar l -> {
-        Register variable = Register.local(current, l.identifier());
-        if (l.initial_value().isPresent()) {
-          Register initial_value = build_expression(l.initial_value().get());
-          program.instruct(new Instruction.Set(variable, initial_value));
-        }
-      }
+      case Semantic.LocalVar l -> build_variable(l);
       case Semantic.Increment m -> build_mutate(m, Instruction.Addition::new);
       case Semantic.Decrement m ->
         build_mutate(m, Instruction.Subtraction::new);
@@ -258,6 +254,16 @@ public final class Builder {
       case Semantic.OrBitwiseAssign a ->
         build_assign(a, Instruction.BitwiseOr::new);
       case Semantic.Discard d -> stack.pop(build_expression(d.source()));
+    }
+  }
+
+  /** Builds a local variable. */
+  private void build_variable(Semantic.LocalVar l) {
+    Register variable = Register.local(current, l.identifier());
+    if (l.initial_value().isPresent()) {
+      Register initial_value = build_expression(l.initial_value().get());
+      stack.pop(initial_value);
+      program.instruct(new Instruction.Set(variable, initial_value));
     }
   }
 
