@@ -1,5 +1,7 @@
 package hlml.lexer;
 
+import hlml.FloatingPointFormatter;
+
 /** Longest sequence of characters that make up a meaningful word in hlml. */
 public sealed interface Token {
   /** Keyword `entrypoint`. */
@@ -518,7 +520,9 @@ public sealed interface Token {
   /** A number constant. */
   record NumberConstant(int start, int end, double value) implements Token {
     @Override
-    public String explanation() { return "number `%.17f`".formatted(value); }
+    public String explanation() {
+      return "number `%s`".formatted(FloatingPointFormatter.format(value));
+    }
   }
 
   /** Index of the token's first character's first byte from the beginning of

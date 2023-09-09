@@ -1,27 +1,20 @@
 package hlml.builder;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.OptionalInt;
+
+import hlml.FloatingPointFormatter;
 
 /** Ordered collection of instructions are executed sequentially for a
  * meaningful usage of the processor. */
 final class Program {
   /** Returns an empty program. */
   static Program create() {
-    Program program =
-      new Program(
-        new ArrayList<>(),
-        new HashMap<>(),
-        new DecimalFormat("0.#", new DecimalFormatSymbols(Locale.US)));
-    program.decimal_formatter.setMaximumFractionDigits(Integer.MAX_VALUE);
-    return program;
+    return new Program(new ArrayList<>(), new HashMap<>());
   }
 
   /** Instructions that are added to the program. */
@@ -30,18 +23,13 @@ final class Program {
   /** Instruction indices that can be used to jump to an instruction. */
   private final Map<Waypoint, OptionalInt> waypoints;
 
-  /** Tool for formatting floating point numbers with maximum accuracy. */
-  private final DecimalFormat decimal_formatter;
-
   /** Constructs. */
   private Program(
     List<Instruction> instructions,
-    Map<Waypoint, OptionalInt> waypoints,
-    DecimalFormat decimal_formatter)
+    Map<Waypoint, OptionalInt> waypoints)
   {
     this.instructions = instructions;
     this.waypoints = waypoints;
-    this.decimal_formatter = decimal_formatter;
   }
 
   /** Add an instruction the the end of the program. */
@@ -217,7 +205,7 @@ final class Program {
       }
       case Register.Link r -> appendable.append(r.building());
       case Register.Constant r ->
-        appendable.append(decimal_formatter.format(r.value()));
+        appendable.append(FloatingPointFormatter.format(r.value()));
       case Register.Instruction r ->
         appendable.append(Integer.toString(resolve(r.waypoint())));
       case Register.Counter r -> appendable.append("@counter");
