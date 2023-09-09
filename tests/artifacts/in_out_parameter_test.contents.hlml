@@ -1,0 +1,18 @@
+# Passing in-out parameters to procedures.
+
+proc divide(dividend, divisor, quotient&, reminder&) {
+  quotient = dividend // divisor;
+  reminder = dividend % divisor;
+}
+
+entrypoint {
+  var dividend = 67;
+  var divisor = 9;
+  var quotient;
+  var reminder;
+  dividend.divide(divisor, quotient, reminder);
+
+  var a = 1;
+  if quotient == 7 { a += 1; }
+  if reminder == 4 { a *= 3; }
+}
