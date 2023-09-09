@@ -1,9 +1,8 @@
-jump 1 always
 set double_if_17$entrypoint$tested 56
 op equal _0 double_if_17$entrypoint$tested 17
-jump 7 equal false _0
+jump 6 equal false _0
 op mul _0 double_if_17$entrypoint$tested 2
 set double_if_17$entrypoint$result _0
-jump 8 always
+jump 7 always
 set double_if_17$entrypoint$result double_if_17$entrypoint$tested
 end

@@ -83,15 +83,29 @@ public final class Builder {
     program = Program.create();
     stack = Stack.create();
     addresses = new HashMap<>();
-    Waypoint start = program.waypoint();
-    program.instruct(new Instruction.JumpAlways(start));
     for (Name dependency : entrypoint.get().dependencies()) {
       build_dependency(dependency);
     }
     current = new Name(target.name(), "entrypoint");
-    program.define(start);
     build_statement(entrypoint.get().body());
     program.instruct(new Instruction.End());
+    for (Name procedure : addresses.keySet()) {
+      current = procedure;
+      Semantic.Proc proc =
+        (Semantic.Proc) target
+          .sources()
+          .get(procedure.source())
+          .globals()
+          .get(procedure.identifier());
+      program.define(addresses.get(procedure));
+      build_statement(proc.body());
+      Register value = Register.null_();
+      Register return_value = Register.local(current, "return$value");
+      program.instruct(new Instruction.Set(return_value, value));
+      Register return_location = Register.local(current, "return$location");
+      Register program_counter = Register.counter();
+      program.instruct(new Instruction.Set(program_counter, return_location));
+    }
     Path output_path =
       artifacts.resolve("%s%s".formatted(target.name(), extension));
     try (
@@ -119,31 +133,11 @@ public final class Builder {
     for (Name dependency : definition.dependencies()) {
       build_dependency(dependency);
     }
-    Name previous = current;
-    current = name;
     switch (definition) {
-      case Semantic.Proc d -> {
-        Semantic.Proc proc =
-          (Semantic.Proc) target
-            .sources()
-            .get(name.source())
-            .globals()
-            .get(name.identifier());
-        Waypoint address = program.waypoint();
-        addresses.put(name, address);
-        program.define(address);
-        build_statement(proc.body());
-        Register value = Register.null_();
-        Register return_value = Register.local(current, "return$value");
-        program.instruct(new Instruction.Set(return_value, value));
-        Register return_location = Register.local(current, "return$location");
-        Register program_counter = Register.counter();
-        program.instruct(new Instruction.Set(program_counter, return_location));
-      }
+      case Semantic.Proc d -> addresses.put(name, program.waypoint());
       case Semantic.Const d -> {}
       case Semantic.Var d -> {}
     }
-    current = previous;
   }
 
   /** Builds a statement if it is there. */

@@ -1,4 +1,3 @@
-jump 1 always
 set variable_test$global 56
 set variable_test$entrypoint$local 17
 op add _0 variable_test$entrypoint$local variable_test$global
