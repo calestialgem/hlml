@@ -109,8 +109,7 @@ public final class Parser {
   /** Parses a parameter. */
   private Optional<Node.Parameter> parse_parameter() {
     Optional<Token.Identifier> identifier = parse_token(Token.Identifier.class);
-    if (identifier.isEmpty())
-      return Optional.empty();
+    if (identifier.isEmpty()) { return Optional.empty(); }
     boolean in_out = parse_token(Token.Ampersand.class).isPresent();
     Node.Parameter parameter = new Node.Parameter(identifier.get(), in_out);
     return Optional.of(parameter);

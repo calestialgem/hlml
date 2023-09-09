@@ -374,8 +374,7 @@ public final class Builder {
         for (int i = 0; i < e.arguments().size(); i++) {
           if (!proc.parameters().get(i).in_out()) { continue; }
           Register argument = arguments.get(i);
-          if (!argument.is_volatile())
-            continue;
+          if (!argument.is_volatile()) { continue; }
           Register parameter = Register.parameter(proc, i);
           program.instruct(new Instruction.Set(argument, parameter));
         }
