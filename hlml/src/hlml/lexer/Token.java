@@ -11,6 +11,15 @@ public sealed interface Token {
     public String explanation() { return "keyword `entrypoint`"; }
   }
 
+  /** Keyword `link`. */
+  record Link(int start) implements Token {
+    @Override
+    public int end() { return start + "link".length(); }
+
+    @Override
+    public String explanation() { return "keyword `link`"; }
+  }
+
   /** Keyword `using`. */
   record Using(int start) implements Token {
     @Override
