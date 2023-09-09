@@ -109,13 +109,13 @@ public sealed interface Semantic {
   }
 
   /** Statements that exit a loop. */
-  record Break() implements Statement {
+  record Break(int loop) implements Statement {
     @Override
     public Set<Name> dependencies() { return Set.of(); }
   }
 
   /** Statements that skip the remaining in a loop. */
-  record Continue() implements Statement {
+  record Continue(int loop) implements Statement {
     @Override
     public Set<Name> dependencies() { return Set.of(); }
   }

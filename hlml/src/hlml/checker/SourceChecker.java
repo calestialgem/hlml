@@ -57,7 +57,7 @@ final class SourceChecker {
       Node.Entrypoint node = source.entrypoint.get();
       representative = source.representative_text(node);
       Semantic.Statement body =
-        check_statement(Scope.create(), false, node.body());
+        check_statement(Scope.create(), new ArrayList<>(), node.body());
       entrypoint = Optional.of(new Semantic.Entrypoint(body));
     }
     for (String identifier : source.globals.keySet()) {
@@ -127,7 +127,8 @@ final class SourceChecker {
           Node.Var local = new Node.Var(p, Optional.empty());
           check_local(scope, local);
         }
-        Semantic.Statement body = check_statement(scope, false, d.body());
+        Semantic.Statement body =
+          check_statement(scope, new ArrayList<>(), d.body());
         Semantic.Proc global =
           new Semantic.Proc(
             new Name(source.name(), identifier),
@@ -180,7 +181,7 @@ final class SourceChecker {
   /** Checks a statement. */
   private Semantic.Statement check_statement(
     Scope scope,
-    boolean in_loop,
+    List<Optional<String>> loops,
     Node.Statement node)
   {
     return switch (node) {
@@ -188,20 +189,20 @@ final class SourceChecker {
         Scope inner_scope = scope.create_child();
         List<Semantic.Statement> inner_statements = new ArrayList<>();
         for (Node.Statement i : block.inner_statements()) {
-          inner_statements.add(check_statement(inner_scope, in_loop, i));
+          inner_statements.add(check_statement(inner_scope, loops, i));
         }
         yield new Semantic.Block(inner_statements);
       }
       case Node.If s -> {
         Semantic.Expression condition = check_expression(scope, s.condition());
         Semantic.Statement true_branch =
-          check_statement(scope.create_child(), in_loop, s.true_branch());
+          check_statement(scope.create_child(), loops, s.true_branch());
         Optional<Semantic.Statement> false_branch = Optional.empty();
         if (s.false_branch().isPresent()) {
           Semantic.Statement checked_branch =
             check_statement(
               scope.create_child(),
-              in_loop,
+              loops,
               s.false_branch().get());
           false_branch = Optional.of(checked_branch);
         }
@@ -212,42 +213,71 @@ final class SourceChecker {
         Optional<Semantic.Statement> interleaved = Optional.empty();
         if (s.interleaved().isPresent()) {
           Semantic.Statement checked_branch =
-            check_statement(
-              scope.create_child(),
-              in_loop,
-              s.interleaved().get());
+            check_statement(scope.create_child(), loops, s.interleaved().get());
           interleaved = Optional.of(checked_branch);
         }
+        Optional<String> label = s.label().map(Token.Identifier::text);
+        if (label.isPresent() && loops.contains(label))
+          throw source
+            .subject(node)
+            .to_diagnostic(
+              "error",
+              "Redeclaration of the loop labeled `%s::%s::%s`!",
+              source.name(),
+              representative,
+              label.get())
+            .to_exception();
+        loops.add(label);
         Semantic.Statement loop =
-          check_statement(scope.create_child(), true, s.loop());
+          check_statement(scope.create_child(), loops, s.loop());
+        loops.remove(loops.size() - 1);
         Optional<Semantic.Statement> zero_branch = Optional.empty();
         if (s.zero_branch().isPresent()) {
           Semantic.Statement checked_branch =
-            check_statement(
-              scope.create_child(),
-              in_loop,
-              s.zero_branch().get());
+            check_statement(scope.create_child(), loops, s.zero_branch().get());
           zero_branch = Optional.of(checked_branch);
         }
         yield new Semantic.While(condition, interleaved, loop, zero_branch);
       }
       case Node.Break s -> {
-        if (!in_loop) {
+        int index = loops.lastIndexOf(s.label().map(Token.Identifier::text));
+        if (index == -1) {
+          if (s.label().isPresent())
+            throw source
+              .subject(s.label().get())
+              .to_diagnostic(
+                "error",
+                "Could not find the loop labeled `%s::%s::%s`!",
+                source.name(),
+                representative,
+                s.label().get().text())
+              .to_exception();
           throw source
             .subject(node)
             .to_diagnostic("error", "Break statement must be in a loop!")
             .to_exception();
         }
-        yield new Semantic.Break();
+        yield new Semantic.Break(index);
       }
       case Node.Continue s -> {
-        if (!in_loop) {
+        int index = loops.lastIndexOf(s.label().map(Token.Identifier::text));
+        if (index == -1) {
+          if (s.label().isPresent())
+            throw source
+              .subject(s.label().get())
+              .to_diagnostic(
+                "error",
+                "Could not find the loop labeled `%s::%s::%s`!",
+                source.name(),
+                representative,
+                s.label().get().text())
+              .to_exception();
           throw source
             .subject(node)
             .to_diagnostic("error", "Continue statement must be in a loop!")
             .to_exception();
         }
-        yield new Semantic.Continue();
+        yield new Semantic.Continue(index);
       }
       case Node.Return s ->
         new Semantic.Return(s.value().map(e -> check_expression(scope, e)));
