@@ -355,23 +355,30 @@ public final class Builder {
         Register return_location =
           Register.local(e.procedure(), "return$location");
         program.instruct(new Instruction.Set(return_location, return_address));
-        int i = 0;
-        for (; i < e.arguments().size(); i++) {
+        List<Register> arguments = new ArrayList<>();
+        for (int i = 0; i < e.arguments().size(); i++) {
           Register argument = build_expression(e.arguments().get(i));
-          Register parameter =
-            Register.local(e.procedure(), proc.parameters().get(i));
+          arguments.add(argument);
+          Register parameter = Register.parameter(proc, i);
           stack.pop(argument);
           program.instruct(new Instruction.Set(parameter, argument));
         }
-        for (; i < proc.parameters().size(); i++) {
+        for (int i = e.arguments().size(); i < proc.parameters().size(); i++) {
           Register argument = Register.null_();
-          Register parameter =
-            Register.local(e.procedure(), proc.parameters().get(i));
+          Register parameter = Register.parameter(proc, i);
           program.instruct(new Instruction.Set(parameter, argument));
         }
         Waypoint address = addresses.get(e.procedure());
         program.instruct(new Instruction.JumpAlways(address));
         program.define(after_call);
+        for (int i = 0; i < e.arguments().size(); i++) {
+          if (!proc.parameters().get(i).in_out()) { continue; }
+          Register argument = arguments.get(i);
+          if (!argument.is_volatile())
+            continue;
+          Register parameter = Register.parameter(proc, i);
+          program.instruct(new Instruction.Set(argument, parameter));
+        }
         Register return_value = Register.local(e.procedure(), "return$value");
         yield return_value;
       }

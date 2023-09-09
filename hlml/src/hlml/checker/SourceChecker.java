@@ -135,8 +135,8 @@ final class SourceChecker {
             d
               .parameters()
               .stream()
-              .map(Node.Parameter::identifier)
-              .map(Token.Identifier::text)
+              .map(
+                p -> new Semantic.Parameter(p.identifier().text(), p.in_out()))
               .toList(),
             body);
         globals.put(identifier, global);

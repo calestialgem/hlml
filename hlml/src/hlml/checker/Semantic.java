@@ -36,12 +36,15 @@ public sealed interface Semantic {
   }
 
   /** Definition of a procedure. */
-  record Proc(Name name, List<String> parameters, Statement body)
+  record Proc(Name name, List<Parameter> parameters, Statement body)
     implements Definition
   {
     @Override
     public Set<Name> dependencies() { return body.dependencies(); }
   }
+
+  /** Definition of a procedure's parameter. */
+  record Parameter(String identifier, boolean in_out) implements Semantic {}
 
   /** Definition of a constant. */
   record Const(Name name, double value) implements Definition {
