@@ -569,7 +569,7 @@ public final class Parser {
     Optional<OperandType> first_operand = operand_parser_function.get();
     if (first_operand.isEmpty()) { return Optional.empty(); }
     PrecedenceType result = first_operand.get();
-    while (true) {
+    left_to_right_same_precedence_operator_parsing: while (true) {
       for (BinaryOperationParser<PrecedenceType> binary_operation_parser : binary_operation_parsers) {
         if (parse_token(binary_operation_parser.operator_class()).isEmpty()) {
           continue;
@@ -581,6 +581,7 @@ public final class Parser {
               .formatted(binary_operation_parser.name()));
         result =
           binary_operation_parser.initializer().apply(result, right_operand);
+        continue left_to_right_same_precedence_operator_parsing;
       }
       break;
     }
@@ -617,12 +618,13 @@ public final class Parser {
     UnaryOperationParser<PrecedenceType>... unary_operation_parsers)
   {
     List<UnaryOperationParser<PrecedenceType>> stack = new ArrayList<>();
-    while (true) {
+    left_to_right_same_precedence_operator_parsing: while (true) {
       for (UnaryOperationParser<PrecedenceType> unary_operation_parser : unary_operation_parsers) {
         if (parse_token(unary_operation_parser.operator_class()).isEmpty()) {
           continue;
         }
         stack.add(unary_operation_parser);
+        continue left_to_right_same_precedence_operator_parsing;
       }
       break;
     }
