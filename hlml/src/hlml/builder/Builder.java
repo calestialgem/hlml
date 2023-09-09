@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -58,6 +60,9 @@ public final class Builder {
    * loop. Used for building break statements. */
   private Waypoint loop_end;
 
+  /** Addresses of the procedures called in the program. */
+  private Map<Name, Waypoint> addresses;
+
   /** Constructor. */
   private Builder(Subject subject, Path artifacts, Semantic.Target target) {
     this.subject = subject;
@@ -77,10 +82,14 @@ public final class Builder {
     built = new HashSet<>();
     program = Program.create();
     stack = Stack.create();
+    addresses = new HashMap<>();
+    Waypoint start = program.waypoint();
+    program.instruct(new Instruction.JumpAlways(start));
     for (Name dependency : entrypoint.get().dependencies()) {
       build_dependency(dependency);
     }
     current = new Name(target.name(), "entrypoint");
+    program.define(start);
     build_statement(entrypoint.get().body());
     program.instruct(new Instruction.End());
     Path output_path =
@@ -110,16 +119,31 @@ public final class Builder {
     for (Name dependency : definition.dependencies()) {
       build_dependency(dependency);
     }
+    Name previous = current;
     current = name;
     switch (definition) {
-      case Semantic.Proc d ->
-        throw Subject
-          .of("compiler")
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
-      case Semantic.Const c -> {}
-      case Semantic.Var v -> {}
+      case Semantic.Proc d -> {
+        Semantic.Proc proc =
+          (Semantic.Proc) target
+            .sources()
+            .get(name.source())
+            .globals()
+            .get(name.identifier());
+        Waypoint address = program.waypoint();
+        addresses.put(name, address);
+        program.define(address);
+        build_statement(proc.body());
+        Register value = Register.null_();
+        Register return_value = Register.local(current, "return$value");
+        program.instruct(new Instruction.Set(return_value, value));
+        Register return_location = Register.local(current, "return$location");
+        Register program_counter = Register.counter();
+        program.instruct(new Instruction.Set(program_counter, return_location));
+      }
+      case Semantic.Const d -> {}
+      case Semantic.Var d -> {}
     }
+    current = previous;
   }
 
   /** Builds a statement if it is there. */
@@ -168,11 +192,17 @@ public final class Builder {
         program.instruct(new Instruction.JumpAlways(loop_end));
       case Semantic.Continue s ->
         program.instruct(new Instruction.JumpAlways(loop_begin));
-      case Semantic.Return s ->
-        throw Subject
-          .of("compiler")
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
+      case Semantic.Return s -> {
+        if (s.value().isPresent()) {
+          Register value = build_expression(s.value().get());
+          Register return_value = Register.local(current, "return$value");
+          stack.pop(value);
+          program.instruct(new Instruction.Set(return_value, value));
+        }
+        Register return_location = Register.local(current, "return$location");
+        Register program_counter = Register.counter();
+        program.instruct(new Instruction.Set(program_counter, return_location));
+      }
       case Semantic.Var l -> {
         Register variable = Register.local(current, l.identifier());
         if (l.initial_value().isPresent()) {
@@ -220,7 +250,7 @@ public final class Builder {
   {
     Register target = build_expression(statement.target());
     program
-      .instruct(initializer.initialize(target, target, Register.literal(1)));
+      .instruct(initializer.initialize(target, target, Register.constant(1)));
   }
 
   /** Builds a assign statement. */
@@ -284,16 +314,43 @@ public final class Builder {
       }
       case Semantic.LogicalNot u ->
         build_unary_operation(u, Instruction.NotEqualTo::new);
-      case Semantic.NumberConstant c -> Register.literal(c.value());
-      case Semantic.ConstantAccess c -> Register.literal(c.value());
+      case Semantic.NumberConstant c -> Register.constant(c.value());
+      case Semantic.ConstantAccess c -> Register.constant(c.value());
       case Semantic.GlobalVariableAccess g -> Register.global(g.name());
       case Semantic.LocalVariableAccess l ->
         Register.local(current, l.identifier());
-      case Semantic.Call e ->
-        throw Subject
-          .of("compiler")
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
+      case Semantic.Call e -> {
+        Semantic.Proc proc =
+          (Semantic.Proc) target
+            .sources()
+            .get(e.procedure().source())
+            .globals()
+            .get(e.procedure().identifier());
+        Waypoint after_call = program.waypoint();
+        Register return_address = Register.instruction(after_call);
+        Register return_location =
+          Register.local(e.procedure(), "return$location");
+        program.instruct(new Instruction.Set(return_location, return_address));
+        int i = 0;
+        for (; i < e.arguments().size(); i++) {
+          Register argument = build_expression(e.arguments().get(i));
+          Register parameter =
+            Register.local(e.procedure(), proc.parameters().get(i));
+          stack.pop(argument);
+          program.instruct(new Instruction.Set(parameter, argument));
+        }
+        for (; i < proc.parameters().size(); i++) {
+          Register argument = Register.null_();
+          Register parameter =
+            Register.local(e.procedure(), proc.parameters().get(i));
+          program.instruct(new Instruction.Set(parameter, argument));
+        }
+        Waypoint address = addresses.get(e.procedure());
+        program.instruct(new Instruction.JumpAlways(address));
+        program.define(after_call);
+        Register return_value = Register.local(e.procedure(), "return$value");
+        yield return_value;
+      }
     };
   }
 
@@ -318,7 +375,7 @@ public final class Builder {
     Register operand = build_expression(operation.operand());
     Register target = stack.push(operand);
     program
-      .instruct(initializer.initialize(target, Register.literal(0), operand));
+      .instruct(initializer.initialize(target, Register.constant(0), operand));
     return target;
   }
 }

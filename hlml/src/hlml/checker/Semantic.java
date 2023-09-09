@@ -429,7 +429,10 @@ public sealed interface Semantic {
   {
     @Override
     public Set<Name> dependencies() {
-      return Sets.union(arguments.stream().map(Expression::dependencies));
+      return Sets
+        .union(
+          Set.of(procedure),
+          Sets.union(arguments.stream().map(Expression::dependencies)));
     }
   }
 }

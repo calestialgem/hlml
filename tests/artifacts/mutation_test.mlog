@@ -1,3 +1,4 @@
+jump 1 always
 set mutation_test$entrypoint$local 1
 op add mutation_test$entrypoint$local mutation_test$entrypoint$local 1
 op sub mutation_test$entrypoint$local mutation_test$entrypoint$local 1

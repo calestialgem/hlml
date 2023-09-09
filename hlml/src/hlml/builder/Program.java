@@ -135,11 +135,15 @@ final class Program {
         appendable.append('_');
         appendable.append(Integer.toString(r.index()));
       }
-      case Register.Literal r -> {
+      case Register.Constant r -> {
         DecimalFormat decimal_formatter = new DecimalFormat("0.#");
         decimal_formatter.setMaximumFractionDigits(Integer.MAX_VALUE);
         appendable.append(decimal_formatter.format(r.value()));
       }
+      case Register.Instruction r ->
+        appendable.append(Integer.toString(resolve(r.waypoint())));
+      case Register.Counter r -> appendable.append("@counter");
+      case Register.Null r -> appendable.append("null");
     }
   }
 }

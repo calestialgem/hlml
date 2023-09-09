@@ -1,0 +1,18 @@
+jump 14 always
+op mul _0 procedure_test$multiply$a procedure_test$multiply$b
+set procedure_test$multiply$return$value _0
+set @counter procedure_test$multiply$return$location
+set procedure_test$multiply$return$value null
+set @counter procedure_test$multiply$return$location
+set procedure_test$multiply$return$location 10
+set procedure_test$multiply$a procedure_test$double$a
+set procedure_test$multiply$b 2
+jump 1 always
+set procedure_test$double$return$value procedure_test$multiply$return$value
+set @counter procedure_test$double$return$location
+set procedure_test$double$return$value null
+set @counter procedure_test$double$return$location
+set procedure_test$double$return$location 17
+set procedure_test$double$a 5
+jump 6 always
+end
