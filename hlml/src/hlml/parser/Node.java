@@ -533,7 +533,7 @@ public sealed interface Node {
    * beginning as if the procedure was a member of the first argument. */
   record MemberCall(
     Precedence0 first_argument,
-    String called,
+    Token.Identifier called,
     List<Expression> remaining_arguments) implements Precedence0
   {
     @Override

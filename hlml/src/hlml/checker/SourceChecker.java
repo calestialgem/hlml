@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.DoubleUnaryOperator;
-import java.util.stream.Stream;
 
 import hlml.lexer.Token;
 import hlml.parser.Node;
@@ -18,16 +17,22 @@ import hlml.resolver.ResolvedSource;
 /** Checks a source. */
 final class SourceChecker {
   /** Checks a source. */
-  static Semantic.Source check(ResolvedSource source) {
-    SourceChecker checker = new SourceChecker(source);
+  static Semantic.Source check(ResolvedSource source, GlobalFinder finder) {
+    SourceChecker checker = new SourceChecker(source, finder);
     return checker.check();
   }
 
   /** Checked source. */
   private final ResolvedSource source;
 
+  /** Global finder. */
+  private final GlobalFinder finder;
+
   /** Global symbols that were checked. */
   private Map<String, Semantic.Definition> globals;
+
+  /** Aliases used in the source. */
+  private Map<String, Semantic.Definition> aliases;
 
   /** Global symbols that are being checked. */
   private Set<String> currently_checked;
@@ -37,13 +42,15 @@ final class SourceChecker {
   private String representative;
 
   /** Constructor. */
-  private SourceChecker(ResolvedSource source) {
+  private SourceChecker(ResolvedSource source, GlobalFinder finder) {
     this.source = source;
+    this.finder = finder;
   }
 
   /** Check the source. */
   private Semantic.Source check() {
     globals = new HashMap<>();
+    aliases = new HashMap<>();
     currently_checked = new HashSet<>();
     Optional<Semantic.Entrypoint> entrypoint = Optional.empty();
     if (source.entrypoint.isPresent()) {
@@ -60,15 +67,30 @@ final class SourceChecker {
   }
 
   /** Checks a mention. */
-  private Optional<Semantic.Definition> find_global(Node.Mention node) {
-    if (node.source().isPresent()
-      && !node.source().get().text().equals(source.name()))
-      throw source
-        .subject(node)
-        .to_diagnostic("failure", "Unimplemented!")
-        .to_exception();
-    String identifier = node.identifier().text();
-    return find_global(identifier);
+  private Semantic.Definition check_mention(Node.Mention node) {
+    if (node.source().isPresent()) {
+      String scope = node.source().get().text();
+      if (!scope.equals(source.name())) {
+        Name name = new Name(scope, node.identifier().text());
+        return finder.find(source.subject(node), name);
+      }
+    }
+    return check_identifier(node.identifier());
+  }
+
+  /** Checks an identifier. */
+  private Semantic.Definition check_identifier(Token.Identifier identifier) {
+    Optional<Semantic.Definition> global = find_global(identifier.text());
+    if (global.isPresent())
+      return global.get();
+    throw source
+      .subject(identifier)
+      .to_diagnostic(
+        "error",
+        "Could not find the symbol `%s::%s`",
+        source.name(),
+        identifier.text())
+      .to_exception();
   }
 
   /** Finds a global in the current source and checks it if it is unchecked. */
@@ -76,31 +98,30 @@ final class SourceChecker {
     if (globals.containsKey(identifier)) {
       return Optional.of(globals.get(identifier));
     }
+    if (aliases.containsKey(identifier)) {
+      return Optional.of(aliases.get(identifier));
+    }
     if (!source.globals.containsKey(identifier)) { return Optional.empty(); }
-    Semantic.Definition global =
-      check_definition(source.globals.get(identifier));
-    globals.put(identifier, global);
-    return Optional.of(global);
-  }
-
-  /** Check a definition. */
-  private Semantic.Definition check_definition(Node.Definition node) {
-    String identifier = node.identifier().text();
+    Node.Definition node = source.globals.get(identifier);
     if (currently_checked.contains(identifier)) {
       throw source
         .subject(node)
-        .to_diagnostic("error", "Cyclic definition with `%s`!", identifier)
+        .to_diagnostic(
+          "error",
+          "Cyclic definition with `%s::%s`!",
+          source.name(),
+          identifier)
         .to_exception();
     }
     currently_checked.add(identifier);
     String old_representative = representative;
     representative = source.representative_text(node);
     Semantic.Definition definition = switch (node) {
-      case Node.Using d ->
-        throw source
-          .subject(node)
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
+      case Node.Using d -> {
+        Semantic.Definition alias = check_mention(d.used());
+        aliases.put(identifier, alias);
+        yield alias;
+      }
       case Node.Proc d -> {
         Scope scope = Scope.create();
         for (Token.Identifier p : d.parameters()) {
@@ -108,10 +129,13 @@ final class SourceChecker {
           check_local(scope, local);
         }
         Semantic.Statement body = check_statement(scope, false, d.body());
-        yield new Semantic.Proc(
-          identifier,
-          d.parameters().stream().map(Token.Identifier::text).toList(),
-          body);
+        Semantic.Proc global =
+          new Semantic.Proc(
+            new Name(source.name(), identifier),
+            d.parameters().stream().map(Token.Identifier::text).toList(),
+            body);
+        globals.put(identifier, global);
+        yield global;
       }
       case Node.Const c -> {
         Semantic.Expression value = check_expression(Scope.create(), c.value());
@@ -121,33 +145,35 @@ final class SourceChecker {
             .to_diagnostic("error", "Constant's value must be a constant!")
             .to_exception();
         }
-        yield new Semantic.Const(identifier, constant.value());
+        Semantic.Const global =
+          new Semantic.Const(
+            new Name(source.name(), identifier),
+            constant.value());
+        globals.put(identifier, global);
+        yield global;
       }
-      case Node.Var var -> check_var(Optional.empty(), var);
+      case Node.Var var -> {
+        Optional<Semantic.Expression> initial_value =
+          var.initial_value().map(i -> check_expression(Scope.create(), i));
+        if (initial_value.isPresent()
+          && !(initial_value.get() instanceof Semantic.Constant))
+          throw source
+            .subject(var.initial_value().get())
+            .to_diagnostic(
+              "error",
+              "Global variables cannot have a non-constant expressions as initial values!")
+            .to_exception();
+        Semantic.GlobalVar global =
+          new Semantic.GlobalVar(
+            new Name(source.name(), var.identifier().text()),
+            initial_value);
+        globals.put(identifier, global);
+        yield global;
+      }
     };
     representative = old_representative;
     currently_checked.remove(identifier);
-    return definition;
-  }
-
-  /** Check a variable definition. */
-  private Semantic.Var check_var(Optional<Scope> scope, Node.Var node) {
-    Optional<Semantic.Expression> initial_value =
-      node
-        .initial_value()
-        .map(i -> check_expression(scope.orElseGet(Scope::create), i));
-    if (scope.isEmpty()
-      && initial_value.isPresent()
-      && !(initial_value.get() instanceof Semantic.Constant))
-    {
-      throw source
-        .subject(node.initial_value().get())
-        .to_diagnostic(
-          "error",
-          "Global variables cannot have a non-constant expressions as initial values!")
-        .to_exception();
-    }
-    return new Semantic.Var(node.identifier().text(), initial_value);
+    return Optional.of(definition);
   }
 
   /** Checks a statement. */
@@ -283,20 +309,24 @@ final class SourceChecker {
   }
 
   /** Introduces a local variable with the given name to the scope. */
-  private Semantic.Var check_local(Scope scope, Node.Var node) {
-    Optional<Semantic.Var> old_local = scope.find(node.identifier().text());
+  private Semantic.LocalVar check_local(Scope scope, Node.Var node) {
+    Optional<Semantic.LocalVar> old_local =
+      scope.find(node.identifier().text());
     if (old_local.isPresent()) {
       throw source
         .subject(node)
         .to_diagnostic(
           "error",
-          "Redeclaration of symbol `%s::%s::%s`",
+          "Redeclaration of the local symbol `%s::%s::%s`",
           source.name(),
           representative,
           node.identifier().text())
         .to_exception();
     }
-    Semantic.Var local = check_var(Optional.of(scope), node);
+    Semantic.LocalVar local =
+      new Semantic.LocalVar(
+        node.identifier().text(),
+        node.initial_value().map(i -> check_expression(scope, i)));
     scope.introduce(local);
     return local;
   }
@@ -436,38 +466,14 @@ final class SourceChecker {
       case Node.SymbolAccess v -> check_symbol_access(scope, v);
       case Node.Grouping g -> check_expression(scope, g.grouped());
       case Node.Call e -> {
-        Optional<Semantic.Definition> called = find_global(e.called());
-        if (called.isEmpty()) {
-          throw source
-            .subject(node)
-            .to_diagnostic(
-              "error",
-              "Could not find the symbol named `%s::%s`!",
-              source.name(),
-              e.called())
-            .to_exception();
-        }
-        yield check_call(called.get(), e.arguments(), scope, node);
+        yield check_call(check_mention(e.called()), e.arguments(), scope, node);
       }
       case Node.MemberCall e -> {
-        Optional<Semantic.Definition> called = find_global(e.called());
-        if (called.isEmpty()) {
-          throw source
-            .subject(node)
-            .to_diagnostic(
-              "error",
-              "Could not find the symbol named `%s::%s`!",
-              source.name(),
-              e.called())
-            .to_exception();
-        }
-        List<Node.Expression> arguments =
-          Stream
-            .concat(
-              Stream.of(e.first_argument()),
-              e.remaining_arguments().stream())
-            .toList();
-        yield check_call(called.get(), arguments, scope, node);
+        Semantic.Definition called = check_identifier(e.called());
+        List<Node.Expression> arguments = new ArrayList<>();
+        arguments.add(e.first_argument());
+        arguments.addAll(e.remaining_arguments());
+        yield check_call(called, arguments, scope, node);
       }
     };
   }
@@ -521,41 +527,26 @@ final class SourceChecker {
     Scope scope,
     Node.SymbolAccess node)
   {
-    Optional<Semantic.Var> local =
+    Optional<Semantic.LocalVar> local =
       scope.find(node.accessed().identifier().text());
     if (local.isPresent()) {
       return new Semantic.LocalVariableAccess(local.get().identifier());
     }
-    Optional<Semantic.Definition> global = find_global(node.accessed());
-    if (global.isPresent()) {
-      if (global.get() instanceof Semantic.Const accessed) {
-        return new Semantic.ConstantAccess(accessed.value());
-      }
-      if (!(global.get() instanceof Semantic.Var accessed)) {
-        throw source
-          .subject(node)
-          .to_diagnostic(
-            "error",
-            "Accessed symbol `%s::%s` is not a variable!",
-            source.name(),
-            global.get().identifier())
-          .to_exception();
-      }
-      return new Semantic.GlobalVariableAccess(
-        new Name(source.name(), accessed.identifier()));
+    Semantic.Definition global = check_mention(node.accessed());
+    if (global instanceof Semantic.Const accessed) {
+      return new Semantic.ConstantAccess(accessed.value());
     }
-    throw source
-      .subject(node)
-      .to_diagnostic(
-        "error",
-        "Could not find the symbol named `%s::%s`!",
-        node
-          .accessed()
-          .source()
-          .map(Token.Identifier::text)
-          .orElseGet(source::name),
-        node.accessed().identifier().text())
-      .to_exception();
+    if (!(global instanceof Semantic.GlobalVar accessed)) {
+      throw source
+        .subject(node)
+        .to_diagnostic(
+          "error",
+          "Accessed symbol `%s::%s` is not a variable!",
+          global.name().source(),
+          global.name().identifier())
+        .to_exception();
+    }
+    return new Semantic.GlobalVariableAccess(global.name());
   }
 
   /** Checks a procedure call. */
@@ -571,8 +562,8 @@ final class SourceChecker {
         .to_diagnostic(
           "error",
           "Called symbol `%s::%s` is not a procedure!",
-          source.name(),
-          called.identifier())
+          called.name().source(),
+          called.name().identifier())
         .to_exception();
     }
     if (procedure.parameters().size() > arguments.size()) {
@@ -583,12 +574,12 @@ final class SourceChecker {
           "Providing more arguments (%d) than parameters (%d) for calling procedure `%s::%s`!",
           arguments.size(),
           procedure.parameters().size(),
-          source.name(),
-          procedure.identifier())
+          procedure.name().source(),
+          procedure.name().identifier())
         .to_exception();
     }
     return new Semantic.Call(
-      new Name(source.name(), procedure.identifier()),
+      procedure.name(),
       arguments.stream().map(a -> check_expression(scope, a)).toList());
   }
 }

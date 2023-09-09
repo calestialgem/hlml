@@ -92,8 +92,8 @@ public final class Builder {
     }
     for (Name global_variable : initialized) {
       current = global_variable;
-      Semantic.Var var =
-        (Semantic.Var) target
+      Semantic.GlobalVar var =
+        (Semantic.GlobalVar) target
           .sources()
           .get(global_variable.source())
           .globals()
@@ -153,7 +153,7 @@ public final class Builder {
     switch (definition) {
       case Semantic.Proc d -> addresses.put(name, program.waypoint());
       case Semantic.Const d -> {}
-      case Semantic.Var d ->
+      case Semantic.GlobalVar d ->
         d.initial_value().ifPresent(i -> initialized.add(name));
     }
   }
@@ -215,7 +215,7 @@ public final class Builder {
         Register program_counter = Register.counter();
         program.instruct(new Instruction.Set(program_counter, return_location));
       }
-      case Semantic.Var l -> {
+      case Semantic.LocalVar l -> {
         Register variable = Register.local(current, l.identifier());
         if (l.initial_value().isPresent()) {
           Register initial_value = build_expression(l.initial_value().get());

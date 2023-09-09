@@ -1,0 +1,21 @@
+set multiplier$scalar 0
+op add multiplier$scalar multiplier$scalar 0,0072992700729927005
+op mul multiplier$scalar multiplier$scalar 100
+set multiplier$scale$return$location 6
+set multiplier$scale$value 17
+jump 16 always
+set access_test$entrypoint$value multiplier$scale$return$value
+set multiplier$scale$return$location 10
+set multiplier$scale$value access_test$entrypoint$value
+jump 16 always
+set access_test$entrypoint$value multiplier$scale$return$value
+set multiplier$scale$return$location 14
+set multiplier$scale$value access_test$entrypoint$value
+jump 16 always
+set access_test$entrypoint$value multiplier$scale$return$value
+end
+op mul _0 multiplier$scale$value multiplier$scalar
+set multiplier$scale$return$value _0
+set @counter multiplier$scale$return$location
+set multiplier$scale$return$value null
+set @counter multiplier$scale$return$location

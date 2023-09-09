@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import hlml.Source;
 import hlml.reporter.Subject;
@@ -41,6 +43,9 @@ public final class Checker {
   /** Checked sources depended on by the target. */
   private Map<String, Semantic.Source> sources;
 
+  /** Sources that are being checked. */
+  private Set<String> currently_checked;
+
   /** Constructor. */
   private Checker(
     Subject subject,
@@ -66,6 +71,7 @@ public final class Checker {
         .to_exception(cause);
     }
     sources = new HashMap<>();
+    currently_checked = new HashSet<>();
     check_source(subject, name);
     Semantic.Target target = new Semantic.Target(name, sources);
     Path target_artifact_path =
@@ -85,13 +91,33 @@ public final class Checker {
     return target;
   }
 
+  /** Find a global symbol. */
+  private Semantic.Definition find_global(Subject subject, Name name) {
+    Semantic.Source source = check_source(subject, name.source());
+    if (source.globals().containsKey(name.identifier()))
+      return source.globals().get(name.identifier());
+    throw subject
+      .to_diagnostic(
+        "error",
+        "Could not find the symbol `%s::%s`!",
+        name.source(),
+        name.identifier())
+      .to_exception();
+  }
+
   /** Check a source file. */
   private Semantic.Source check_source(Subject subject, String name) {
     if (sources.containsKey(name)) { return sources.get(name); }
+    if (currently_checked.contains(name))
+      throw subject
+        .to_diagnostic("error", "Cyclic definition with `%s`!", name)
+        .to_exception();
+    currently_checked.add(name);
     Path file = find_source(subject, name);
     ResolvedSource resolution = Resolver.resolve(file, artifacts);
-    Semantic.Source source = SourceChecker.check(resolution);
+    Semantic.Source source = SourceChecker.check(resolution, this::find_global);
     sources.put(name, source);
+    currently_checked.remove(name);
     return source;
   }
 

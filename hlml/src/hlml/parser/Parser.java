@@ -614,7 +614,7 @@ public final class Parser {
       expect_token(
         Token.ClosingParenthesis.class,
         "remaining argument list closer `)` of the member call expression");
-      result = new Node.MemberCall(result, called.text(), remaining_arguments);
+      result = new Node.MemberCall(result, called, remaining_arguments);
     }
     return Optional.of(result);
   }

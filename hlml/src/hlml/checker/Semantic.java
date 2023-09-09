@@ -31,12 +31,12 @@ public sealed interface Semantic {
 
   /** Definition of a construct in code. */
   sealed interface Definition extends Declaration {
-    /** Word that designates this definition. */
-    String identifier();
+    /** Name of the definition. */
+    Name name();
   }
 
   /** Definition of a procedure. */
-  record Proc(String identifier, List<String> parameters, Statement body)
+  record Proc(Name name, List<String> parameters, Statement body)
     implements Definition
   {
     @Override
@@ -44,14 +44,14 @@ public sealed interface Semantic {
   }
 
   /** Definition of a constant. */
-  record Const(String identifier, double value) implements Definition {
+  record Const(Name name, double value) implements Definition {
     @Override
     public Set<Name> dependencies() { return Set.of(); }
   }
 
-  /** Definition of a variable. */
-  record Var(String identifier, Optional<Expression> initial_value)
-    implements Definition, Statement
+  /** Definition of a global variable. */
+  record GlobalVar(Name name, Optional<Expression> initial_value)
+    implements Definition
   {
     @Override
     public Set<Name> dependencies() {
@@ -125,6 +125,16 @@ public sealed interface Semantic {
     @Override
     public Set<Name> dependencies() {
       return value.map(Expression::dependencies).orElseGet(Set::of);
+    }
+  }
+
+  /** Definition of a local variable. */
+  record LocalVar(String identifier, Optional<Expression> initial_value)
+    implements Statement
+  {
+    @Override
+    public Set<Name> dependencies() {
+      return initial_value.map(Expression::dependencies).orElseGet(Set::of);
     }
   }
 
