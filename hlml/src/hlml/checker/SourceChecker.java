@@ -217,7 +217,7 @@ final class SourceChecker {
           interleaved = Optional.of(checked_branch);
         }
         Optional<String> label = s.label().map(Token.Identifier::text);
-        if (label.isPresent() && loops.contains(label))
+        if (label.isPresent() && loops.contains(label)) {
           throw source
             .subject(node)
             .to_diagnostic(
@@ -227,6 +227,7 @@ final class SourceChecker {
               representative,
               label.get())
             .to_exception();
+        }
         loops.add(label);
         Semantic.Statement loop =
           check_statement(scope.create_child(), loops, s.loop());
@@ -242,7 +243,7 @@ final class SourceChecker {
       case Node.Break s -> {
         int index = loops.lastIndexOf(s.label().map(Token.Identifier::text));
         if (index == -1) {
-          if (s.label().isPresent())
+          if (s.label().isPresent()) {
             throw source
               .subject(s.label().get())
               .to_diagnostic(
@@ -252,6 +253,7 @@ final class SourceChecker {
                 representative,
                 s.label().get().text())
               .to_exception();
+          }
           throw source
             .subject(node)
             .to_diagnostic("error", "Break statement must be in a loop!")
@@ -262,7 +264,7 @@ final class SourceChecker {
       case Node.Continue s -> {
         int index = loops.lastIndexOf(s.label().map(Token.Identifier::text));
         if (index == -1) {
-          if (s.label().isPresent())
+          if (s.label().isPresent()) {
             throw source
               .subject(s.label().get())
               .to_diagnostic(
@@ -272,6 +274,7 @@ final class SourceChecker {
                 representative,
                 s.label().get().text())
               .to_exception();
+          }
           throw source
             .subject(node)
             .to_diagnostic("error", "Continue statement must be in a loop!")

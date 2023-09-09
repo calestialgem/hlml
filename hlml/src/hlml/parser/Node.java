@@ -146,8 +146,7 @@ public sealed interface Node {
   {
     @Override
     public int first(List<Token> tokens) {
-      if (label.isPresent())
-        return tokens.indexOf(label.get());
+      if (label.isPresent()) { return tokens.indexOf(label.get()); }
       return condition.first(tokens) - 1;
     }
 
@@ -167,8 +166,7 @@ public sealed interface Node {
 
     @Override
     public int last(List<Token> tokens) {
-      if (label.isPresent())
-        return tokens.indexOf(label.get()) + 1;
+      if (label.isPresent()) { return tokens.indexOf(label.get()) + 1; }
       return first + 1;
     }
   }
@@ -182,8 +180,7 @@ public sealed interface Node {
 
     @Override
     public int last(List<Token> tokens) {
-      if (label.isPresent())
-        return tokens.indexOf(label.get()) + 1;
+      if (label.isPresent()) { return tokens.indexOf(label.get()) + 1; }
       return first + 1;
     }
   }
