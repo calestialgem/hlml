@@ -1,5 +1,5 @@
 set multiplier$scalar 0
-op add multiplier$scalar multiplier$scalar 0,0072992700729927005
+op add multiplier$scalar multiplier$scalar 0.0072992700729927005
 op mul multiplier$scalar multiplier$scalar 100
 set multiplier$scale$return$location 6
 set multiplier$scale$value 17
