@@ -1,0 +1,11 @@
+# Tests reading and writing to a memory cell.
+
+const memory_location = 0;
+link cell1 as cell;
+
+entrypoint {
+  var value;
+  mlog::read(value, cell, memory_location);        #  read value cell1 0
+  value += 10;
+  mlog::write(value, cell, memory_location);       # write value cell1 0
+}
