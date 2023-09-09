@@ -123,8 +123,8 @@ final class SourceChecker {
       }
       case Node.Proc d -> {
         Scope scope = Scope.create();
-        for (Token.Identifier p : d.parameters()) {
-          Node.Var local = new Node.Var(p, Optional.empty());
+        for (Node.Parameter p : d.parameters()) {
+          Node.Var local = new Node.Var(p.identifier(), Optional.empty());
           check_local(scope, local);
         }
         Semantic.Statement body =
@@ -132,7 +132,12 @@ final class SourceChecker {
         Semantic.Proc global =
           new Semantic.Proc(
             new Name(source.name(), identifier),
-            d.parameters().stream().map(Token.Identifier::text).toList(),
+            d
+              .parameters()
+              .stream()
+              .map(Node.Parameter::identifier)
+              .map(Token.Identifier::text)
+              .toList(),
             body);
         globals.put(identifier, global);
         yield global;

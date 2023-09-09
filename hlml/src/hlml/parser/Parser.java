@@ -96,8 +96,7 @@ public final class Parser {
     expect_token(
       Token.OpeningParenthesis.class,
       "parameter list opener `(` of the procedure declaration");
-    List<Token.Identifier> parameters =
-      separated_of(() -> parse_token(Token.Identifier.class));
+    List<Node.Parameter> parameters = separated_of(this::parse_parameter);
     expect_token(
       Token.ClosingParenthesis.class,
       "parameter list closer `)` of the procedure declaration");
@@ -105,6 +104,16 @@ public final class Parser {
       expect(this::parse_block, "body of the procedure declaration");
     Node.Proc proc = new Node.Proc(identifier, parameters, body);
     return Optional.of(proc);
+  }
+
+  /** Parses a parameter. */
+  private Optional<Node.Parameter> parse_parameter() {
+    Optional<Token.Identifier> identifier = parse_token(Token.Identifier.class);
+    if (identifier.isEmpty())
+      return Optional.empty();
+    boolean in_out = parse_token(Token.Ampersand.class).isPresent();
+    Node.Parameter parameter = new Node.Parameter(identifier.get(), in_out);
+    return Optional.of(parameter);
   }
 
   /** Parses a const. */

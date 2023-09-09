@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import hlml.lexer.Token;
-import hlml.lexer.Token.Identifier;
 
 /** Hierarchical collection of tokens in the source file. */
 public sealed interface Node {
@@ -50,14 +49,16 @@ public sealed interface Node {
     }
 
     @Override
-    public Identifier identifier() { return alias.orElseGet(used::identifier); }
+    public Token.Identifier identifier() {
+      return alias.orElseGet(used::identifier);
+    }
   }
 
   /** Defining a symbol that is a parametrized set of instructions that resolve
    * to a value. */
   record Proc(
     Token.Identifier identifier,
-    List<Token.Identifier> parameters,
+    List<Parameter> parameters,
     Statement body) implements Definition
   {
     @Override
@@ -67,6 +68,19 @@ public sealed interface Node {
 
     @Override
     public int last(List<Token> tokens) { return body.last(tokens); }
+  }
+
+  /** Defining a parameter for a proc. */
+  record Parameter(Token.Identifier identifier, boolean in_out)
+    implements Node
+  {
+    @Override
+    public int first(List<Token> tokens) { return tokens.indexOf(identifier); }
+
+    @Override
+    public int last(List<Token> tokens) {
+      return tokens.indexOf(identifier) + (in_out ? 1 : 0);
+    }
   }
 
   /** Defining a symbol that holds an known value. */
