@@ -178,6 +178,7 @@ public final class Parser {
   /** Parses an if statement. */
   private Optional<Node.If> parse_if() {
     if (parse_token(Token.If.class).isEmpty()) { return Optional.empty(); }
+    List<Node.Var> variables = repeats_of(this::parse_var);
     Node.Expression condition =
       expect(this::parse_expression, "condition of the if statement");
     Node.Statement true_branch =
@@ -191,7 +192,8 @@ public final class Parser {
               () -> first_of(this::parse_block, this::parse_if),
               "false branch of the if statement"));
     }
-    Node.If if_statement = new Node.If(condition, true_branch, false_branch);
+    Node.If if_statement =
+      new Node.If(variables, condition, true_branch, false_branch);
     return Optional.of(if_statement);
   }
 
@@ -205,6 +207,7 @@ public final class Parser {
       current = first;
       return Optional.empty();
     }
+    List<Node.Var> variables = repeats_of(this::parse_var);
     Node.Expression condition =
       expect(this::parse_expression, "condition of the while statement");
     Optional<Node.Statement> interleaved = Optional.empty();
@@ -228,7 +231,13 @@ public final class Parser {
               "zero branch of the while statement"));
     }
     Node.While while_statement =
-      new Node.While(label, condition, interleaved, loop, zero_branch);
+      new Node.While(
+        label,
+        variables,
+        condition,
+        interleaved,
+        loop,
+        zero_branch);
     return Optional.of(while_statement);
   }
 

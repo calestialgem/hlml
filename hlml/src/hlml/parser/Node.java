@@ -122,12 +122,16 @@ public sealed interface Node {
 
   /** Statements that branch the control flow. */
   record If(
+    List<Var> variables,
     Expression condition,
     Statement true_branch,
     Optional<Statement> false_branch) implements Statement
   {
     @Override
-    public int first(List<Token> tokens) { return condition.first(tokens) - 1; }
+    public int first(List<Token> tokens) {
+      if (!variables.isEmpty()) { return variables.get(0).first(tokens) - 1; }
+      return condition.first(tokens) - 1;
+    }
 
     @Override
     public int last(List<Token> tokens) {
@@ -139,6 +143,7 @@ public sealed interface Node {
   /** Statements that loop the control flow. */
   record While(
     Optional<Token.Identifier> label,
+    List<Var> variables,
     Expression condition,
     Optional<Statement> interleaved,
     Statement loop,
@@ -147,6 +152,7 @@ public sealed interface Node {
     @Override
     public int first(List<Token> tokens) {
       if (label.isPresent()) { return tokens.indexOf(label.get()); }
+      if (!variables.isEmpty()) { return variables.get(0).first(tokens) - 1; }
       return condition.first(tokens) - 1;
     }
 
