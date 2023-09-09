@@ -1,0 +1,12 @@
+# Tests accessing a symbol from another file.
+
+using multiplier::fine_structure_constant as fsc;
+using multiplier::scale;
+
+entrypoint {
+  multiplier::scalar += fsc;
+  multiplier::scalar *= 100;
+  var value = scale(17);
+  value = value.scale();
+  value = multiplier::scale(value);
+}
