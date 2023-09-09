@@ -32,6 +32,11 @@ public class LoadedSource extends Source {
     return subject(token.start(), token.end());
   }
 
+  /** Returns a subject as a character in this source file. */
+  public Subject subject(int index) {
+    return subject(index, index + 1);
+  }
+
   /** Returns a subject as a range of characters in this source file. */
   public Subject subject(int start, int end) {
     return Subject.of(path, contents, start, end);

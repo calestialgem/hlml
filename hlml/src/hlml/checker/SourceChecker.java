@@ -59,6 +59,18 @@ final class SourceChecker {
     return new Semantic.Source(entrypoint, globals);
   }
 
+  /** Checks a mention. */
+  private Optional<Semantic.Definition> find_global(Node.Mention node) {
+    if (node.source().isPresent()
+      && !node.source().get().text().equals(source.name()))
+      throw source
+        .subject(node)
+        .to_diagnostic("failure", "Unimplemented!")
+        .to_exception();
+    String identifier = node.identifier().text();
+    return find_global(identifier);
+  }
+
   /** Finds a global in the current source and checks it if it is unchecked. */
   private Optional<Semantic.Definition> find_global(String identifier) {
     if (globals.containsKey(identifier)) {
@@ -84,16 +96,21 @@ final class SourceChecker {
     String old_representative = representative;
     representative = source.representative_text(node);
     Semantic.Definition definition = switch (node) {
+      case Node.Using d ->
+        throw source
+          .subject(node)
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
       case Node.Proc d -> {
         Scope scope = Scope.create();
-        for (Token.LowercaseIdentifier p : d.parameters()) {
+        for (Token.Identifier p : d.parameters()) {
           Node.Var local = new Node.Var(p, Optional.empty());
           check_local(scope, local);
         }
         Semantic.Statement body = check_statement(scope, false, d.body());
         yield new Semantic.Proc(
           identifier,
-          d.parameters().stream().map(Token.LowercaseIdentifier::text).toList(),
+          d.parameters().stream().map(Token.Identifier::text).toList(),
           body);
       }
       case Node.Const c -> {
@@ -493,7 +510,7 @@ final class SourceChecker {
           "error",
           "Accessed symbol `%s::%s` is not mutable!",
           source.name(),
-          node.identifier())
+          node.accessed().identifier().text())
         .to_exception();
     }
     return target;
@@ -504,11 +521,12 @@ final class SourceChecker {
     Scope scope,
     Node.SymbolAccess node)
   {
-    Optional<Semantic.Var> local = scope.find(node.identifier());
+    Optional<Semantic.Var> local =
+      scope.find(node.accessed().identifier().text());
     if (local.isPresent()) {
       return new Semantic.LocalVariableAccess(local.get().identifier());
     }
-    Optional<Semantic.Definition> global = find_global(node.identifier());
+    Optional<Semantic.Definition> global = find_global(node.accessed());
     if (global.isPresent()) {
       if (global.get() instanceof Semantic.Const accessed) {
         return new Semantic.ConstantAccess(accessed.value());
@@ -531,8 +549,12 @@ final class SourceChecker {
       .to_diagnostic(
         "error",
         "Could not find the symbol named `%s::%s`!",
-        source.name(),
-        node.identifier())
+        node
+          .accessed()
+          .source()
+          .map(Token.Identifier::text)
+          .orElseGet(source::name),
+        node.accessed().identifier().text())
       .to_exception();
   }
 

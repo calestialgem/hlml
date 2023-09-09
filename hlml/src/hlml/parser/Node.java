@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import hlml.lexer.Token;
+import hlml.lexer.Token.Identifier;
 
 /** Hierarchical collection of tokens in the source file. */
 public sealed interface Node {
@@ -36,11 +37,27 @@ public sealed interface Node {
     default Token representative(List<Token> tokens) { return identifier(); }
   }
 
+  /** Defining a symbol as an alias to another one. */
+  record Using(Mention used, Optional<Token.Identifier> alias)
+    implements Definition
+  {
+    @Override
+    public int first(List<Token> tokens) { return used.first(tokens) - 1; }
+
+    @Override
+    public int last(List<Token> tokens) {
+      return tokens.indexOf(identifier()) + 1;
+    }
+
+    @Override
+    public Identifier identifier() { return alias.orElseGet(used::identifier); }
+  }
+
   /** Defining a symbol that is a parametrized set of instructions that resolve
    * to a value. */
   record Proc(
-    Token.LowercaseIdentifier identifier,
-    List<Token.LowercaseIdentifier> parameters,
+    Token.Identifier identifier,
+    List<Token.Identifier> parameters,
     Statement body) implements Definition
   {
     @Override
@@ -53,7 +70,7 @@ public sealed interface Node {
   }
 
   /** Defining a symbol that holds an known value. */
-  record Const(Token.LowercaseIdentifier identifier, Expression value)
+  record Const(Token.Identifier identifier, Expression value)
     implements Definition
   {
     @Override
@@ -66,9 +83,8 @@ public sealed interface Node {
   }
 
   /** Defining a symbol that holds an unknown value. */
-  record Var(
-    Token.LowercaseIdentifier identifier,
-    Optional<Expression> initial_value) implements Definition, Statement
+  record Var(Token.Identifier identifier, Optional<Expression> initial_value)
+    implements Definition, Statement
   {
     @Override
     public int first(List<Token> tokens) {
@@ -489,27 +505,27 @@ public sealed interface Node {
   sealed interface SymbolBased extends Precedence0 {}
 
   /** Expression that denotes the value held by a symbol. */
-  record SymbolAccess(int first, String identifier) implements SymbolBased {
+  record SymbolAccess(Mention accessed) implements SymbolBased {
     @Override
-    public int first(List<Token> tokens) { return first; }
+    public int first(List<Token> tokens) { return accessed.first(tokens); }
 
     @Override
-    public int last(List<Token> tokens) { return first; }
+    public int last(List<Token> tokens) { return accessed.last(tokens); }
   }
 
   /** Expression that calls a procedure. */
-  record Call(int first, String called, List<Expression> arguments)
+  record Call(Mention called, List<Expression> arguments)
     implements SymbolBased
   {
     @Override
-    public int first(List<Token> tokens) { return first; }
+    public int first(List<Token> tokens) { return called.first(tokens); }
 
     @Override
     public int last(List<Token> tokens) {
       if (!arguments.isEmpty()) {
         return arguments.get(arguments.size() - 1).last(tokens) + 1;
       }
-      return first + 2;
+      return called.first(tokens) + 2;
     }
   }
 
@@ -544,6 +560,21 @@ public sealed interface Node {
 
     @Override
     public int last(List<Token> tokens) { return first; }
+  }
+
+  /** Mentioning a symbol by its scope and identifier. */
+  record Mention(Optional<Token.Identifier> source, Token.Identifier identifier)
+    implements Node
+  {
+    @Override
+    public int first(List<Token> tokens) {
+      if (source.isPresent())
+        return tokens.indexOf(source.get());
+      return tokens.indexOf(identifier);
+    }
+
+    @Override
+    public int last(List<Token> tokens) { return tokens.indexOf(identifier); }
   }
 
   /** Index of the node's first token. Used for reporting diagnostics with a

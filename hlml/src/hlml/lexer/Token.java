@@ -498,21 +498,12 @@ public sealed interface Token {
   }
 
   /** Any word that refers to a user-defined construct. */
-  sealed interface Identifier extends Token {
-    /** Characters that make up the identifier. */
-    String text();
+  record Identifier(int start, String text) implements Token {
+    @Override
+    public int end() { return start() + text().length(); }
 
     @Override
-    default int end() { return start() + text().length(); }
-  }
-
-  /** Identifiers the begin with a lowercase letter. Used for identifying
-   * variables and procedures. */
-  record LowercaseIdentifier(int start, String text) implements Identifier {
-    @Override
-    public String explanation() {
-      return "lowercase identifier `%s`".formatted(text);
-    }
+    public String explanation() { return "identifier `%s`".formatted(text); }
   }
 
   /** A number constant. */

@@ -32,12 +32,14 @@ public class Source {
         .to_exception();
     }
     int initial = name.codePointAt(0);
-    if (initial < 'a' || initial > 'z') {
+    boolean is_initial =
+      initial >= 'a' && initial <= 'z' || initial >= 'A' && initial <= 'Z';
+    if (!is_initial) {
       throw Subject
         .of(path)
         .to_diagnostic(
           "error",
-          "Source file's name must start with a lowercase letter, not `%c`!",
+          "Source file's name must start with a letter, not `%c`!",
           initial)
         .to_exception();
     }
@@ -45,6 +47,7 @@ public class Source {
       int character = name.codePointAt(i);
       boolean is_valid =
         character >= 'a' && character <= 'z'
+          || character >= 'A' && character <= 'Z'
           || character >= '0' && character <= '9'
           || character == '_';
       if (!is_valid) {
@@ -52,7 +55,7 @@ public class Source {
           .of(path)
           .to_diagnostic(
             "error",
-            "Source file's name must consist of lowercase letters, decimal digits and underscores, not `%c`!",
+            "Source file's name must consist of letters, digits and underscores, not `%c`!",
             character)
           .to_exception();
       }

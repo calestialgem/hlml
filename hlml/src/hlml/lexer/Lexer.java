@@ -103,7 +103,9 @@ public final class Lexer {
             Token.EqualEqual::new,
             Token.EqualEqualEqual::new);
         default -> {
-          if (initial >= 'a' && initial <= 'z') {
+          if (initial >= 'a' && initial <= 'z'
+            || initial >= 'A' && initial <= 'Z')
+          {
             while (has_current()) {
               int character = get_current();
               boolean is_word_part =
@@ -129,7 +131,7 @@ public final class Lexer {
               case "break" -> { token = new Token.Break(start); }
               case "continue" -> { token = new Token.Continue(start); }
               case "return" -> { token = new Token.Return(start); }
-              default -> { token = new Token.LowercaseIdentifier(start, text); }
+              default -> { token = new Token.Identifier(start, text); }
             }
             tokens.add(token);
             break;
@@ -184,7 +186,7 @@ public final class Lexer {
             break;
           }
           throw source
-            .subject(start, current)
+            .subject(start)
             .to_diagnostic("error", "Unknown character `%c`!", initial)
             .to_exception();
         }

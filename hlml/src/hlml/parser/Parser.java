@@ -58,21 +58,47 @@ public final class Parser {
 
   /** Parses a definition. */
   private Optional<Node.Definition> parse_definition() {
-    return first_of(this::parse_proc, this::parse_const, this::parse_var);
+    return first_of(
+      this::parse_using,
+      this::parse_proc,
+      this::parse_const,
+      this::parse_var);
+  }
+
+  /** Parses a using. */
+  private Optional<Node.Using> parse_using() {
+    if (parse_token(Token.Using.class).isEmpty())
+      return Optional.empty();
+    Node.Mention used =
+      expect(this::parse_mention, "mention to used of the alias definition");
+    Optional<Token.Identifier> alias = Optional.empty();
+    if (parse_token(Token.As.class).isPresent()) {
+      alias =
+        Optional
+          .of(
+            expect_token(
+              Token.Identifier.class,
+              "alias identifier of the alias definition"));
+    }
+    expect_token(
+      Token.Semicolon.class,
+      "terminator `;` of the alias definition");
+    Node.Using using = new Node.Using(used, alias);
+    return Optional.of(using);
   }
 
   /** Parses a proc. */
   private Optional<Node.Proc> parse_proc() {
     if (parse_token(Token.Proc.class).isEmpty()) { return Optional.empty(); }
-    Token.LowercaseIdentifier identifier =
+    Token.Identifier identifier =
       expect_token(
-        Token.LowercaseIdentifier.class,
+        Token.Identifier.class,
         "identifier of the procedure declaration");
     expect_token(
       Token.OpeningParenthesis.class,
       "parameter list opener `(` of the procedure declaration");
-    List<Token.LowercaseIdentifier> parameters =
-      separated_of(() -> parse_token(Token.LowercaseIdentifier.class));
+    List<Token.Identifier> parameters =
+      separated_of(() -> parse_token(Token.Identifier.class));
     expect_token(
       Token.ClosingParenthesis.class,
       "parameter list closer `)` of the procedure declaration");
@@ -85,9 +111,9 @@ public final class Parser {
   /** Parses a const. */
   private Optional<Node.Const> parse_const() {
     if (parse_token(Token.Const.class).isEmpty()) { return Optional.empty(); }
-    Token.LowercaseIdentifier identifier =
+    Token.Identifier identifier =
       expect_token(
-        Token.LowercaseIdentifier.class,
+        Token.Identifier.class,
         "identifier of the constant declaration");
     expect_token(
       Token.Equal.class,
@@ -104,9 +130,9 @@ public final class Parser {
   /** Parses a var. */
   private Optional<Node.Var> parse_var() {
     if (parse_token(Token.Var.class).isEmpty()) { return Optional.empty(); }
-    Token.LowercaseIdentifier identifier =
+    Token.Identifier identifier =
       expect_token(
-        Token.LowercaseIdentifier.class,
+        Token.Identifier.class,
         "identifier of the variable declaration");
     Optional<Node.Expression> initial_value = Optional.empty();
     if (parse_token(Token.Equal.class).isPresent()) {
@@ -576,9 +602,9 @@ public final class Parser {
     Node.Precedence0 result = precedence_0.get();
     while (true) {
       if (parse_token(Token.Dot.class).isEmpty()) { break; }
-      Token.LowercaseIdentifier called =
+      Token.Identifier called =
         expect_token(
-          Token.LowercaseIdentifier.class,
+          Token.Identifier.class,
           "procedure name of the member call expression");
       expect_token(
         Token.OpeningParenthesis.class,
@@ -611,18 +637,15 @@ public final class Parser {
 
   /** Parses a symbol based. */
   private Optional<Node.SymbolBased> parse_symbol_based() {
-    int first = current;
-    Optional<Token.LowercaseIdentifier> token =
-      parse_token(Token.LowercaseIdentifier.class);
-    if (token.isEmpty()) { return Optional.empty(); }
-    Node.SymbolBased symbol_based =
-      new Node.SymbolAccess(first, token.get().text());
+    Optional<Node.Mention> mention = parse_mention();
+    if (mention.isEmpty()) { return Optional.empty(); }
+    Node.SymbolBased symbol_based = new Node.SymbolAccess(mention.get());
     if (parse_token(Token.OpeningParenthesis.class).isPresent()) {
       List<Node.Expression> arguments = separated_of(this::parse_expression);
       expect_token(
         Token.ClosingParenthesis.class,
         "argument list closer `)` of the call expression");
-      symbol_based = new Node.Call(first, token.get().text(), arguments);
+      symbol_based = new Node.Call(mention.get(), arguments);
     }
     return Optional.of(symbol_based);
   }
@@ -636,6 +659,37 @@ public final class Parser {
     Node.NumberConstant number_constant =
       new Node.NumberConstant(first, token.get().value());
     return Optional.of(number_constant);
+  }
+
+  /** Parses a mention. */
+  private Optional<Node.Mention> parse_mention() {
+    Optional<Token.Identifier> scope = parse_scope();
+    if (scope.isPresent()) {
+      Token.Identifier identifier =
+        expect_token(
+          Token.Identifier.class,
+          "identifier of the qualified mention");
+      Node.Mention mention = new Node.Mention(scope, identifier);
+      return Optional.of(mention);
+    }
+    Optional<Token.Identifier> identifier = parse_token(Token.Identifier.class);
+    if (identifier.isEmpty())
+      return Optional.empty();
+    Node.Mention mention = new Node.Mention(scope, identifier.get());
+    return Optional.of(mention);
+  }
+
+  /** Parses a scope, which is the name of a source fallowed by `::`. */
+  private Optional<Token.Identifier> parse_scope() {
+    int first = current;
+    Optional<Token.Identifier> scope = parse_token(Token.Identifier.class);
+    if (scope.isEmpty())
+      return Optional.empty();
+    if (parse_token(Token.ColonColon.class).isEmpty()) {
+      current = first;
+      return Optional.empty();
+    }
+    return scope.map(Function.identity());
   }
 
   /** Runs the given parser repeatedly and collects the parsed constructs as a
