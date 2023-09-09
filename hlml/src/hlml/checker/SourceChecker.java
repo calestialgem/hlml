@@ -634,7 +634,7 @@ final class SourceChecker {
           called.name().identifier())
         .to_exception();
     }
-    if (procedure.parameters().size() > arguments.size()) {
+    if (arguments.size() > procedure.parameters().size()) {
       throw source
         .subject(node)
         .to_diagnostic(
