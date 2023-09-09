@@ -60,6 +60,9 @@ public final class Builder {
    * loop. Used for building break statements. */
   private Waypoint loop_end;
 
+  /** Global variables in the program with initial values. */
+  private Set<Name> initialized;
+
   /** Addresses of the procedures called in the program. */
   private Map<Name, Waypoint> addresses;
 
@@ -82,9 +85,23 @@ public final class Builder {
     built = new HashSet<>();
     program = Program.create();
     stack = Stack.create();
+    initialized = new HashSet<>();
     addresses = new HashMap<>();
     for (Name dependency : entrypoint.get().dependencies()) {
       build_dependency(dependency);
+    }
+    for (Name global_variable : initialized) {
+      current = global_variable;
+      Semantic.Var var =
+        (Semantic.Var) target
+          .sources()
+          .get(global_variable.source())
+          .globals()
+          .get(global_variable.identifier());
+      Register value = build_expression(var.initial_value().get());
+      Register global = Register.global(global_variable);
+      stack.pop(value);
+      program.instruct(new Instruction.Set(global, value));
     }
     current = new Name(target.name(), "entrypoint");
     build_statement(entrypoint.get().body());
@@ -136,7 +153,8 @@ public final class Builder {
     switch (definition) {
       case Semantic.Proc d -> addresses.put(name, program.waypoint());
       case Semantic.Const d -> {}
-      case Semantic.Var d -> {}
+      case Semantic.Var d ->
+        d.initial_value().ifPresent(i -> initialized.add(name));
     }
   }
 

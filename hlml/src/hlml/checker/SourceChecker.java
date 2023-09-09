@@ -115,17 +115,22 @@ final class SourceChecker {
 
   /** Check a variable definition. */
   private Semantic.Var check_var(Optional<Scope> scope, Node.Var node) {
-    if (scope.isEmpty() && node.initial_value().isPresent()) {
+    Optional<Semantic.Expression> initial_value =
+      node
+        .initial_value()
+        .map(i -> check_expression(scope.orElseGet(Scope::create), i));
+    if (scope.isEmpty()
+      && initial_value.isPresent()
+      && !(initial_value.get() instanceof Semantic.Constant))
+    {
       throw source
         .subject(node.initial_value().get())
         .to_diagnostic(
           "error",
-          "Global variables cannot have an initial value!")
+          "Global variables cannot have a non-constant expressions as initial values!")
         .to_exception();
     }
-    return new Semantic.Var(
-      node.identifier().text(),
-      node.initial_value().map(i -> check_expression(scope.get(), i)));
+    return new Semantic.Var(node.identifier().text(), initial_value);
   }
 
   /** Checks a statement. */
