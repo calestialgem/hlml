@@ -138,13 +138,18 @@ public sealed interface Node {
 
   /** Statements that loop the control flow. */
   record While(
+    Optional<Token.Identifier> label,
     Expression condition,
     Optional<Statement> interleaved,
     Statement loop,
     Optional<Statement> zero_branch) implements Statement
   {
     @Override
-    public int first(List<Token> tokens) { return condition.first(tokens) - 1; }
+    public int first(List<Token> tokens) {
+      if (label.isPresent())
+        return tokens.indexOf(label.get());
+      return condition.first(tokens) - 1;
+    }
 
     @Override
     public int last(List<Token> tokens) {
@@ -154,21 +159,33 @@ public sealed interface Node {
   }
 
   /** Statements that exit a loop. */
-  record Break(int first) implements Statement {
+  record Break(int first, Optional<Token.Identifier> label)
+    implements Statement
+  {
     @Override
     public int first(List<Token> tokens) { return first; }
 
     @Override
-    public int last(List<Token> tokens) { return first + 1; }
+    public int last(List<Token> tokens) {
+      if (label.isPresent())
+        return tokens.indexOf(label.get()) + 1;
+      return first + 1;
+    }
   }
 
   /** Statements that skip the remaining in a loop. */
-  record Continue(int first) implements Statement {
+  record Continue(int first, Optional<Token.Identifier> label)
+    implements Statement
+  {
     @Override
     public int first(List<Token> tokens) { return first; }
 
     @Override
-    public int last(List<Token> tokens) { return first + 1; }
+    public int last(List<Token> tokens) {
+      if (label.isPresent())
+        return tokens.indexOf(label.get()) + 1;
+      return first + 1;
+    }
   }
 
   /** Statements that provide a value to the procedures caller. */

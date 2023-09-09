@@ -1,0 +1,4 @@
+set label_test$entrypoint$i 0
+op lessThan _0 label_test$entrypoint$i 10
+jump 4 equal true _0
+jump 

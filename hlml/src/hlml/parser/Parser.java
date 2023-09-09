@@ -197,7 +197,14 @@ public final class Parser {
 
   /** Parses a while statement. */
   private Optional<Node.While> parse_while() {
-    if (parse_token(Token.While.class).isEmpty()) { return Optional.empty(); }
+    int first = current;
+    Optional<Token.Identifier> label = parse_token(Token.Identifier.class);
+    if (label.isPresent() && parse_token(Token.Colon.class).isEmpty()
+      || parse_token(Token.While.class).isEmpty())
+    {
+      current = first;
+      return Optional.empty();
+    }
     Node.Expression condition =
       expect(this::parse_expression, "condition of the while statement");
     Optional<Node.Statement> interleaved = Optional.empty();
@@ -221,7 +228,7 @@ public final class Parser {
               "zero branch of the while statement"));
     }
     Node.While while_statement =
-      new Node.While(condition, interleaved, loop, zero_branch);
+      new Node.While(label, condition, interleaved, loop, zero_branch);
     return Optional.of(while_statement);
   }
 
@@ -229,10 +236,11 @@ public final class Parser {
   private Optional<Node.Break> parse_break() {
     int first = current;
     if (parse_token(Token.Break.class).isEmpty()) { return Optional.empty(); }
+    Optional<Token.Identifier> label = parse_token(Token.Identifier.class);
     expect_token(
       Token.Semicolon.class,
       "terminator `;` of the break statement");
-    Node.Break break_statement = new Node.Break(first);
+    Node.Break break_statement = new Node.Break(first, label);
     return Optional.of(break_statement);
   }
 
@@ -242,10 +250,11 @@ public final class Parser {
     if (parse_token(Token.Continue.class).isEmpty()) {
       return Optional.empty();
     }
+    Optional<Token.Identifier> label = parse_token(Token.Identifier.class);
     expect_token(
       Token.Semicolon.class,
       "terminator `;` of the continue statement");
-    Node.Continue continue_statement = new Node.Continue(first);
+    Node.Continue continue_statement = new Node.Continue(first, label);
     return Optional.of(continue_statement);
   }
 
