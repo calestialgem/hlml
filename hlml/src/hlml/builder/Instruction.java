@@ -77,6 +77,12 @@ sealed interface Instruction {
    * display. */
   record DrawFlush(Register d) implements Instruction {}
 
+  /** Instruction that packs a color made up of three floating point channels to
+   * a single unsigned integer. */
+  record PackColor(Register c, Register r, Register g, Register b)
+    implements Instruction
+  {}
+
   /** Instruction that makes the currently run instruction to change out of
    * sequence. */
   sealed interface Jump extends Instruction {

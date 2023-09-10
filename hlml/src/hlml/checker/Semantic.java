@@ -322,6 +322,25 @@ public sealed interface Semantic {
     public Set<Name> dependencies() { return Set.of(); }
   }
 
+  /** Procedure that compiles to the `packcolor` instruction. */
+  record PackColor() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "pack_color"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("c", true),
+          new Parameter("r", false),
+          new Parameter("g", false),
+          new Parameter("b", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
   /** Definition of a procedure's parameter. */
   record Parameter(String identifier, boolean in_out) implements Semantic {}
 

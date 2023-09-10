@@ -133,6 +133,10 @@ final class Program {
         appendable.append("drawflush");
         append_operands(appendable, i.d());
       }
+      case Instruction.PackColor i -> {
+        appendable.append("packcolor");
+        append_operands(appendable, i.c(), i.r(), i.g(), i.b());
+      }
       case Instruction.JumpAlways i -> {
         appendable.append("jump ");
         appendable.append(Integer.toString(resolve(i.goal())));

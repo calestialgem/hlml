@@ -520,6 +520,16 @@ public final class Builder {
                 new Instruction.DrawFlush(build_argument(e.arguments(), 0)));
             yield Register.null_();
           }
+          case Semantic.PackColor p -> {
+            program
+              .instruct(
+                new Instruction.PackColor(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2),
+                  build_argument(e.arguments(), 3)));
+            yield Register.null_();
+          }
         };
       }
     };
