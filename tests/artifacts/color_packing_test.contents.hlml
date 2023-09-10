@@ -1,12 +1,21 @@
 # Tests packing colors and packed color constants.
 
+link display1;
+
 entrypoint {
   var color;
+  mlog::draw_clear(0, 0, 0);
+
   mlog::pack_color(color, 0.78, 0.13, 0.25);  # packcolor color 0.78 0.13 0.25
+  mlog::draw_col(color);
+  mlog::draw_rect(0, 0, 80, 40);
 
   color = 0pffaf00;                           # set color %ffaf00ff
   color = 0pffaf00ff;                         # set color %ffaf00ff
   color = 0pff_af_00;                         # set color %ffaf00ff
   color = 0pff_af_00_ff;                      # set color %ffaf00ff
   mlog::draw_col(color);
+  mlog::draw_rect(0, 40, 80, 40);
+
+  mlog::draw_flush(display1);
 }

@@ -1,7 +1,12 @@
+draw clear 0 0 0
 packcolor color_packing_test$entrypoint$color 0.78 0.13 0.25
+draw col color_packing_test$entrypoint$color
+draw rect 0 0 80 40
 set color_packing_test$entrypoint$color %ffaf00ff
 set color_packing_test$entrypoint$color %ffaf00ff
 set color_packing_test$entrypoint$color %ffaf00ff
 set color_packing_test$entrypoint$color %ffaf00ff
 draw col color_packing_test$entrypoint$color
+draw rect 0 40 80 40
+drawflush display1
 end
