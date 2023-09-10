@@ -536,12 +536,12 @@ public sealed interface Token {
   record ColorConstant(int start, int end, int value) implements Token {
     @Override
     public String explanation() {
-      return "color `%s`".formatted(PackedColorFormatter.format(value));
+      return "color `0p%s`".formatted(PackedColorFormatter.format(value));
     }
 
     @Override
     public String toString() {
-      return "ColorConstant[start=%d, end=%d, value=%s]"
+      return "ColorConstant[start=%d, end=%d, value=0p%s]"
         .formatted(start, end, PackedColorFormatter.format(value));
     }
   }
