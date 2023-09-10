@@ -142,9 +142,63 @@ final class NumberBuilder {
     exponent_sign = is_negative;
   }
 
-  /** Builds a {@link Number} using the currently inserted digits. Does not
+  /** Builds a {@code double} using the currently inserted digits. Does not
    * invalidate or affect the builder. */
-  double build() {
+  double build_double() {
+    start_build();
+    rescale(double_significand_width);
+    if (significand == 0) { return 0; }
+    exponent += double_mantissa_width + double_exponent_bias;
+    if (exponent >= double_exponent_limit) { return Double.POSITIVE_INFINITY; }
+    if (exponent > 0) {
+      significand &= double_mantissa_mask;
+      return Double
+        .longBitsToDouble(
+          (long) exponent << double_mantissa_width | significand);
+    }
+    if (-exponent > double_significand_width) { return 0; }
+    significand >>>= 1 - exponent;
+    return Double.longBitsToDouble(significand);
+  }
+
+  /** Builds an {@code unsigned int} using the currently inserted digits. Does
+   * not invalidate or affect the builder. Throws {@link ArithmeticException} if
+   * the built number does not fit. */
+  int build_int() {
+    long as_long = build_long();
+    if (Long.compareUnsigned(as_long, Integer.toUnsignedLong(-1)) > 0) {
+      throw new ArithmeticException(
+        "Number does not fit to an 32-bit unsigned integral!");
+    }
+    return (int) as_long;
+  }
+
+  /** Builds an {@code unsigned long} using the currently inserted digits. Does
+   * not invalidate or affect the builder. Throws {@link ArithmeticException} if
+   * the built number does not fit. */
+  long build_long() {
+    start_build();
+    if (exponent > 0) {
+      int consumable_exponent =
+        Integer.min(exponent, Long.numberOfLeadingZeros(significand));
+      significand <<= consumable_exponent;
+      exponent -= consumable_exponent;
+    }
+    if (exponent < 0) {
+      int consumable_exponent =
+        Integer.min(-exponent, Long.numberOfTrailingZeros(significand));
+      significand >>>= consumable_exponent;
+      exponent += consumable_exponent;
+    }
+    if (exponent != 0) {
+      throw new ArithmeticException("Number is not integral!");
+    }
+    return significand;
+  }
+
+  /** Defines significand from digits, and exponent from the scale and the
+   * trailing exponent. */
+  private void start_build() {
     significand = digits;
     switch (base) {
       case NumberBase.PowerOfTwo b -> {
@@ -171,19 +225,6 @@ final class NumberBuilder {
         convert_to_binary_exponent(b.radix(), scale - exponent_magnitude);
       }
     }
-    rescale(double_significand_width);
-    if (significand == 0) { return 0; }
-    exponent += double_mantissa_width + double_exponent_bias;
-    if (exponent >= double_exponent_limit) { return Double.POSITIVE_INFINITY; }
-    if (exponent > 0) {
-      significand &= double_mantissa_mask;
-      return Double
-        .longBitsToDouble(
-          (long) exponent << double_mantissa_width | significand);
-    }
-    if (-exponent > double_significand_width) { return 0; }
-    significand >>>= 1 - exponent;
-    return Double.longBitsToDouble(significand);
   }
 
   /** Converts the built number's exponent to base 2. */

@@ -6,7 +6,7 @@ sealed interface NumberBase {
    * number conversions. Exponent's base is {@code 2}. */
   record PowerOfTwo(int power) implements NumberBase {
     @Override
-    public int radix() { return 1 << power - 1; }
+    public int radix() { return 1 << power; }
   }
 
   /** A base that is not a power of {@code 2}. This makes conversions complex

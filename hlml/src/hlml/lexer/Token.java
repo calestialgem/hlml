@@ -1,6 +1,7 @@
 package hlml.lexer;
 
 import hlml.FloatingPointFormatter;
+import hlml.PackedColorFormatter;
 
 /** Longest sequence of characters that make up a meaningful word in hlml. */
 public sealed interface Token {
@@ -522,6 +523,26 @@ public sealed interface Token {
     @Override
     public String explanation() {
       return "number `%s`".formatted(FloatingPointFormatter.format(value));
+    }
+
+    @Override
+    public String toString() {
+      return "NumberConstant[start=%d, end=%d, value=%s]"
+        .formatted(start, end, FloatingPointFormatter.format(value));
+    }
+  }
+
+  /** A packed color constant. */
+  record ColorConstant(int start, int end, int value) implements Token {
+    @Override
+    public String explanation() {
+      return "color `%s`".formatted(PackedColorFormatter.format(value));
+    }
+
+    @Override
+    public String toString() {
+      return "ColorConstant[start=%d, end=%d, value=%s]"
+        .formatted(start, end, PackedColorFormatter.format(value));
     }
   }
 

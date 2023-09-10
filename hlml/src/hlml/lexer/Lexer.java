@@ -139,6 +139,51 @@ public final class Lexer {
             tokens.add(token);
             break;
           }
+          if (initial == '0'
+            && has_current()
+            && (get_current() == 'p' || get_current() == 'P'))
+          {
+            NumberBase base = NumberBase.of(16);
+            NumberBuilder builder = NumberBuilder.create(base);
+            advance();
+            try {
+              int digit_count = 1;
+              builder.insert(enforce_digit(base));
+              while (has_current()) {
+                if (get_current() == '_') {
+                  advance();
+                  builder.insert(enforce_digit(base));
+                  digit_count++;
+                }
+                else {
+                  OptionalInt maybe_digit = lex_digit(base);
+                  if (maybe_digit.isEmpty()) { break; }
+                  builder.insert(maybe_digit.getAsInt());
+                  digit_count++;
+                }
+              }
+              if (digit_count != 6 && digit_count != 8)
+                throw source
+                  .subject(start, current)
+                  .to_diagnostic(
+                    "error",
+                    "Color constants must have 6 or 8 hexadecimal digits!")
+                  .to_exception();
+              int value = builder.build_int();
+              if (digit_count == 6) {
+                value <<= 8;
+                value |= 0xff;
+              }
+              tokens.add(new Token.ColorConstant(start, current, value));
+            }
+            catch (ArithmeticException cause) {
+              throw source
+                .subject(start, current)
+                .to_diagnostic("error", "Could not lex the color constant!")
+                .to_exception(cause);
+            }
+            break;
+          }
           if (initial >= '0' && initial <= '9') {
             int digit = initial - '0';
             NumberBase base = NumberBase.of(10);
@@ -219,7 +264,7 @@ public final class Lexer {
                   }
                 }
               }
-              double value = builder.build();
+              double value = builder.build_double();
               tokens.add(new Token.NumberConstant(start, current, value));
             }
             catch (ArithmeticException cause) {
@@ -246,7 +291,12 @@ public final class Lexer {
     if (digit.isPresent()) { return digit.getAsInt(); }
     throw source
       .subject(start, current)
-      .to_diagnostic("error", "Expected a digit!")
+      .to_diagnostic(
+        "error",
+        "Expected a digit %s!",
+        has_current()
+          ? "instead of `%c`".formatted(get_current())
+          : "at the end of the file")
       .to_exception();
   }
 

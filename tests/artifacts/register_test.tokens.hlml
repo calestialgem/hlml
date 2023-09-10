@@ -1,1 +1,1 @@
-[Entrypoint[start=59], OpeningBrace[start=70], NumberConstant[start=75, end=76, value=1.0], Semicolon[start=76], NumberConstant[start=81, end=83, value=71.0], Semicolon[start=83], ClosingBrace[start=86]]
+[Entrypoint[start=59], OpeningBrace[start=70], NumberConstant[start=75, end=76, value=1], Semicolon[start=76], NumberConstant[start=81, end=83, value=71], Semicolon[start=83], ClosingBrace[start=86]]
