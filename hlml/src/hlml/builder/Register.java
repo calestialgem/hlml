@@ -30,8 +30,14 @@ sealed interface Register {
     public boolean is_volatile() { return false; }
   }
 
-  /** Literal that holds a constant. */
-  record Constant(double value) implements Register {
+  /** Literal that holds a constant number. */
+  record Number(double value) implements Register {
+    @Override
+    public boolean is_volatile() { return false; }
+  }
+
+  /** Literal that holds a constant color. */
+  record Color(int value) implements Register {
     @Override
     public boolean is_volatile() { return false; }
   }
@@ -79,9 +85,14 @@ sealed interface Register {
     return new Link(building);
   }
 
-  /** Returns a literal holding the given constant. */
-  static Register constant(double value) {
-    return new Constant(value);
+  /** Returns a literal holding the given constant number. */
+  static Register number(double value) {
+    return new Number(value);
+  }
+
+  /** Returns a literal holding the given constant color. */
+  static Register color(int value) {
+    return new Color(value);
   }
 
   /** Returns a literal holding the given instruction index. */

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.OptionalInt;
 
 import hlml.FloatingPointFormatter;
+import hlml.PackedColorFormatter;
 
 /** Ordered collection of instructions are executed sequentially for a
  * meaningful usage of the processor. */
@@ -208,8 +209,12 @@ final class Program {
         appendable.append(Integer.toString(r.index()));
       }
       case Register.Link r -> appendable.append(r.building());
-      case Register.Constant r ->
+      case Register.Number r ->
         appendable.append(FloatingPointFormatter.format(r.value()));
+      case Register.Color r -> {
+        appendable.append('%');
+        appendable.append(PackedColorFormatter.format(r.value()));
+      }
       case Register.Instruction r ->
         appendable.append(Integer.toString(resolve(r.waypoint())));
       case Register.Counter r -> appendable.append("@counter");

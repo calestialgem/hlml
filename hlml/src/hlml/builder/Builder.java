@@ -274,7 +274,7 @@ public final class Builder {
   {
     Register target = build_expression(statement.target());
     program
-      .instruct(initializer.initialize(target, target, Register.constant(1)));
+      .instruct(initializer.initialize(target, target, Register.number(1)));
   }
 
   /** Builds a assign statement. */
@@ -338,9 +338,10 @@ public final class Builder {
       }
       case Semantic.LogicalNot u ->
         build_unary_operation(u, Instruction.NotEqualTo::new);
-      case Semantic.NumberConstant c -> Register.constant(c.value());
+      case Semantic.NumberConstant c -> Register.number(c.value());
+      case Semantic.ColorConstant e -> Register.color(e.value());
       case Semantic.LinkAccess e -> Register.link(e.building());
-      case Semantic.ConstantAccess c -> Register.constant(c.value());
+      case Semantic.ConstantAccess c -> Register.number(c.value());
       case Semantic.GlobalVariableAccess g -> Register.global(g.name());
       case Semantic.LocalVariableAccess l ->
         Register.local(current, l.identifier());
@@ -568,7 +569,7 @@ public final class Builder {
     Register operand = build_expression(operation.operand());
     Register target = stack.push(operand);
     program
-      .instruct(initializer.initialize(target, Register.constant(0), operand));
+      .instruct(initializer.initialize(target, Register.number(0), operand));
     return target;
   }
 }

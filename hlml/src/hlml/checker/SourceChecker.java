@@ -531,11 +531,7 @@ final class SourceChecker {
           a -> a != 0 ? 1 : 0);
       case Node.NumberConstant number_constant ->
         new Semantic.NumberConstant(number_constant.value());
-      case Node.ColorConstant e ->
-        throw source
-          .subject(node)
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
+      case Node.ColorConstant e -> new Semantic.ColorConstant(e.value());
       case Node.SymbolAccess v -> check_symbol_access(scope, v);
       case Node.Grouping g -> check_expression(scope, g.grouped());
       case Node.Call e -> {

@@ -1,0 +1,7 @@
+packcolor color_packing_test$entrypoint$color 0.78 0.13 0.25
+set color_packing_test$entrypoint$color %ffaf00ff
+set color_packing_test$entrypoint$color %ffaf00ff
+set color_packing_test$entrypoint$color %ffaf00ff
+set color_packing_test$entrypoint$color %ffaf00ff
+draw col color_packing_test$entrypoint$color
+end

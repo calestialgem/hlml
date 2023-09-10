@@ -716,6 +716,12 @@ public sealed interface Semantic {
   /** Expression that evaluates to a hard-coded numeric value. */
   record NumberConstant(double value) implements Constant {}
 
+  /** Expression that evaluates to a hard-coded color value. */
+  record ColorConstant(int value) implements Expression {
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
   /** Expression that evaluates to the value held by a symbol. */
   sealed interface SymbolAccess extends Expression {}
 
