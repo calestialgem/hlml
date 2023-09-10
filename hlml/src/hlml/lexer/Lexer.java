@@ -153,22 +153,22 @@ public final class Lexer {
                 if (get_current() == '_') {
                   advance();
                   builder.insert(enforce_digit(base));
-                  digit_count++;
                 }
                 else {
                   OptionalInt maybe_digit = lex_digit(base);
                   if (maybe_digit.isEmpty()) { break; }
                   builder.insert(maybe_digit.getAsInt());
-                  digit_count++;
                 }
+                digit_count++;
               }
-              if (digit_count != 6 && digit_count != 8)
+              if (digit_count != 6 && digit_count != 8) {
                 throw source
                   .subject(start, current)
                   .to_diagnostic(
                     "error",
                     "Color constants must have 6 or 8 hexadecimal digits!")
                   .to_exception();
+              }
               int value = builder.build_int();
               if (digit_count == 6) {
                 value <<= 8;
