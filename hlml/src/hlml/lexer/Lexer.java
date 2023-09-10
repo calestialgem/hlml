@@ -2,6 +2,8 @@ package hlml.lexer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.function.IntFunction;
 
 import hlml.loader.LoadedSource;
@@ -138,52 +140,93 @@ public final class Lexer {
             break;
           }
           if (initial >= '0' && initial <= '9') {
-            Natural128 value = Natural128.zero;
-            value =
-              value
-                .add(initial - '0')
-                .orElseThrow(
-                  () -> source
-                    .subject(start, current)
-                    .to_diagnostic("error", "Huge number!")
-                    .to_exception());
-            while (has_current()) {
-              int character = get_current();
-              if (character == '_') { continue; }
-              boolean is_digit = character >= '0' && character <= '9';
-              if (!is_digit) { break; }
-              advance();
-              value =
-                value
-                  .multiply(10)
-                  .orElseThrow(
-                    () -> source
-                      .subject(start, current)
-                      .to_diagnostic("error", "Huge number!")
-                      .to_exception());
-              value =
-                value
-                  .add(character - '0')
-                  .orElseThrow(
-                    () -> source
-                      .subject(start, current)
-                      .to_diagnostic("error", "Huge number!")
-                      .to_exception());
+            int digit = initial - '0';
+            NumberBase base = NumberBase.of(10);
+            if (digit == 0 && has_current()) {
+              Optional<NumberBase> given_base = switch (get_current()) {
+                case 'b', 'B' -> Optional.of(NumberBase.of(2));
+                case 'o', 'O' -> Optional.of(NumberBase.of(8));
+                case 'd', 'D' -> Optional.of(NumberBase.of(10));
+                case 'x', 'X' -> Optional.of(NumberBase.of(16));
+                default -> Optional.empty();
+              };
+              if (given_base.isPresent()) {
+                base = given_base.get();
+                advance();
+                digit = enforce_digit(base);
+              }
             }
-            Token.NumberConstant number =
-              new Token.NumberConstant(
-                start,
-                current,
-                value
-                  .to_double()
-                  .orElseThrow(
-                    () -> source
-                      .subject(start, current)
-                      .to_diagnostic(
-                        "error",
-                        "Number is not representable as a binary64 floating point!")
-                      .to_exception()));
-            tokens.add(number);
+            NumberBuilder builder = NumberBuilder.create(base);
+            try {
+              builder.insert(digit);
+              while (has_current()) {
+                if (get_current() == '_') {
+                  advance();
+                  builder.insert(enforce_digit(base));
+                }
+                else {
+                  OptionalInt maybe_digit = lex_digit(base);
+                  if (maybe_digit.isEmpty()) { break; }
+                  builder.insert(maybe_digit.getAsInt());
+                }
+              }
+              if (has_current() && get_current() == '.') {
+                int start = current;
+                advance();
+                builder.fraction_separator();
+                OptionalInt first_digit = lex_digit(base);
+                if (first_digit.isEmpty()) {
+                  current = start;
+                }
+                else {
+                  builder.insert(first_digit.getAsInt());
+                  while (has_current()) {
+                    if (get_current() == '_') {
+                      advance();
+                      builder.insert(enforce_digit(base));
+                    }
+                    else {
+                      OptionalInt maybe_digit = lex_digit(base);
+                      if (maybe_digit.isEmpty()) { break; }
+                      builder.insert(maybe_digit.getAsInt());
+                    }
+                  }
+                }
+              }
+              int exponent_separator =
+                base instanceof NumberBase.PowerOfTwo ? 'p' : 'e';
+              if (has_current()
+                && (get_current() == exponent_separator
+                  || get_current() == exponent_separator + 'A' - 'a'))
+              {
+                advance();
+                boolean is_negative = has_current() && get_current() == '-';
+                if (is_negative || has_current() && get_current() == '+')
+                  advance();
+                builder.exponent_separator(is_negative);
+                base = NumberBase.of(10);
+                builder.insert(enforce_digit(base));
+                while (has_current()) {
+                  if (get_current() == '_') {
+                    advance();
+                    builder.insert(enforce_digit(base));
+                  }
+                  else {
+                    OptionalInt maybe_digit = lex_digit(base);
+                    if (maybe_digit.isEmpty()) { break; }
+                    builder.insert(maybe_digit.getAsInt());
+                  }
+                }
+              }
+              double value = NumberConverter.convert(builder.build());
+              tokens.add(new Token.NumberConstant(start, current, value));
+            }
+            catch (ArithmeticException cause) {
+              throw source
+                .subject(start, current)
+                .to_diagnostic("error", "Could not lex the number constant!")
+                .to_exception(cause);
+            }
             break;
           }
           throw source
@@ -194,6 +237,48 @@ public final class Lexer {
       }
     }
     return new LexedSource(source, tokens);
+  }
+
+  /** Takes a digit or throws. */
+  private int enforce_digit(NumberBase base) {
+    OptionalInt digit = lex_digit(base);
+    if (digit.isPresent())
+      return digit.getAsInt();
+    throw source
+      .subject(start, current)
+      .to_diagnostic("error", "Expected a digit!")
+      .to_exception();
+  }
+
+  /** Takes a new digit if it is of the given base. */
+  private OptionalInt lex_digit(NumberBase base) {
+    int start = current;
+    OptionalInt digit = lex_digit();
+    if (digit.isPresent() && digit.getAsInt() >= base.radix()) {
+      current = start;
+      return OptionalInt.empty();
+    }
+    return digit;
+  }
+
+  /** Takes the next character as a digit if it exists. */
+  private OptionalInt lex_digit() {
+    if (!has_current())
+      return OptionalInt.empty();
+    int character = get_current();
+    if (character >= '0' && character <= '9') {
+      advance();
+      return OptionalInt.of(character - '0');
+    }
+    if (character >= 'a' && character <= 'f') {
+      advance();
+      return OptionalInt.of(character - 'a' + 10);
+    }
+    if (character >= 'A' && character <= 'F') {
+      advance();
+      return OptionalInt.of(character - 'A' + 10);
+    }
+    return OptionalInt.empty();
   }
 
   /** Lexes a single punctuation. */
