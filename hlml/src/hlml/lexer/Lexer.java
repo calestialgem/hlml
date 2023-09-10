@@ -201,8 +201,9 @@ public final class Lexer {
               {
                 advance();
                 boolean is_negative = has_current() && get_current() == '-';
-                if (is_negative || has_current() && get_current() == '+')
+                if (is_negative || has_current() && get_current() == '+') {
                   advance();
+                }
                 builder.exponent_separator(is_negative);
                 base = NumberBase.of(10);
                 builder.insert(enforce_digit(base));
@@ -242,8 +243,7 @@ public final class Lexer {
   /** Takes a digit or throws. */
   private int enforce_digit(NumberBase base) {
     OptionalInt digit = lex_digit(base);
-    if (digit.isPresent())
-      return digit.getAsInt();
+    if (digit.isPresent()) { return digit.getAsInt(); }
     throw source
       .subject(start, current)
       .to_diagnostic("error", "Expected a digit!")
@@ -263,8 +263,7 @@ public final class Lexer {
 
   /** Takes the next character as a digit if it exists. */
   private OptionalInt lex_digit() {
-    if (!has_current())
-      return OptionalInt.empty();
+    if (!has_current()) { return OptionalInt.empty(); }
     int character = get_current();
     if (character >= '0' && character <= '9') {
       advance();

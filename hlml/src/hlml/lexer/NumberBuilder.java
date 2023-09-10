@@ -165,14 +165,14 @@ final class NumberBuilder {
           convert_to_binary_exponent(b.radix(), scale + exponent_magnitude);
           break;
         }
-        if (scale < Integer.MIN_VALUE + exponent_magnitude)
+        if (scale < Integer.MIN_VALUE + exponent_magnitude) {
           throw on_exponent_overflow();
+        }
         convert_to_binary_exponent(b.radix(), scale - exponent_magnitude);
       }
     }
     rescale(double_significand_width);
-    if (significand == 0)
-      return 0;
+    if (significand == 0) { return 0; }
     exponent += double_mantissa_width + double_exponent_bias;
     if (exponent >= double_exponent_limit) { return Double.POSITIVE_INFINITY; }
     if (exponent > 0) {
@@ -195,7 +195,6 @@ final class NumberBuilder {
     }
     if (arbitrary_exponent < 0) {
       scale_down_to_binary(radix, arbitrary_exponent);
-      return;
     }
   }
 
@@ -257,14 +256,13 @@ final class NumberBuilder {
       throw new ArithmeticException("Exponent is too big!");
     }
     long truncated = significand >>> -change;
-    long middle_point = ((truncated << 1) + 1) << -change - 1;
+    long middle_point = (truncated << 1) + 1 << -change - 1;
     boolean rounds_up =
-      !(significand < middle_point
-        || significand == middle_point && (truncated & 1) == 0);
+      significand >= middle_point
+        && (significand != middle_point || (truncated & 1) != 0);
     significand = truncated;
     exponent -= change;
-    if (rounds_up)
-      round_up(target_width);
+    if (rounds_up) { round_up(target_width); }
   }
 
   /** Rounds the given rounded down version of the number up. Throws
