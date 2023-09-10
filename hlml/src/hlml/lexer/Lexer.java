@@ -218,7 +218,7 @@ public final class Lexer {
                   }
                 }
               }
-              double value = NumberConverter.convert(builder.build());
+              double value = builder.build();
               tokens.add(new Token.NumberConstant(start, current, value));
             }
             catch (ArithmeticException cause) {
