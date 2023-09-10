@@ -189,18 +189,6 @@ final class NumberBuilder {
   /** Converts the built number's exponent to base 2. */
   private void convert_to_binary_exponent(int radix, int arbitrary_exponent) {
     exponent = 0;
-    if (arbitrary_exponent > 0) {
-      scale_up_to_binary(radix, arbitrary_exponent);
-      return;
-    }
-    if (arbitrary_exponent < 0) {
-      scale_down_to_binary(radix, arbitrary_exponent);
-    }
-  }
-
-  /** Multiplies by the radix until the arbitrary exponent is gone and the
-   * binary exponent is built up. */
-  private void scale_up_to_binary(int radix, int arbitrary_exponent) {
     int radix_width = Integer.SIZE - Integer.numberOfLeadingZeros(radix);
     int safe_width = Long.SIZE - radix_width;
     int overflowing_width = safe_width + 1;
@@ -217,20 +205,11 @@ final class NumberBuilder {
       }
       significand *= radix;
     }
-  }
-
-  /** Divides by the radix until the arbitrary exponent is gone and the binary
-   * exponent is built up. */
-  private void scale_down_to_binary(int radix, int arbitrary_exponent) {
-    int middle_point = radix / 2;
     for (int i = 0; i < -arbitrary_exponent; i++) {
       rescale(Long.SIZE);
-      long reminder = Long.remainderUnsigned(significand, radix);
-      significand = Long.divideUnsigned(significand, radix);
-      boolean rounds_up =
-        reminder > middle_point
-          || reminder == middle_point && (significand & 1) != 0;
-      if (rounds_up) { round_up(Long.SIZE); }
+      long truncated = Long.divideUnsigned(significand, radix);
+      long middle_point = truncated * radix + radix / 2;
+      round(middle_point, truncated, Long.SIZE);
     }
   }
 
@@ -246,36 +225,33 @@ final class NumberBuilder {
     if (change == 0) { return; }
     if (change > 0) {
       if (exponent < Integer.MIN_VALUE + change) {
-        throw new ArithmeticException("Exponent is too small!");
+        throw on_exponent_overflow();
       }
       significand <<= change;
       exponent -= change;
       return;
     }
-    if (exponent > Integer.MAX_VALUE + change) {
-      throw new ArithmeticException("Exponent is too big!");
-    }
+    if (exponent > Integer.MAX_VALUE + change) { throw on_exponent_overflow(); }
+    exponent -= change;
     long truncated = significand >>> -change;
     long middle_point = (truncated << 1) + 1 << -change - 1;
-    boolean rounds_up =
-      significand >= middle_point
-        && (significand != middle_point || (truncated & 1) != 0);
-    significand = truncated;
-    exponent -= change;
-    if (rounds_up) { round_up(target_width); }
+    round(middle_point, truncated, target_width);
   }
 
-  /** Rounds the given rounded down version of the number up. Throws
-   * {@link ArithmeticException} if the exponent overflows. */
-  private void round_up(int target_width) {
+  /** Rounds the built number if necessary. Throws {@link ArithmeticException}
+   * if the exponent overflows. */
+  private void round(long middle_point, long truncated, int target_width) {
+    boolean should_round_down =
+      Long.compareUnsigned(significand, middle_point) < 0
+        || significand == middle_point && (truncated & 1) == 0;
+    significand = truncated;
+    if (should_round_down) { return; }
     long max_significand = (1L << target_width + 1) - 1;
     if (Long.compareUnsigned(significand, max_significand) != 0) {
       significand++;
       return;
     }
-    if (exponent == Integer.MAX_VALUE) {
-      throw new ArithmeticException("Exponent is too big!");
-    }
+    if (exponent == Integer.MAX_VALUE) { throw on_exponent_overflow(); }
     long rounded_up_max_significand = 1L << target_width - 1;
     significand = rounded_up_max_significand;
     exponent++;
