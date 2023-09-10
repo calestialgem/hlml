@@ -614,6 +614,15 @@ public sealed interface Node {
     public int last(List<Token> tokens) { return first; }
   }
 
+  /** Expression that directly denotes a compile-time known color value. */
+  record ColorConstant(int first, int value) implements Precedence0 {
+    @Override
+    public int first(List<Token> tokens) { return first; }
+
+    @Override
+    public int last(List<Token> tokens) { return first; }
+  }
+
   /** Mentioning a symbol by its scope and identifier. */
   record Mention(Optional<Token.Identifier> source, Token.Identifier identifier)
     implements Node

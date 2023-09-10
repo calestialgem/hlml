@@ -648,7 +648,8 @@ public final class Parser {
       first_of(
         this::parse_grouping,
         this::parse_symbol_based,
-        this::parse_number_constant);
+        this::parse_number_constant,
+        this::parse_color_constant);
     if (precedence_0.isEmpty()) { return precedence_0; }
     Node.Precedence0 result = precedence_0.get();
     while (true) {
@@ -710,6 +711,17 @@ public final class Parser {
     Node.NumberConstant number_constant =
       new Node.NumberConstant(first, token.get().value());
     return Optional.of(number_constant);
+  }
+
+  /** Parses a color constant. */
+  private Optional<Node.ColorConstant> parse_color_constant() {
+    int first = current;
+    Optional<Token.ColorConstant> token =
+      parse_token(Token.ColorConstant.class);
+    if (token.isEmpty()) { return Optional.empty(); }
+    Node.ColorConstant color_constant =
+      new Node.ColorConstant(first, token.get().value());
+    return Optional.of(color_constant);
   }
 
   /** Parses a mention. */
