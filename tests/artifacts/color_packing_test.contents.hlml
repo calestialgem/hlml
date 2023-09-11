@@ -17,5 +17,5 @@ entrypoint {
   mlog::draw_col(color);
   mlog::draw_rect(0, 40, 80, 40);
 
-  mlog::draw_flush(display1);
+  mlog::drawflush(display1);
 }

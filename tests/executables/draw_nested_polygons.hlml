@@ -15,12 +15,12 @@ entrypoint {
   mlog::draw_clear(255, 255, 255);
   mlog::draw_color(0, 0, 0, 255);
   mlog::draw_stroke(stroke);
-  mlog::draw_line_poly(x_center, y_center, 8, poly_size, 0);
-  mlog::draw_line_poly(x_center, y_center, 8, poly_size, 30);
+  mlog::draw_linepoly(x_center, y_center, 8, poly_size, 0);
+  mlog::draw_linepoly(x_center, y_center, 8, poly_size, 30);
   mlog::draw_rect(
     x_center - rect_size / 2,
     y_center - rect_size / 2,
     rect_size,
     rect_size);
-  mlog::draw_flush(display1);
+  mlog::drawflush(display1);
 }

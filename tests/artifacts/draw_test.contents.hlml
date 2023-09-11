@@ -7,10 +7,10 @@ entrypoint {
   mlog::draw_stroke(1);                         # draw   stroke 1 0 0 0 0 0
   mlog::draw_line(1, 2, 3, 4);                  # draw     line 1 2 3 4 0 0
   mlog::draw_rect(1, 2, 3, 4);                  # draw     rect 1 2 3 4 0 0
-  mlog::draw_line_rect(1, 2, 3, 4);             # draw lineRect 1 2 3 4 0 0
+  mlog::draw_linerect(1, 2, 3, 4);              # draw lineRect 1 2 3 4 0 0
   mlog::draw_poly(1, 2, 3, 4, 5);               # draw     poly 1 2 3 4 5 0
-  mlog::draw_line_poly(1, 2, 3, 4, 5);          # draw linePoly 1 2 3 4 5 0
+  mlog::draw_linepoly(1, 2, 3, 4, 5);           # draw linePoly 1 2 3 4 5 0
   mlog::draw_triangle(1, 2, 3, 4, 5, 6);        # draw triangle 1 2 3 4 5 6
   mlog::draw_image(1, 2, 3, 4, 5);              # draw    image 1 2 3 4 5 0
-  mlog::draw_flush(1);                          # drawflush   1
+  mlog::drawflush(1);                           # drawflush   1
 }

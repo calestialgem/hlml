@@ -103,7 +103,7 @@ final class Program {
         appendable.append("draw rect");
         append_operands(appendable, i.x(), i.y(), i.w(), i.h());
       }
-      case Instruction.DrawLineRect i -> {
+      case Instruction.DrawLinerect i -> {
         appendable.append("draw lineRect");
         append_operands(appendable, i.x(), i.y(), i.w(), i.h());
       }
@@ -111,7 +111,7 @@ final class Program {
         appendable.append("draw poly");
         append_operands(appendable, i.x(), i.y(), i.n(), i.r(), i.a());
       }
-      case Instruction.DrawLinePoly i -> {
+      case Instruction.DrawLinepoly i -> {
         appendable.append("draw linePoly");
         append_operands(appendable, i.x(), i.y(), i.n(), i.r(), i.a());
       }
@@ -130,11 +130,11 @@ final class Program {
         appendable.append("draw image");
         append_operands(appendable, i.x(), i.y(), i.i(), i.r(), i.a());
       }
-      case Instruction.DrawFlush i -> {
+      case Instruction.Drawflush i -> {
         appendable.append("drawflush");
         append_operands(appendable, i.d());
       }
-      case Instruction.PackColor i -> {
+      case Instruction.Packcolor i -> {
         appendable.append("packcolor");
         append_operands(appendable, i.c(), i.r(), i.g(), i.b());
       }
@@ -142,7 +142,7 @@ final class Program {
         appendable.append("print");
         append_operands(appendable, i.s());
       }
-      case Instruction.PrintFlush i -> {
+      case Instruction.Printflush i -> {
         appendable.append("printflush");
         append_operands(appendable, i.m());
       }

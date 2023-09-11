@@ -205,9 +205,9 @@ public sealed interface Semantic {
 
   /** Procedure that compiles to the `draw` instruction's `lineRect`
    * subinstruction. */
-  record DrawLineRect() implements Procedure {
+  record DrawLinerect() implements Procedure {
     @Override
-    public Name name() { return new Name(built_in_scope, "draw_line_rect"); }
+    public Name name() { return new Name(built_in_scope, "draw_linerect"); }
 
     @Override
     public List<Parameter> parameters() {
@@ -246,9 +246,9 @@ public sealed interface Semantic {
 
   /** Procedure that compiles to the `draw` instruction's `linePoly`
    * subinstruction. */
-  record DrawLinePoly() implements Procedure {
+  record DrawLinepoly() implements Procedure {
     @Override
-    public Name name() { return new Name(built_in_scope, "draw_line_poly"); }
+    public Name name() { return new Name(built_in_scope, "draw_linepoly"); }
 
     @Override
     public List<Parameter> parameters() {
@@ -309,9 +309,9 @@ public sealed interface Semantic {
   }
 
   /** Procedure that compiles to the `drawflush` instruction. */
-  record DrawFlush() implements Procedure {
+  record Drawflush() implements Procedure {
     @Override
-    public Name name() { return new Name(built_in_scope, "draw_flush"); }
+    public Name name() { return new Name(built_in_scope, "drawflush"); }
 
     @Override
     public List<Parameter> parameters() {
@@ -356,9 +356,9 @@ public sealed interface Semantic {
   }
 
   /** Procedure that compiles to the `printflush` instruction. */
-  record PrintFlush() implements Procedure {
+  record Printflush() implements Procedure {
     @Override
-    public Name name() { return new Name(built_in_scope, "print_flush"); }
+    public Name name() { return new Name(built_in_scope, "printflush"); }
 
     @Override
     public List<Parameter> parameters() {
@@ -370,9 +370,9 @@ public sealed interface Semantic {
   }
 
   /** Procedure that compiles to the `getlink` instruction. */
-  record GetLink() implements Procedure {
+  record Getlink() implements Procedure {
     @Override
-    public Name name() { return new Name(built_in_scope, "get_link"); }
+    public Name name() { return new Name(built_in_scope, "getlink"); }
 
     @Override
     public List<Parameter> parameters() {

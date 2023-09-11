@@ -10,5 +10,5 @@ entrypoint {
   mlog::print(age);                     # print  age
   mlog::print(new_line);                # print "\n"
 
-  mlog::print_flush(message);           # printflush message1
+  mlog::printflush(message);            # printflush message1
 }

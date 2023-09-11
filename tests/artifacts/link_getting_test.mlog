@@ -1,0 +1,5 @@
+getlink link_getting_test$entrypoint$memory_cell 1
+read link_getting_test$entrypoint$value link_getting_test$entrypoint$memory_cell 5
+op mul link_getting_test$entrypoint$value link_getting_test$entrypoint$value 12
+write link_getting_test$entrypoint$value link_getting_test$entrypoint$memory_cell 5
+end

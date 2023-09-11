@@ -40,7 +40,7 @@ sealed interface Instruction {
   {}
 
   /** Instruction that draws a rectangle outline. */
-  record DrawLineRect(Register x, Register y, Register w, Register h)
+  record DrawLinerect(Register x, Register y, Register w, Register h)
     implements Instruction
   {}
 
@@ -50,7 +50,7 @@ sealed interface Instruction {
   {}
 
   /** Instructions that draws a regular polygon outline */
-  record DrawLinePoly(
+  record DrawLinepoly(
     Register x,
     Register y,
     Register n,
@@ -75,11 +75,11 @@ sealed interface Instruction {
 
   /** Instruction that sends all the accumulated drawing instructions to a
    * display. */
-  record DrawFlush(Register d) implements Instruction {}
+  record Drawflush(Register d) implements Instruction {}
 
   /** Instruction that packs a color made up of three floating point channels to
    * a single unsigned integer. */
-  record PackColor(Register c, Register r, Register g, Register b)
+  record Packcolor(Register c, Register r, Register g, Register b)
     implements Instruction
   {}
 
@@ -88,7 +88,7 @@ sealed interface Instruction {
 
   /** Instruction that sends all the accumulated printing instructions to a
    * message. */
-  record PrintFlush(Register m) implements Instruction {}
+  record Printflush(Register m) implements Instruction {}
 
   /** Instruction that gets a link by its index. */
   record Getlink(Register l, Register i) implements Instruction {}

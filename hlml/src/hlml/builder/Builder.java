@@ -460,10 +460,10 @@ public final class Builder {
                   build_argument(e.arguments(), 3)));
             yield Register.null_();
           }
-          case Semantic.DrawLineRect p -> {
+          case Semantic.DrawLinerect p -> {
             program
               .instruct(
-                new Instruction.DrawLineRect(
+                new Instruction.DrawLinerect(
                   build_argument(e.arguments(), 0),
                   build_argument(e.arguments(), 1),
                   build_argument(e.arguments(), 2),
@@ -481,10 +481,10 @@ public final class Builder {
                   build_argument(e.arguments(), 4)));
             yield Register.null_();
           }
-          case Semantic.DrawLinePoly p -> {
+          case Semantic.DrawLinepoly p -> {
             program
               .instruct(
-                new Instruction.DrawLinePoly(
+                new Instruction.DrawLinepoly(
                   build_argument(e.arguments(), 0),
                   build_argument(e.arguments(), 1),
                   build_argument(e.arguments(), 2),
@@ -515,16 +515,16 @@ public final class Builder {
                   build_argument(e.arguments(), 4)));
             yield Register.null_();
           }
-          case Semantic.DrawFlush p -> {
+          case Semantic.Drawflush p -> {
             program
               .instruct(
-                new Instruction.DrawFlush(build_argument(e.arguments(), 0)));
+                new Instruction.Drawflush(build_argument(e.arguments(), 0)));
             yield Register.null_();
           }
           case Semantic.PackColor p -> {
             program
               .instruct(
-                new Instruction.PackColor(
+                new Instruction.Packcolor(
                   build_argument(e.arguments(), 0),
                   build_argument(e.arguments(), 1),
                   build_argument(e.arguments(), 2),
@@ -537,13 +537,13 @@ public final class Builder {
                 new Instruction.Print(build_argument(e.arguments(), 0)));
             yield Register.null_();
           }
-          case Semantic.PrintFlush p -> {
+          case Semantic.Printflush p -> {
             program
               .instruct(
-                new Instruction.PrintFlush(build_argument(e.arguments(), 0)));
+                new Instruction.Printflush(build_argument(e.arguments(), 0)));
             yield Register.null_();
           }
-          case Semantic.GetLink p -> {
+          case Semantic.Getlink p -> {
             program
               .instruct(
                 new Instruction.Getlink(
