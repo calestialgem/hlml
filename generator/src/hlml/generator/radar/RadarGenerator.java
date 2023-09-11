@@ -55,6 +55,9 @@ public final class RadarGenerator {
     tests.append("# Tests radar instruction.");
     tests.append(System.lineSeparator());
     tests.append(System.lineSeparator());
+    tests.append("link message1 as building;");
+    tests.append(System.lineSeparator());
+    tests.append(System.lineSeparator());
     tests.append("entrypoint {");
     tests.append(System.lineSeparator());
     tests.append("  var unit;");
@@ -64,7 +67,6 @@ public final class RadarGenerator {
     procedures.append("sealed interface Procedure{");
 
     builtins = new StringBuilder();
-    builtins.append("final class Builtin{{Set.of(null");
 
     instructions = new StringBuilder();
     instructions.append("sealed interface Instruction{");
@@ -97,8 +99,7 @@ public final class RadarGenerator {
     Path procedure_file = radar_directory.resolve("Procedure.java");
     Persistance.write(procedure_file, procedures.toString());
 
-    builtins.append(");}}");
-    Path builtin_file = radar_directory.resolve("Builtin.java");
+    Path builtin_file = radar_directory.resolve("builtin");
     Persistance.write(builtin_file, builtins.toString());
 
     instructions.append("}");
@@ -123,7 +124,7 @@ public final class RadarGenerator {
     identifier += metric.toLowerCase();
     tests
       .append(
-        "%-66s # radar %8s %8s %8s %9s building 1 unit%n"
+        "%-66s # radar %8s %8s %8s %9s message1 1 unit%n"
           .formatted(
             "  mlog::radar_" + identifier + "(building, 1, unit);",
             filters.length >= 1 ? filters[0] : "any",
@@ -153,13 +154,13 @@ public final class RadarGenerator {
     procedures.append(suffix);
     procedures
       .append(
-        "() implements Procedure{@Override public Name name(){return new Name(built_in_scope,\"radar_");
+        "()implements Procedure{@Override public Name name(){return new Name(built_in_scope,\"radar_");
     procedures.append(identifier);
     procedures
       .append(
         "\");}@Override public List<Parameter>parameters(){return List.of(new Parameter(\"b\",false), new Parameter(\"o\", false), new Parameter(\"u\", true));}@Override public Set<Name> dependencies(){return Set.of();}}");
 
-    builtins.append(", new Radar");
+    builtins.append(",new Semantic.Radar");
     builtins.append(suffix);
     builtins.append("()");
 
