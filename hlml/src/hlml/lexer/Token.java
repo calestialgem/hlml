@@ -546,6 +546,12 @@ public sealed interface Token {
     }
   }
 
+  /** A string constant. */
+  record StringConstant(int start, int end, String value) implements Token {
+    @Override
+    public String explanation() { return "string `\"%s\"`".formatted(value); }
+  }
+
   /** Index of the token's first character's first byte from the beginning of
    * the file. Used for reporting diagnostics with a source location. */
   int start();

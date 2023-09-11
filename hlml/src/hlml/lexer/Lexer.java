@@ -104,6 +104,23 @@ public final class Lexer {
             Token.EqualEqual::new,
             Token.EqualEqual::new,
             Token.EqualEqualEqual::new);
+        case '"' -> {
+          StringBuilder builder = new StringBuilder();
+          while (true) {
+            int character;
+            if (!has_current() || (character = get_current()) == '\n')
+              throw source
+                .subject(start, current)
+                .to_diagnostic("error", "Incomplete string constant!")
+                .to_exception();
+            advance();
+            if (character == '"')
+              break;
+            builder.appendCodePoint(character);
+          }
+          String value = builder.toString();
+          tokens.add(new Token.StringConstant(start, current, value));
+        }
         default -> {
           if (initial >= 'a' && initial <= 'z'
             || initial >= 'A' && initial <= 'Z')
