@@ -1,0 +1,13 @@
+# Tests printing and flushing instructions.
+
+const age = 23 - 11 / 365;
+link message1 as message;
+
+entrypoint {
+  var text = "My age is: ";
+  mlog::print(text);                    # print text
+  mlog::print(age);                     # print  age
+  mlog::print("\n");                    # print "\n"
+
+  mlog::print_flush(message);           # printflush message1
+}
