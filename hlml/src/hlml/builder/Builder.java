@@ -340,8 +340,8 @@ public final class Builder {
         build_unary_operation(u, Instruction.NotEqualTo::new);
       case Semantic.NumberConstant c -> Register.number(c.value());
       case Semantic.ColorConstant e -> Register.color(e.value());
+      case Semantic.StringConstant e -> Register.string(e.value());
       case Semantic.LinkAccess e -> Register.link(e.building());
-      case Semantic.ConstantAccess c -> Register.number(c.value());
       case Semantic.GlobalVariableAccess g -> Register.global(g.name());
       case Semantic.LocalVariableAccess l ->
         Register.local(current, l.identifier());

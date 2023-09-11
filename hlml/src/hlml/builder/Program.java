@@ -209,11 +209,16 @@ final class Program {
         appendable.append(Integer.toString(r.index()));
       }
       case Register.Link r -> appendable.append(r.building());
-      case Register.Number r ->
+      case Register.NumberConstant r ->
         appendable.append(FloatingPointFormatter.format(r.value()));
-      case Register.Color r -> {
+      case Register.ColorConstant r -> {
         appendable.append('%');
         appendable.append(PackedColorFormatter.format(r.value()));
+      }
+      case Register.StringConstant r -> {
+        appendable.append('"');
+        appendable.append(r.value());
+        appendable.append('"');
       }
       case Register.Instruction r ->
         appendable.append(Integer.toString(resolve(r.waypoint())));

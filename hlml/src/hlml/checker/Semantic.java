@@ -345,7 +345,7 @@ public sealed interface Semantic {
   record Parameter(String identifier, boolean in_out) implements Semantic {}
 
   /** Definition of a constant. */
-  record Const(Name name, double value) implements Definition {
+  record Const(Name name, Constant value) implements Definition {
     @Override
     public Set<Name> dependencies() { return Set.of(); }
   }
@@ -561,15 +561,6 @@ public sealed interface Semantic {
     Set<Name> dependencies();
   }
 
-  /** Expression that has a known value. */
-  sealed interface Constant extends Expression {
-    /** Value that is denoted by this expression. */
-    double value();
-
-    @Override
-    default Set<Name> dependencies() { return Set.of(); }
-  }
-
   /** Expression made up of one operand and an operator at the left. */
   sealed interface UnaryOperation extends Expression {
     /** Operand of the operator. */
@@ -713,26 +704,29 @@ public sealed interface Semantic {
    * otherwise. */
   record LogicalNot(Expression operand) implements UnaryOperation {}
 
-  /** Expression that evaluates to a hard-coded numeric value. */
+  /** Expression that evaluates to the value held by a symbol. */
+  sealed interface SymbolAccess extends Expression {}
+
+  /** Expression that has a known value. */
+  sealed interface Constant extends SymbolAccess {
+    @Override
+    default Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Expression that evaluates to a hard-coded number value. */
   record NumberConstant(double value) implements Constant {}
 
   /** Expression that evaluates to a hard-coded color value. */
-  record ColorConstant(int value) implements Expression {
-    @Override
-    public Set<Name> dependencies() { return Set.of(); }
-  }
+  record ColorConstant(int value) implements Constant {}
 
-  /** Expression that evaluates to the value held by a symbol. */
-  sealed interface SymbolAccess extends Expression {}
+  /** Expression that evaluates to a hard-coded string value. */
+  record StringConstant(String value) implements Constant {}
 
   /** Expression that evaluates to a link. */
   record LinkAccess(String building) implements SymbolAccess {
     @Override
     public Set<Name> dependencies() { return Set.of(); }
   }
-
-  /** Expression that evaluates to the value held by a constant. */
-  record ConstantAccess(double value) implements SymbolAccess, Constant {}
 
   /** Expression that evaluates to the value held by a variable. */
   sealed interface VariableAccess extends SymbolAccess {}

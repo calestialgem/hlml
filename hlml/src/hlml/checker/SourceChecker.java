@@ -159,9 +159,7 @@ final class SourceChecker {
             .to_exception();
         }
         Semantic.Const global =
-          new Semantic.Const(
-            new Name(source.name(), identifier),
-            constant.value());
+          new Semantic.Const(new Name(source.name(), identifier), constant);
         globals.put(identifier, global);
         yield global;
       }
@@ -532,6 +530,7 @@ final class SourceChecker {
       case Node.NumberConstant number_constant ->
         new Semantic.NumberConstant(number_constant.value());
       case Node.ColorConstant e -> new Semantic.ColorConstant(e.value());
+      case Node.StringConstant e -> new Semantic.StringConstant(e.value());
       case Node.SymbolAccess v -> check_symbol_access(scope, v);
       case Node.Grouping g -> check_expression(scope, g.grouped());
       case Node.Call e -> {
@@ -552,8 +551,8 @@ final class SourceChecker {
     Semantic.BinaryOperation operation,
     DoubleBinaryOperator operator)
   {
-    if (!(operation.left_operand() instanceof Semantic.Constant l)
-      || !(operation.right_operand() instanceof Semantic.Constant r))
+    if (!(operation.left_operand() instanceof Semantic.NumberConstant l)
+      || !(operation.right_operand() instanceof Semantic.NumberConstant r))
     {
       return operation;
     }
@@ -566,7 +565,7 @@ final class SourceChecker {
     Semantic.UnaryOperation operation,
     DoubleUnaryOperator operator)
   {
-    if (!(operation.operand() instanceof Semantic.Constant o)) {
+    if (!(operation.operand() instanceof Semantic.NumberConstant o)) {
       return operation;
     }
     return new Semantic.NumberConstant(operator.applyAsDouble(o.value()));
@@ -604,7 +603,7 @@ final class SourceChecker {
     Semantic.Definition global = check_mention(node.accessed());
     return switch (global) {
       case Semantic.Link g -> new Semantic.LinkAccess(g.building());
-      case Semantic.Const g -> new Semantic.ConstantAccess(g.value());
+      case Semantic.Const g -> g.value();
       case Semantic.GlobalVar g -> new Semantic.GlobalVariableAccess(g.name());
       default ->
         throw source
