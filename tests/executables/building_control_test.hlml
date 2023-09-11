@@ -1,0 +1,11 @@
+# Tests controlling buildings.
+
+link message1 as building;
+
+entrypoint {
+  mlog::control_enabled(building, 1);       # control enabled message1 1
+  mlog::control_shoot(building, 0, 0, 1);   # control   shoot message1 0 0 1
+  mlog::control_shootp(building, 0, 1);     # control  shootp message1 0 1
+  mlog::control_config(building, 0);        # control  config message1 0
+  mlog::control_color(building, 0);         # control   color message1 0
+}
