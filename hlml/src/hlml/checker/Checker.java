@@ -97,7 +97,8 @@ public final class Checker {
               new Semantic.DrawFlush(),
               new Semantic.PackColor(),
               new Semantic.Print(),
-              new Semantic.PrintFlush())
+              new Semantic.PrintFlush(),
+              new Semantic.Getlink())
             .stream()
             .collect(
               Collectors

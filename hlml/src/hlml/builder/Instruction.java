@@ -90,6 +90,9 @@ sealed interface Instruction {
    * message. */
   record PrintFlush(Register m) implements Instruction {}
 
+  /** Instruction that gets a link by its index. */
+  record Getlink(Register l, Register i) implements Instruction {}
+
   /** Instruction that makes the currently run instruction to change out of
    * sequence. */
   sealed interface Jump extends Instruction {

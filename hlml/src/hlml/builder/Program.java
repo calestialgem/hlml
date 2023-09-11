@@ -146,6 +146,10 @@ final class Program {
         appendable.append("printflush");
         append_operands(appendable, i.m());
       }
+      case Instruction.Getlink i -> {
+        appendable.append("getlink");
+        append_operands(appendable, i.l(), i.i());
+      }
       case Instruction.JumpAlways i -> {
         appendable.append("jump ");
         appendable.append(Integer.toString(resolve(i.goal())));

@@ -543,6 +543,14 @@ public final class Builder {
                 new Instruction.PrintFlush(build_argument(e.arguments(), 0)));
             yield Register.null_();
           }
+          case Semantic.Getlink p -> {
+            program
+              .instruct(
+                new Instruction.Getlink(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1)));
+            yield Register.null_();
+          }
         };
       }
     };

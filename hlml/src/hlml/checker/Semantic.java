@@ -369,6 +369,20 @@ public sealed interface Semantic {
     public Set<Name> dependencies() { return Set.of(); }
   }
 
+  /** Procedure that compiles to the `getlink` instruction. */
+  record Getlink() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "getlink"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List.of(new Parameter("l", true), new Parameter("i", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
   /** Definition of a procedure's parameter. */
   record Parameter(String identifier, boolean in_out) implements Semantic {}
 
