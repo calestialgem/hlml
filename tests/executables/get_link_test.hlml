@@ -3,7 +3,7 @@
 entrypoint {
   var memory_cell;
   var value;
-  mlog::getlink(memory_cell, 1);        # getlink memory_cell 1
+  mlog::get_link(memory_cell, 1);       # getlink memory_cell 1
   mlog::read(value, memory_cell, 5);
   value *= 12;
   mlog::write(value, memory_cell, 5);

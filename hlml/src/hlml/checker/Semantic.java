@@ -370,9 +370,9 @@ public sealed interface Semantic {
   }
 
   /** Procedure that compiles to the `getlink` instruction. */
-  record Getlink() implements Procedure {
+  record GetLink() implements Procedure {
     @Override
-    public Name name() { return new Name(built_in_scope, "getlink"); }
+    public Name name() { return new Name(built_in_scope, "get_link"); }
 
     @Override
     public List<Parameter> parameters() {
