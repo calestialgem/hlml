@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Generator",
+      "request": "launch",
+      "mainClass": "hlml.generator/hlml.generator.main.Generator",
+      "projectName": "generator"
+    },
+    {
+      "type": "java",
+      "name": "Launcher",
+      "request": "launch",
+      "mainClass": "hlml/hlml.launcher.Launcher",
+      "projectName": "hlml"
+    }
+  ]
+}
