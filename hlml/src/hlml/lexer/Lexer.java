@@ -108,14 +108,14 @@ public final class Lexer {
           StringBuilder builder = new StringBuilder();
           while (true) {
             int character;
-            if (!has_current() || (character = get_current()) == '\n')
+            if (!has_current() || (character = get_current()) == '\n') {
               throw source
                 .subject(start, current)
                 .to_diagnostic("error", "Incomplete string constant!")
                 .to_exception();
+            }
             advance();
-            if (character == '"')
-              break;
+            if (character == '"') { break; }
             builder.appendCodePoint(character);
           }
           String value = builder.toString();
