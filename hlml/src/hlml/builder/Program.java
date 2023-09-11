@@ -150,6 +150,26 @@ final class Program {
         appendable.append("getlink");
         append_operands(appendable, i.l(), i.i());
       }
+      case Instruction.ControlEnabled i -> {
+        appendable.append("control enabled");
+        append_operands(appendable, i.b(), i.e());
+      }
+      case Instruction.ControlShoot i -> {
+        appendable.append("control shoot");
+        append_operands(appendable, i.b(), i.x(), i.y(), i.s());
+      }
+      case Instruction.ControlShootp i -> {
+        appendable.append("control shootp");
+        append_operands(appendable, i.b(), i.u(), i.s());
+      }
+      case Instruction.ControlConfig i -> {
+        appendable.append("control config");
+        append_operands(appendable, i.b(), i.c());
+      }
+      case Instruction.ControlColor i -> {
+        appendable.append("control color");
+        append_operands(appendable, i.b(), i.c());
+      }
       case Instruction.JumpAlways i -> {
         appendable.append("jump ");
         appendable.append(Integer.toString(resolve(i.goal())));

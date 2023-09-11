@@ -98,7 +98,12 @@ public final class Checker {
               new Semantic.PackColor(),
               new Semantic.Print(),
               new Semantic.PrintFlush(),
-              new Semantic.GetLink())
+              new Semantic.GetLink(),
+              new Semantic.ControlEnabled(),
+              new Semantic.ControlShoot(),
+              new Semantic.ControlShootp(),
+              new Semantic.ControlConfig(),
+              new Semantic.ControlColor())
             .stream()
             .collect(
               Collectors

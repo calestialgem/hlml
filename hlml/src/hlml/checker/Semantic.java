@@ -383,6 +383,90 @@ public sealed interface Semantic {
     public Set<Name> dependencies() { return Set.of(); }
   }
 
+  /** Procedure that compiles to the `control` instruction's `enabled`
+   * subinstruction. */
+  record ControlEnabled() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "control_enabled"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List.of(new Parameter("b", false), new Parameter("e", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `control` instruction's `shoot`
+   * subinstruction. */
+  record ControlShoot() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "control_shoot"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("b", false),
+          new Parameter("x", false),
+          new Parameter("y", false),
+          new Parameter("s", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `control` instruction's `shootp`
+   * subinstruction. */
+  record ControlShootp() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "control_shootp"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("b", false),
+          new Parameter("u", false),
+          new Parameter("s", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `control` instruction's `config`
+   * subinstruction. */
+  record ControlConfig() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "control_config"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List.of(new Parameter("b", false), new Parameter("c", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `control` instruction's `color`
+   * subinstruction. */
+  record ControlColor() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "control_color"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List.of(new Parameter("b", false), new Parameter("c", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
   /** Definition of a procedure's parameter. */
   record Parameter(String identifier, boolean in_out) implements Semantic {}
 

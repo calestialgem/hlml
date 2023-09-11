@@ -551,6 +551,49 @@ public final class Builder {
                   build_argument(e.arguments(), 1)));
             yield Register.null_();
           }
+          case Semantic.ControlEnabled p -> {
+            program
+              .instruct(
+                new Instruction.ControlEnabled(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1)));
+            yield Register.null_();
+          }
+          case Semantic.ControlShoot p -> {
+            program
+              .instruct(
+                new Instruction.ControlShoot(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2),
+                  build_argument(e.arguments(), 3)));
+            yield Register.null_();
+          }
+          case Semantic.ControlShootp p -> {
+            program
+              .instruct(
+                new Instruction.ControlShootp(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2)));
+            yield Register.null_();
+          }
+          case Semantic.ControlConfig p -> {
+            program
+              .instruct(
+                new Instruction.ControlConfig(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1)));
+            yield Register.null_();
+          }
+          case Semantic.ControlColor p -> {
+            program
+              .instruct(
+                new Instruction.ControlColor(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1)));
+            yield Register.null_();
+          }
         };
       }
     };

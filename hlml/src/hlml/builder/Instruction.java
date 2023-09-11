@@ -93,6 +93,26 @@ sealed interface Instruction {
   /** Instruction that gets a link by its index. */
   record Getlink(Register l, Register i) implements Instruction {}
 
+  /** Instruction that sets the enabled status of a building. */
+  record ControlEnabled(Register b, Register e) implements Instruction {}
+
+  /** Instruction that makes a turret building shoot at a coordinate. */
+  record ControlShoot(Register b, Register x, Register y, Register s)
+    implements Instruction
+  {}
+
+  /** Instruction that makes a turret building shoot at a unit with velocity
+   * prediction. */
+  record ControlShootp(Register b, Register u, Register s)
+    implements Instruction
+  {}
+
+  /** Instruction that changes the configuration of a building. */
+  record ControlConfig(Register b, Register c) implements Instruction {}
+
+  /** Instruction that changes the color of a building. */
+  record ControlColor(Register b, Register c) implements Instruction {}
+
   /** Instruction that makes the currently run instruction to change out of
    * sequence. */
   sealed interface Jump extends Instruction {
