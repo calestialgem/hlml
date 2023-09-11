@@ -95,7 +95,9 @@ public final class Checker {
               new Semantic.DrawTriangle(),
               new Semantic.DrawImage(),
               new Semantic.DrawFlush(),
-              new Semantic.PackColor())
+              new Semantic.PackColor(),
+              new Semantic.Print(),
+              new Semantic.PrintFlush())
             .stream()
             .collect(
               Collectors

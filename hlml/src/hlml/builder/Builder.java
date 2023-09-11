@@ -531,6 +531,18 @@ public final class Builder {
                   build_argument(e.arguments(), 3)));
             yield Register.null_();
           }
+          case Semantic.Print p -> {
+            program
+              .instruct(
+                new Instruction.Print(build_argument(e.arguments(), 0)));
+            yield Register.null_();
+          }
+          case Semantic.PrintFlush p -> {
+            program
+              .instruct(
+                new Instruction.PrintFlush(build_argument(e.arguments(), 0)));
+            yield Register.null_();
+          }
         };
       }
     };

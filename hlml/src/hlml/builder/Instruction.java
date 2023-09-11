@@ -83,6 +83,13 @@ sealed interface Instruction {
     implements Instruction
   {}
 
+  /** Instruction that prints some value as text. */
+  record Print(Register s) implements Instruction {}
+
+  /** Instruction that sends all the accumulated printing instructions to a
+   * message. */
+  record PrintFlush(Register m) implements Instruction {}
+
   /** Instruction that makes the currently run instruction to change out of
    * sequence. */
   sealed interface Jump extends Instruction {

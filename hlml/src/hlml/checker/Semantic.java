@@ -341,6 +341,34 @@ public sealed interface Semantic {
     public Set<Name> dependencies() { return Set.of(); }
   }
 
+  /** Procedure that compiles to the `print` instruction. */
+  record Print() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "print"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List.of(new Parameter("s", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `printflush` instruction. */
+  record PrintFlush() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "print_flush"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List.of(new Parameter("m", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
   /** Definition of a procedure's parameter. */
   record Parameter(String identifier, boolean in_out) implements Semantic {}
 

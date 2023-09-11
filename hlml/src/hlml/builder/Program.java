@@ -138,6 +138,14 @@ final class Program {
         appendable.append("packcolor");
         append_operands(appendable, i.c(), i.r(), i.g(), i.b());
       }
+      case Instruction.Print i -> {
+        appendable.append("print");
+        append_operands(appendable, i.s());
+      }
+      case Instruction.PrintFlush i -> {
+        appendable.append("printflush");
+        append_operands(appendable, i.m());
+      }
       case Instruction.JumpAlways i -> {
         appendable.append("jump ");
         appendable.append(Integer.toString(resolve(i.goal())));
