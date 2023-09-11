@@ -104,6 +104,7 @@ public final class Checker {
               new Semantic.ControlShootp(),
               new Semantic.ControlConfig(),
               new Semantic.ControlColor(),
+              new Semantic.Sensor(),
               new Semantic.RadarDistance(),
               new Semantic.RadarEnemyDistance(),
               new Semantic.RadarEnemyAllyDistance(),

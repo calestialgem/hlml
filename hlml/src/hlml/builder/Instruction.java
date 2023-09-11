@@ -113,6 +113,9 @@ sealed interface Instruction {
   /** Instruction that changes the color of a building. */
   record ControlColor(Register b, Register c) implements Instruction {}
 
+  /** Instruction that gets information from a building or a unit. */
+  record Sensor(Register r, Register t, Register i) implements Instruction {}
+
   /** Instruction that finds the first or last unit in a building's range via
    * `distance` as the metric. */
   record RadarDistance(Register b, Register o, Register u)

@@ -594,6 +594,13 @@ public final class Builder {
                   build_argument(e.arguments(), 1)));
             yield Register.null_();
           }
+          case Semantic.Sensor p-> {
+            program.instruct(new Instruction.Sensor(
+              build_argument(e.arguments(), 0),
+              build_argument(e.arguments(), 1),
+              build_argument(e.arguments(), 2)));
+        yield Register.null_();
+          }
           case Semantic.RadarDistance p -> {
             program
               .instruct(

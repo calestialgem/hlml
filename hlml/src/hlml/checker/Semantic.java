@@ -467,6 +467,24 @@ public sealed interface Semantic {
     public Set<Name> dependencies() { return Set.of(); }
   }
 
+  /** Procedure that compiles to the `sensor` instruction. */
+  record Sensor() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "sensor"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("r", true),
+          new Parameter("t", false),
+          new Parameter("i", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
   /** Procedure that compiles to the `radar` instruction's `distance`
    * subinstruction with filters `any`, `any`, `any`. */
   record RadarDistance() implements Procedure {
