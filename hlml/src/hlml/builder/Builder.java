@@ -398,8 +398,9 @@ public final class Builder {
               stack.pop(argument);
               arguments.add(argument);
             }
-            for (int i = e.arguments().size(); i < p.parameter_count(); i++)
+            for (int i = e.arguments().size(); i < p.parameter_count(); i++) {
               arguments.add(Register.null_());
+            }
             program
               .instruct(
                 new Instruction.DirectlyCompiled(

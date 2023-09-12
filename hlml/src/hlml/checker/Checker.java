@@ -132,22 +132,19 @@ public final class Checker {
     String[] metrics = { "distance", "health", "shield", "armor", "maxHealth" };
     String[] filters =
       { "enemy", "ally", "player", "attacker", "flying", "boss", "ground" };
-    for (int m = 0; m < metrics.length; m++) {
+    for (String metric : metrics) {
       builtins
         .add(
           new Semantic.Instruction(
-            "radar_" + metrics[m].toLowerCase(),
-            "radar any any any " + metrics[m],
+            "radar_" + metric.toLowerCase(),
+            "radar any any any " + metric,
             3));
       for (int i = 0; i < filters.length; i++) {
         builtins
           .add(
             new Semantic.Instruction(
-              "radar_"
-                + filters[i].toLowerCase()
-                + '_'
-                + metrics[m].toLowerCase(),
-              "radar " + filters[i] + " any any " + metrics[m],
+              "radar_" + filters[i].toLowerCase() + '_' + metric.toLowerCase(),
+              "radar " + filters[i] + " any any " + metric,
               3));
         for (int j = i + 1; j < filters.length; j++) {
           builtins
@@ -158,8 +155,8 @@ public final class Checker {
                   + '_'
                   + filters[j].toLowerCase()
                   + '_'
-                  + metrics[m].toLowerCase(),
-                "radar " + filters[i] + ' ' + filters[j] + " any " + metrics[m],
+                  + metric.toLowerCase(),
+                "radar " + filters[i] + ' ' + filters[j] + " any " + metric,
                 3));
           for (int k = j + 1; k < filters.length; k++) {
             builtins
@@ -172,7 +169,7 @@ public final class Checker {
                     + '_'
                     + filters[k].toLowerCase()
                     + '_'
-                    + metrics[m].toLowerCase(),
+                    + metric.toLowerCase(),
                   "radar "
                     + filters[i]
                     + ' '
@@ -180,7 +177,7 @@ public final class Checker {
                     + ' '
                     + filters[k]
                     + ' '
-                    + metrics[m],
+                    + metric,
                   3));
           }
         }
