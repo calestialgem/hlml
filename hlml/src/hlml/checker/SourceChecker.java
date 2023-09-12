@@ -541,24 +541,14 @@ final class SourceChecker {
         yield check_call(called, arguments, scope, node);
       }
       case Node.MemberAccess e -> {
-        Semantic.Definition builtin =
-          finder
-            .find(
-              source.subject(e.member()),
-              new Name(Semantic.built_in_scope, e.member().text()));
-        if (!(builtin instanceof Semantic.BuiltinConstant property)) {
-          throw source
-            .subject(node)
-            .to_diagnostic(
-              "error",
-              "Member `%s::%s` is not a sensible property!",
-              builtin.name().source(),
-              builtin.name().identifier())
-            .to_exception();
-        }
+        Semantic.Expression member =
+          check_expression(
+            scope,
+            new Node.SymbolAccess(
+              new Node.Mention(Optional.empty(), e.member())));
         yield new Semantic.MemberAccess(
           check_expression(scope, e.object()),
-          property.value());
+          member);
       }
     };
   }

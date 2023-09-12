@@ -1,9 +1,11 @@
 # Tests member access expression.
 
+using mlog::copper as what_im_looking_for;
+
 link container1 as container;
 
 entrypoint {
-  var copper = container.copper;
+  var found = container.what_im_looking_for;
   # sensor _0 container1 @copper
-  # set copper _0
+  # set found _0
 }

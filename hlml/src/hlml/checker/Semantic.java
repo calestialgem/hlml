@@ -505,11 +505,13 @@ public sealed interface Semantic {
   record LogicalNot(Expression operand) implements UnaryOperation {}
 
   /** Expression that senses a property of an object. */
-  record MemberAccess(Expression object, KnownBuiltin member)
+  record MemberAccess(Expression object, Expression member)
     implements Expression
   {
     @Override
-    public Set<Name> dependencies() { return object.dependencies(); }
+    public Set<Name> dependencies() {
+      return Sets.union(object.dependencies(), member.dependencies());
+    }
   }
 
   /** Expression that evaluates to the value held by a symbol. */
