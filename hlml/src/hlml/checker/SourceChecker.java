@@ -545,6 +545,11 @@ final class SourceChecker {
         arguments.addAll(e.remaining_arguments());
         yield check_call(called, arguments, scope, node);
       }
+      case Node.MemberAccess e ->
+        throw source
+          .subject(node)
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
     };
   }
 

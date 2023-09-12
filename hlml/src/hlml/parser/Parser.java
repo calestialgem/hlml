@@ -655,19 +655,20 @@ public final class Parser {
     Node.Precedence0 result = precedence_0.get();
     while (true) {
       if (parse_token(Token.Dot.class).isEmpty()) { break; }
-      Token.Identifier called =
+      Token.Identifier member =
         expect_token(
           Token.Identifier.class,
-          "procedure name of the member call expression");
-      expect_token(
-        Token.OpeningParenthesis.class,
-        "remaining argument list opener `(` of the member call expression");
-      List<Node.Expression> remaining_arguments =
-        separated_of(this::parse_expression);
-      expect_token(
-        Token.ClosingParenthesis.class,
-        "remaining argument list closer `)` of the member call expression");
-      result = new Node.MemberCall(result, called, remaining_arguments);
+          "member name in the member access expression");
+      if (parse_token(Token.OpeningParenthesis.class).isPresent()) {
+        List<Node.Expression> remaining_arguments =
+          separated_of(this::parse_expression);
+        expect_token(
+          Token.ClosingParenthesis.class,
+          "remaining argument list closer `)` of the member call expression");
+        result = new Node.MemberCall(result, member, remaining_arguments);
+        continue;
+      }
+      result = new Node.MemberAccess(result, member);
     }
     return Optional.of(result);
   }

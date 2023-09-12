@@ -581,6 +581,17 @@ public sealed interface Node {
     }
   }
 
+  /** Expression that senses a property of an object. */
+  record MemberAccess(Precedence0 object, Token.Identifier member)
+    implements Precedence0
+  {
+    @Override
+    public int first(List<Token> tokens) { return object.first(tokens); }
+
+    @Override
+    public int last(List<Token> tokens) { return tokens.indexOf(member); }
+  }
+
   /** Expression that calls a procedure by passing the first argument at the
    * beginning as if the procedure was a member of the first argument. */
   record MemberCall(
