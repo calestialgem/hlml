@@ -1,0 +1,27 @@
+# Tests conditional compilation.
+
+const compile_semantic_errors = 0;
+
+const a = 10;
+
+when compile_semantic_errors {
+  proc my_conditional_procedure() {
+    var value = b;
+  }
+}
+else {
+  proc my_conditional_procedure() {
+    var value = a;
+  }
+}
+
+proc my_unconditional_procedure() {
+  when !compile_semantic_errors {
+    var my_conditional_variable = a;
+  }
+  else {
+    var my_conditional_variable = b;
+  }
+
+  var my_unconditional_variable = my_conditional_variable * a;
+}
