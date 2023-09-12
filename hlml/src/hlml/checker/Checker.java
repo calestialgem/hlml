@@ -129,58 +129,77 @@ public final class Checker {
     builtin("ucontrol", "within", 4);
     builtin("ucontrol", "unbind", 0);
 
-    String[] metrics = { "distance", "health", "shield", "armor", "maxHealth" };
     String[] filters =
       { "enemy", "ally", "player", "attacker", "flying", "boss", "ground" };
+    int filter_0_combinations = 1;
+    int filter_1_combinations = filter_0_combinations * filters.length;
+    int filter_2_combinations =
+      filter_1_combinations * (filters.length - 1) / 2;
+    int filter_3_combinations =
+      filter_2_combinations * (filters.length - 2) / 3;
+    int filter_combinations =
+      filter_0_combinations
+        + filter_1_combinations
+        + filter_2_combinations
+        + filter_3_combinations;
+    String[] filter_name_combinations = new String[filter_combinations];
+    String[] filter_instruction_combinations = new String[filter_combinations];
+    int combination = 0;
+    filter_name_combinations[combination] = "";
+    filter_instruction_combinations[combination] = "any any any";
+    combination++;
+    for (int i = 0; i < filters.length; i++) {
+      String filter_i = filters[i];
+      String filter_i_name = filter_i.toLowerCase();
+      filter_name_combinations[combination] = filter_i_name;
+      filter_instruction_combinations[combination] = filter_i + " any any";
+      combination++;
+      for (int j = i + 1; j < filters.length; j++) {
+        String filter_j = filters[j];
+        String filter_j_name = filter_j.toLowerCase();
+        filter_name_combinations[combination] =
+          filter_i_name + "_" + filter_j_name;
+        filter_instruction_combinations[combination] =
+          filter_i + " " + filter_j + " any";
+        combination++;
+        for (int k = j + 1; k < filters.length; k++) {
+          String filter_k = filters[k];
+          String filter_k_name = filter_k.toLowerCase();
+          filter_name_combinations[combination] =
+            filter_i_name + "_" + filter_j_name + "_" + filter_k_name;
+          filter_instruction_combinations[combination] =
+            filter_i + " " + filter_j + " " + filter_k;
+          combination++;
+        }
+      }
+    }
+
+    String[] metrics = { "distance", "health", "shield", "armor", "maxHealth" };
     for (String metric : metrics) {
-      builtins
-        .add(
-          new Semantic.Instruction(
-            "radar_" + metric.toLowerCase(),
-            "radar any any any " + metric,
-            3));
-      for (int i = 0; i < filters.length; i++) {
+      String metric_name = metric.toLowerCase();
+      for (int i = 0; i < filter_combinations; i++) {
         builtins
           .add(
             new Semantic.Instruction(
-              "radar_" + filters[i].toLowerCase() + '_' + metric.toLowerCase(),
-              "radar " + filters[i] + " any any " + metric,
+              "radar_"
+                + filter_name_combinations[i]
+                + (filter_name_combinations[i].length() == 0 ? "" : "_")
+                + metric_name,
+              "radar " + filter_instruction_combinations[i] + " " + metric,
               3));
-        for (int j = i + 1; j < filters.length; j++) {
-          builtins
-            .add(
-              new Semantic.Instruction(
-                "radar_"
-                  + filters[i].toLowerCase()
-                  + '_'
-                  + filters[j].toLowerCase()
-                  + '_'
-                  + metric.toLowerCase(),
-                "radar " + filters[i] + ' ' + filters[j] + " any " + metric,
-                3));
-          for (int k = j + 1; k < filters.length; k++) {
-            builtins
-              .add(
-                new Semantic.Instruction(
-                  "radar_"
-                    + filters[i].toLowerCase()
-                    + '_'
-                    + filters[j].toLowerCase()
-                    + '_'
-                    + filters[k].toLowerCase()
-                    + '_'
-                    + metric.toLowerCase(),
-                  "radar "
-                    + filters[i]
-                    + ' '
-                    + filters[j]
-                    + ' '
-                    + filters[k]
-                    + ' '
-                    + metric,
-                  3));
-          }
-        }
+        builtins
+          .add(
+            new Semantic.Instruction(
+              "uradar_"
+                + filter_name_combinations[i]
+                + (filter_name_combinations[i].length() == 0 ? "" : "_")
+                + metric_name,
+              "uradar "
+                + filter_instruction_combinations[i]
+                + " "
+                + metric
+                + " 0",
+              2));
       }
     }
 
