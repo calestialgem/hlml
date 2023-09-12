@@ -551,7 +551,7 @@ final class SourceChecker {
             .find(
               source.subject(e.member()),
               new Name(Semantic.built_in_scope, e.member().text()));
-        if (!(builtin instanceof Semantic.BuiltinConstant property))
+        if (!(builtin instanceof Semantic.BuiltinConstant property)) {
           throw source
             .subject(node)
             .to_diagnostic(
@@ -560,6 +560,7 @@ final class SourceChecker {
               builtin.name().source(),
               builtin.name().identifier())
             .to_exception();
+        }
         yield new Semantic.MemberAccess(
           check_expression(scope, e.object()),
           property.value());
