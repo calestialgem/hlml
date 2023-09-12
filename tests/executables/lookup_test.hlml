@@ -1,0 +1,9 @@
+# Tests looking up object types with their ids.
+
+entrypoint {
+  var type;
+  mlog::lookup_block(type, 0);        # lookup  block type 0
+  mlog::lookup_unit(type, 0);         # lookup   unit type 0
+  mlog::lookup_item(type, 0);         # lookup   item type 0
+  mlog::lookup_liquid(type, 0);       # lookup liquid type 0
+}

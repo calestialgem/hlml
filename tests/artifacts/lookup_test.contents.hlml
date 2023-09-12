@@ -1,0 +1,9 @@
+# Tests looking up objects with their ids.
+
+entrypoint {
+  var entity;
+  mlog::lookup_block(entity, 0);        # lookup  block entity 0
+  mlog::lookup_unit(entity, 0);         # lookup   unit entity 0
+  mlog::lookup_item(entity, 0);         # lookup   item entity 0
+  mlog::lookup_liquid(entity, 0);       # lookup liquid entity 0
+}
