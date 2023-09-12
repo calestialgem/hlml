@@ -942,6 +942,8 @@ public final class Checker {
           global.name().source(),
           global.name().identifier())
         .to_exception();
+    if (global instanceof Semantic.Using using)
+      return using.aliased();
     return global;
   }
 

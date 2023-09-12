@@ -49,6 +49,14 @@ public sealed interface Semantic {
     public Set<Name> dependencies() { return Set.of(); }
   }
 
+  /** Defining a symbol as an alias to another one. */
+  record Using(boolean visible, Name name, Definition aliased)
+    implements Definition
+  {
+    @Override
+    public Set<Name> dependencies() { return aliased.dependencies(); }
+  }
+
   /** Definition of a procedure that could be built-in or user-defined. */
   sealed interface Procedure extends Definition {
     /** Number of parameters this procedure takes. */

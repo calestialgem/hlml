@@ -31,9 +31,6 @@ final class SourceChecker {
   /** Global symbols that were checked. */
   private Map<String, Semantic.Definition> globals;
 
-  /** Aliases used in the source. */
-  private Map<String, Semantic.Definition> aliases;
-
   /** Global symbols that are being checked. */
   private Set<String> currently_checked;
 
@@ -50,7 +47,6 @@ final class SourceChecker {
   /** Check the source. */
   private Semantic.Source check() {
     globals = new HashMap<>();
-    aliases = new HashMap<>();
     currently_checked = new HashSet<>();
     Optional<Semantic.Entrypoint> entrypoint = Optional.empty();
     if (source.entrypoint.isPresent()) {
@@ -81,24 +77,27 @@ final class SourceChecker {
   /** Checks an identifier. */
   private Semantic.Definition check_identifier(Token.Identifier identifier) {
     Optional<Semantic.Definition> global = find_global(identifier.text());
-    if (global.isPresent()) { return global.get(); }
-    throw source
-      .subject(identifier)
-      .to_diagnostic(
-        "error",
-        "Could not find the symbol `%s::%s`",
-        source.name(),
-        identifier.text())
-      .to_exception();
+    if (!global.isPresent()) {
+      throw source
+        .subject(identifier)
+        .to_diagnostic(
+          "error",
+          "Could not find the symbol `%s::%s`",
+          source.name(),
+          identifier.text())
+        .to_exception();
+    }
+    Semantic.Definition definition = global.get();
+    if (definition instanceof Semantic.Using using)
+      return using.aliased();
+    return definition;
+
   }
 
   /** Finds a global in the current source and checks it if it is unchecked. */
   private Optional<Semantic.Definition> find_global(String identifier) {
     if (globals.containsKey(identifier)) {
       return Optional.of(globals.get(identifier));
-    }
-    if (aliases.containsKey(identifier)) {
-      return Optional.of(aliases.get(identifier));
     }
     if (!source.globals.containsKey(identifier)) { return Optional.empty(); }
     Node.Definition node = source.globals.get(identifier);
@@ -116,20 +115,16 @@ final class SourceChecker {
     String old_representative = representative;
     representative = source.representative_text(node);
     Semantic.Definition definition = switch (node) {
-      case Node.Link d -> {
-        Semantic.Link global =
-          new Semantic.Link(
-            node.modifier().isPresent(),
-            new Name(source.name(), identifier),
-            d.building().text());
-        globals.put(identifier, global);
-        yield global;
-      }
-      case Node.Using d -> {
-        Semantic.Definition alias = check_mention(d.used());
-        aliases.put(identifier, alias);
-        yield alias;
-      }
+      case Node.Link d ->
+        new Semantic.Link(
+          node.modifier().isPresent(),
+          new Name(source.name(), identifier),
+          d.building().text());
+      case Node.Using d ->
+        new Semantic.Using(
+          node.modifier().isPresent(),
+          new Name(source.name(), identifier),
+          check_mention(d.used()));
       case Node.Proc d -> {
         Scope scope = Scope.create();
         for (Node.Parameter p : d.parameters()) {
@@ -139,35 +134,30 @@ final class SourceChecker {
         }
         Semantic.Statement body =
           check_statement(scope, new ArrayList<>(), d.body());
-        Semantic.UserDefinedProcedure global =
-          new Semantic.UserDefinedProcedure(
-            node.modifier().isPresent(),
-            new Name(source.name(), identifier),
-            d
-              .parameters()
-              .stream()
-              .map(
-                p -> new Semantic.Parameter(p.identifier().text(), p.in_out()))
-              .toList(),
-            body);
-        globals.put(identifier, global);
-        yield global;
+        yield new Semantic.UserDefinedProcedure(
+          node.modifier().isPresent(),
+          new Name(source.name(), identifier),
+          d
+            .parameters()
+            .stream()
+            .map(p -> new Semantic.Parameter(p.identifier().text(), p.in_out()))
+            .toList(),
+          body);
       }
       case Node.Const c -> {
         Semantic.Expression value = check_expression(Scope.create(), c.value());
         if (!(value instanceof Semantic.Known constant)) {
           throw source
             .subject(c.value())
-            .to_diagnostic("error", "Constant's value must be a constant!")
+            .to_diagnostic(
+              "error",
+              "Constants' values must be known in compile-time!")
             .to_exception();
         }
-        Semantic.UserDefinedConstant global =
-          new Semantic.UserDefinedConstant(
-            node.modifier().isPresent(),
-            new Name(source.name(), identifier),
-            constant);
-        globals.put(identifier, global);
-        yield global;
+        yield new Semantic.UserDefinedConstant(
+          node.modifier().isPresent(),
+          new Name(source.name(), identifier),
+          constant);
       }
       case Node.GlobalVar var -> {
         Optional<Semantic.Expression> initial_value =
@@ -182,16 +172,14 @@ final class SourceChecker {
               "Global variables cannot have a non-constant expressions as initial values!")
             .to_exception();
         }
-        Semantic.GlobalVar global =
-          new Semantic.GlobalVar(
-            node.modifier().isPresent(),
-            new Name(source.name(), var.identifier().text()),
-            initial_value);
-        globals.put(identifier, global);
-        yield global;
+        yield new Semantic.GlobalVar(
+          node.modifier().isPresent(),
+          new Name(source.name(), var.identifier().text()),
+          initial_value);
       }
     };
     representative = old_representative;
+    globals.put(identifier, definition);
     currently_checked.remove(identifier);
     return Optional.of(definition);
   }
