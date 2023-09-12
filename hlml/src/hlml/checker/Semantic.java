@@ -385,6 +385,20 @@ public sealed interface Semantic {
     }
   }
 
+  /** Expression that yields one if the left operand is not zero. Otherwise,
+   * evaluates the right operand and yields one if it is not zero. If that is
+   * also not the case, yields zero. */
+  record LogicalOr(Expression left_operand, Expression right_operand)
+    implements BinaryOperation
+  {}
+
+  /** Expression that yields zero if the left operand is zero. Otherwise,
+   * evaluates the right operand and yields zero if it is zero. If that is also
+   * not the case, yields one. */
+  record LogicalAnd(Expression left_operand, Expression right_operand)
+    implements BinaryOperation
+  {}
+
   /** Expression that yields one when the left operand is equal to the right
    * operand, and zero otherwise. */
   record EqualTo(Expression left_operand, Expression right_operand)

@@ -291,6 +291,10 @@ public final class Builder {
   /** Builds an expression. */
   private Register build_expression(Semantic.Expression expression) {
     return switch (expression) {
+      case Semantic.LogicalOr e ->
+        throw subject.to_diagnostic("failure", "Unimplemented!").to_exception();
+      case Semantic.LogicalAnd e ->
+        throw subject.to_diagnostic("failure", "Unimplemented!").to_exception();
       case Semantic.EqualTo b ->
         build_binary_operation(b, Instruction.EqualTo::new);
       case Semantic.NotEqualTo b ->

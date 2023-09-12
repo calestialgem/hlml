@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.DoubleUnaryOperator;
 
+import hlml.checker.Semantic.Expression;
 import hlml.lexer.Token;
 import hlml.parser.Node;
 import hlml.resolver.ResolvedSource;
@@ -400,16 +401,44 @@ final class SourceChecker {
     Node.Expression node)
   {
     return switch (node) {
-      case Node.LogicalOr e ->
-        throw source
-          .subject(node)
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
-      case Node.LogicalAnd e ->
-        throw source
-          .subject(node)
-          .to_diagnostic("failure", "Unimplemented!")
-          .to_exception();
+      case Node.LogicalOr(var l, var r) -> {
+        Expression left_operand = check_expression(scope, l);
+        Expression right_operand = check_expression(scope, r);
+        if (left_operand instanceof Semantic.KnownNumeric left) {
+          if (left.numeric() == 1)
+            yield new Semantic.KnownNumber(1);
+          if (right_operand instanceof Semantic.KnownNumeric right) {
+            if (right.numeric() == 1)
+              yield new Semantic.KnownNumber(1);
+            yield new Semantic.KnownNumber(0);
+          }
+        }
+        else
+          if (right_operand instanceof Semantic.KnownNumeric right) {
+            if (right.numeric() == 1)
+              yield new Semantic.KnownNumber(1);
+          }
+        yield new Semantic.LogicalOr(left_operand, right_operand);
+      }
+      case Node.LogicalAnd(var l, var r) -> {
+        Expression left_operand = check_expression(scope, l);
+        Expression right_operand = check_expression(scope, r);
+        if (left_operand instanceof Semantic.KnownNumeric left) {
+          if (left.numeric() == 0)
+            yield new Semantic.KnownNumber(0);
+          if (right_operand instanceof Semantic.KnownNumeric right) {
+            if (right.numeric() == 0)
+              yield new Semantic.KnownNumber(0);
+            yield new Semantic.KnownNumber(1);
+          }
+        }
+        else
+          if (right_operand instanceof Semantic.KnownNumeric right) {
+            if (right.numeric() == 0)
+              yield new Semantic.KnownNumber(0);
+          }
+        yield new Semantic.LogicalAnd(left_operand, right_operand);
+      }
       case Node.EqualTo(var l, var r) ->
         fold_binary_operation(
           new Semantic.EqualTo(
