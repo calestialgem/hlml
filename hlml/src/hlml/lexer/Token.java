@@ -257,24 +257,6 @@ public sealed interface Token {
     public String explanation() { return "punctuation `%=`"; }
   }
 
-  /** Punctuation `&`. */
-  record Ampersand(int start) implements Token {
-    @Override
-    public int end() { return start + "&".length(); }
-
-    @Override
-    public String explanation() { return "punctuation `&`"; }
-  }
-
-  /** Punctuation `&=`. */
-  record AmpersandEqual(int start) implements Token {
-    @Override
-    public int end() { return start + "&=".length(); }
-
-    @Override
-    public String explanation() { return "punctuation `&=`"; }
-  }
-
   /** Punctuation `^`. */
   record Caret(int start) implements Token {
     @Override
@@ -291,24 +273,6 @@ public sealed interface Token {
 
     @Override
     public String explanation() { return "punctuation `^=`"; }
-  }
-
-  /** Punctuation `|`. */
-  record Pipe(int start) implements Token {
-    @Override
-    public int end() { return start + "|".length(); }
-
-    @Override
-    public String explanation() { return "punctuation `|`"; }
-  }
-
-  /** Punctuation `|=`. */
-  record PipeEqual(int start) implements Token {
-    @Override
-    public int end() { return start + "|=".length(); }
-
-    @Override
-    public String explanation() { return "punctuation `|=`"; }
   }
 
   /** Punctuation `!`. */
@@ -381,6 +345,60 @@ public sealed interface Token {
 
     @Override
     public String explanation() { return "punctuation `-=`"; }
+  }
+
+  /** Punctuation `&`. */
+  record Ampersand(int start) implements Token {
+    @Override
+    public int end() { return start + "&".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `&`"; }
+  }
+
+  /** Punctuation `&&`. */
+  record AmpersandAmpersand(int start) implements Token {
+    @Override
+    public int end() { return start + "&&".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `&&`"; }
+  }
+
+  /** Punctuation `&=`. */
+  record AmpersandEqual(int start) implements Token {
+    @Override
+    public int end() { return start + "&=".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `&=`"; }
+  }
+
+  /** Punctuation `|`. */
+  record Pipe(int start) implements Token {
+    @Override
+    public int end() { return start + "|".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `|`"; }
+  }
+
+  /** Punctuation `||`. */
+  record PipePipe(int start) implements Token {
+    @Override
+    public int end() { return start + "||".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `||`"; }
+  }
+
+  /** Punctuation `|=`. */
+  record PipeEqual(int start) implements Token {
+    @Override
+    public int end() { return start + "|=".length(); }
+
+    @Override
+    public String explanation() { return "punctuation `|=`"; }
   }
 
   /** Punctuation `/`. */

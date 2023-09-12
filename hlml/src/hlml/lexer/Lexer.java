@@ -64,10 +64,7 @@ public final class Lexer {
         case ':' -> lex_repeatable(Token.Colon::new, Token.ColonColon::new);
         case '*' -> lex_extensible(Token.Star::new, Token.StarEqual::new);
         case '%' -> lex_extensible(Token.Percent::new, Token.PercentEqual::new);
-        case '&' ->
-          lex_extensible(Token.Ampersand::new, Token.AmpersandEqual::new);
         case '^' -> lex_extensible(Token.Caret::new, Token.CaretEqual::new);
-        case '|' -> lex_extensible(Token.Pipe::new, Token.PipeEqual::new);
         case '!' ->
           lex_extensible(Token.Exclamation::new, Token.ExclamationEqual::new);
         case '+' ->
@@ -80,6 +77,16 @@ public final class Lexer {
             Token.Minus::new,
             Token.MinusMinus::new,
             Token.MinusEqual::new);
+        case '&' ->
+          lex_repeatable_or_extensible(
+            Token.Ampersand::new,
+            Token.AmpersandAmpersand::new,
+            Token.AmpersandEqual::new);
+        case '|' ->
+          lex_repeatable_or_extensible(
+            Token.Pipe::new,
+            Token.PipePipe::new,
+            Token.PipeEqual::new);
         case '/' ->
           lex_repeatable_and_extensible(
             Token.Slash::new,
