@@ -571,6 +571,350 @@ public sealed interface Semantic {
     public Set<Name> dependencies() { return Set.of(); }
   }
 
+  /** Procedure that compiles to the `ubind` instruction. */
+  record Ubind() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ubind"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List.of(new Parameter("type", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `idle`
+   * subinstruction. */
+  record UcontrolIdle() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ucontrol_idle"); }
+
+    @Override
+    public List<Parameter> parameters() { return List.of(); }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `stop`
+   * subinstruction. */
+  record UcontrolStop() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ucontrol_stop"); }
+
+    @Override
+    public List<Parameter> parameters() { return List.of(); }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `move`
+   * subinstruction. */
+  record UcontrolMove() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ucontrol_move"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("x_coordinate", false),
+          new Parameter("y_coordinate", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `approach`
+   * subinstruction. */
+  record UcontrolApproach() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ucontrol_approach"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("x_coordinate", false),
+          new Parameter("y_coordinate", false),
+          new Parameter("radius", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `pathfind`
+   * subinstruction. */
+  record UcontrolPathfind() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ucontrol_pathfind"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("x_coordinate", false),
+          new Parameter("y_coordinate", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `autopathfind`
+   * subinstruction. */
+  record UcontrolAutopathfind() implements Procedure {
+    @Override
+    public Name name() {
+      return new Name(built_in_scope, "ucontrol_autopathfind");
+    }
+
+    @Override
+    public List<Parameter> parameters() { return List.of(); }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `boost`
+   * subinstruction. */
+  record UcontrolBoost() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ucontrol_boost"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List.of(new Parameter("enabled", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `target`
+   * subinstruction. */
+  record UcontrolTarget() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ucontrol_target"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("x_coordinate", false),
+          new Parameter("y_coordinate", false),
+          new Parameter("shoot", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `targetp`
+   * subinstruction. */
+  record UcontrolTargetp() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ucontrol_targetp"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(new Parameter("unit", false), new Parameter("shoot", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `itemdrop`
+   * subinstruction. */
+  record UcontrolItemdrop() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ucontrol_itemdrop"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(new Parameter("to", false), new Parameter("amount", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `itemtake`
+   * subinstruction. */
+  record UcontrolItemtake() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ucontrol_itemtake"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("from", false),
+          new Parameter("item", false),
+          new Parameter("amount", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `paydrop`
+   * subinstruction. */
+  record UcontrolPaydrop() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ucontrol_paydrop"); }
+
+    @Override
+    public List<Parameter> parameters() { return List.of(); }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `paytake`
+   * subinstruction. */
+  record UcontrolPaytake() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ucontrol_paytake"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List.of(new Parameter("take_units", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `payenter`
+   * subinstruction. */
+  record UcontrolPayenter() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ucontrol_payenter"); }
+
+    @Override
+    public List<Parameter> parameters() { return List.of(); }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `mine`
+   * subinstruction. */
+  record UcontrolMine() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ucontrol_mine"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("x_coordinate", false),
+          new Parameter("y_coordinate", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `flag`
+   * subinstruction. */
+  record UcontrolFlag() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ucontrol_flag"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List.of(new Parameter("value", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `build`
+   * subinstruction. */
+  record UcontrolBuild() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ucontrol_build"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("x_coordinate", false),
+          new Parameter("y_coordinate", false),
+          new Parameter("block", false),
+          new Parameter("rotation", false),
+          new Parameter("configuration", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `getblock`
+   * subinstruction. */
+  record UcontrolGetblock() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ucontrol_getblock"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("x_coordinate", false),
+          new Parameter("y_coordinate", false),
+          new Parameter("type", true),
+          new Parameter("building", true),
+          new Parameter("floor", true));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `within`
+   * subinstruction. */
+  record UcontrolWithin() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ucontrol_within"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List
+        .of(
+          new Parameter("x_coordinate", false),
+          new Parameter("y_coordinate", false),
+          new Parameter("radius", false),
+          new Parameter("result", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `ucontrol` instruction's `unbind`
+   * subinstruction. */
+  record UcontrolUnbind() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "ucontrol_unbind"); }
+
+    @Override
+    public List<Parameter> parameters() { return List.of(); }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
   /** Procedure that compiles to the `radar` instruction's `distance`
    * subinstruction with filters `any`, `any`, `any`. */
   record RadarDistance() implements Procedure {

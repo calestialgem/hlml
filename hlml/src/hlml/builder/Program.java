@@ -195,6 +195,100 @@ final class Program {
         appendable.append("lookup liquid");
         append_operands(appendable, i.t(), i.i());
       }
+      case Instruction.Ubind i -> {
+        appendable.append("ubind");
+        append_operands(appendable, i.type());
+      }
+      case Instruction.UcontrolIdle i -> appendable.append("ucontrol idle");
+      case Instruction.UcontrolStop i -> appendable.append("ucontrol stop");
+      case Instruction.UcontrolMove i -> {
+        appendable.append("ucontrol move");
+        append_operands(appendable, i.x_coordinate(), i.y_coordinate());
+      }
+      case Instruction.UcontrolApproach i -> {
+        appendable.append("ucontrol approach");
+        append_operands(
+          appendable,
+          i.x_coordinate(),
+          i.y_coordinate(),
+          i.radius());
+      }
+      case Instruction.UcontrolPathfind i -> {
+        appendable.append("ucontrol pathfind");
+        append_operands(appendable, i.x_coordinate(), i.y_coordinate());
+      }
+      case Instruction.UcontrolAutopathfind i ->
+        appendable.append("ucontrol autoPathfind");
+      case Instruction.UcontrolBoost i -> {
+        appendable.append("ucontrol boost");
+        append_operands(appendable, i.enabled());
+      }
+      case Instruction.UcontrolTarget i -> {
+        appendable.append("ucontrol target");
+        append_operands(
+          appendable,
+          i.x_coordinate(),
+          i.y_coordinate(),
+          i.shoot());
+      }
+      case Instruction.UcontrolTargetp i -> {
+        appendable.append("ucontrol targetp");
+        append_operands(appendable, i.unit(), i.shoot());
+      }
+      case Instruction.UcontrolItemdrop i -> {
+        appendable.append("ucontrol itemDrop");
+        append_operands(appendable, i.to(), i.amount());
+      }
+      case Instruction.UcontrolItemtake i -> {
+        appendable.append("ucontrol itemTake");
+        append_operands(appendable, i.from(), i.item(), i.amount());
+      }
+      case Instruction.UcontrolPaydrop i ->
+        appendable.append("ucontrol payDrop");
+      case Instruction.UcontrolPaytake i -> {
+        appendable.append("ucontrol payTake");
+        append_operands(appendable, i.take_units());
+      }
+      case Instruction.UcontrolPayenter i ->
+        appendable.append("ucontrol payEnter");
+      case Instruction.UcontrolMine i -> {
+        appendable.append("ucontrol mine");
+        append_operands(appendable, i.x_coordinate(), i.y_coordinate());
+      }
+      case Instruction.UcontrolFlag i -> {
+        appendable.append("ucontrol flag");
+        append_operands(appendable, i.value());
+      }
+      case Instruction.UcontrolBuild i -> {
+        appendable.append("ucontrol build");
+        append_operands(
+          appendable,
+          i.x_coordinate(),
+          i.y_coordinate(),
+          i.block(),
+          i.rotation(),
+          i.configuration());
+      }
+      case Instruction.UcontrolGetblock i -> {
+        appendable.append("ucontrol getBlock");
+        append_operands(
+          appendable,
+          i.x_coordinate(),
+          i.y_coordinate(),
+          i.type(),
+          i.building(),
+          i.floor());
+      }
+      case Instruction.UcontrolWithin i -> {
+        appendable.append("ucontrol within");
+        append_operands(
+          appendable,
+          i.x_coordinate(),
+          i.y_coordinate(),
+          i.radius(),
+          i.result());
+      }
+      case Instruction.UcontrolUnbind i -> appendable.append("ucontrol unbind");
       case Instruction.RadarDistance i -> {
         appendable.append("radar any any any distance");
         append_operands(appendable, i.b(), i.o(), i.u());

@@ -1,0 +1,22 @@
+ubind unit_control$entrypoint$type
+ucontrol idle
+ucontrol stop
+ucontrol move unit_control$entrypoint$x_coordinate unit_control$entrypoint$y_coordinate
+ucontrol approach unit_control$entrypoint$x_coordinate unit_control$entrypoint$y_coordinate unit_control$entrypoint$radius
+ucontrol pathfind unit_control$entrypoint$x_coordinate unit_control$entrypoint$y_coordinate
+ucontrol autoPathfind
+ucontrol boost unit_control$entrypoint$enabled
+ucontrol target unit_control$entrypoint$x_coordinate unit_control$entrypoint$y_coordinate unit_control$entrypoint$shoot
+ucontrol targetp unit_control$entrypoint$unit unit_control$entrypoint$shoot
+ucontrol itemDrop unit_control$entrypoint$to unit_control$entrypoint$amount
+ucontrol itemTake unit_control$entrypoint$from unit_control$entrypoint$item unit_control$entrypoint$amount
+ucontrol payDrop
+ucontrol payTake unit_control$entrypoint$take_units
+ucontrol payEnter
+ucontrol mine unit_control$entrypoint$x_coordinate unit_control$entrypoint$y_coordinate
+ucontrol flag unit_control$entrypoint$value
+ucontrol build unit_control$entrypoint$x_coordinate unit_control$entrypoint$y_coordinate unit_control$entrypoint$block unit_control$entrypoint$rotation unit_control$entrypoint$configuration
+ucontrol getBlock unit_control$entrypoint$x_coordinate unit_control$entrypoint$y_coordinate unit_control$entrypoint$type unit_control$entrypoint$building unit_control$entrypoint$floor
+ucontrol within unit_control$entrypoint$x_coordinate unit_control$entrypoint$y_coordinate unit_control$entrypoint$radius unit_control$entrypoint$result
+ucontrol unbind
+end

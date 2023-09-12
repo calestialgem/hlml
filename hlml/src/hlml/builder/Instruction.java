@@ -135,6 +135,119 @@ sealed interface Instruction {
   /** Instruction that gets a liquid type by its index. */
   record LookupLiquid(Register t, Register i) implements Instruction {}
 
+  /** Instruction that binds a unit of a type to this processor. */
+  record Ubind(Register type) implements Instruction {}
+
+  /** Instruction that commands the unit to not move but keep building or
+   * mining. */
+  record UcontrolIdle() implements Instruction {}
+
+  /** Instruction that commands the unit to cease all moving, building and
+   * mining. */
+  record UcontrolStop() implements Instruction {}
+
+  /** Instruction that commands the unit to directly move to a location. */
+  record UcontrolMove(Register x_coordinate, Register y_coordinate)
+    implements Instruction
+  {}
+
+  /** Instruction that commands the unit to directly move to a circle with a
+   * radius around a location. */
+  record UcontrolApproach(
+    Register x_coordinate,
+    Register y_coordinate,
+    Register radius) implements Instruction
+  {}
+
+  /** Instruction that commands the unit to indirectly move to a location, while
+   * going around any obstacles along the way. */
+  record UcontrolPathfind(Register x_coordinate, Register y_coordinate)
+    implements Instruction
+  {}
+
+  /** Instruction that commands the unit to indirectly move to the enemy drop
+   * location or core, while going around any obstacles along the way. */
+  record UcontrolAutopathfind() implements Instruction {}
+
+  /** Instruction that controls the unit boosting state. */
+  record UcontrolBoost(Register enabled) implements Instruction {}
+
+  /** Instruction that commands the unit to shoot to a location. */
+  record UcontrolTarget(
+    Register x_coordinate,
+    Register y_coordinate,
+    Register shoot) implements Instruction
+  {}
+
+  /** Instruction that commands the unit to shoot a unit with velocity
+   * prediction. */
+  record UcontrolTargetp(Register unit, Register shoot)
+    implements Instruction
+  {}
+
+  /** Instruction that commands the unit to drop some of its items to a
+   * target. */
+  record UcontrolItemdrop(Register to, Register amount)
+    implements Instruction
+  {}
+
+  /** Instruction that commands the unit to take some items from a source. */
+  record UcontrolItemtake(Register from, Register item, Register amount)
+    implements Instruction
+  {}
+
+  /** Instruction that commands the unit to drop its payload to current
+   * location. */
+  record UcontrolPaydrop() implements Instruction {}
+
+  /** Instruction that commands the unit to pickup a payload at current
+   * location, which optionally can be a unit. */
+  record UcontrolPaytake(Register take_units) implements Instruction {}
+
+  /** Instruction that commands the unit to land or enter as a payload to a
+   * target in the current location. */
+  record UcontrolPayenter() implements Instruction {}
+
+  /** Instruction that commands the unit to mine at a location. */
+  record UcontrolMine(Register x_coordinate, Register y_coordinate)
+    implements Instruction
+  {}
+
+  /** Instruction that sets the unit's flag number. */
+  record UcontrolFlag(Register value) implements Instruction {}
+
+  /** Instruction that commands the unit to build a structure at a location of
+   * some type with a rotation and configuration. */
+  record UcontrolBuild(
+    Register x_coordinate,
+    Register y_coordinate,
+    Register block,
+    Register rotation,
+    Register configuration) implements Instruction
+  {}
+
+  /** Instruction that reads the block type, building and floor at a location
+   * though the unit. */
+  record UcontrolGetblock(
+    Register x_coordinate,
+    Register y_coordinate,
+    Register type,
+    Register building,
+    Register floor) implements Instruction
+  {}
+
+  /** Instruction that checks whether the unit is inside a circle with some
+   * radius and center location. */
+  record UcontrolWithin(
+    Register x_coordinate,
+    Register y_coordinate,
+    Register radius,
+    Register result) implements Instruction
+  {}
+
+  /** Instruction that unbinds the unit from this processor. */
+  record UcontrolUnbind() implements Instruction {}
+
   /** Instruction that finds the first or last unit in a building's range via
    * `distance` as the metric. */
   record RadarDistance(Register b, Register o, Register u)

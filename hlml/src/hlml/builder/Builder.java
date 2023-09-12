@@ -644,6 +644,155 @@ public final class Builder {
                   build_argument(e.arguments(), 1)));
             yield Register.null_();
           }
+          case Semantic.Ubind p -> {
+            program
+              .instruct(
+                new Instruction.Ubind(build_argument(e.arguments(), 0)));
+            yield Register.null_();
+          }
+          case Semantic.UcontrolIdle p -> {
+            program.instruct(new Instruction.UcontrolIdle());
+            yield Register.null_();
+          }
+          case Semantic.UcontrolStop p -> {
+            program.instruct(new Instruction.UcontrolStop());
+            yield Register.null_();
+          }
+          case Semantic.UcontrolMove p -> {
+            program
+              .instruct(
+                new Instruction.UcontrolMove(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1)));
+            yield Register.null_();
+          }
+          case Semantic.UcontrolApproach p -> {
+            program
+              .instruct(
+                new Instruction.UcontrolApproach(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2)));
+            yield Register.null_();
+          }
+          case Semantic.UcontrolPathfind p -> {
+            program
+              .instruct(
+                new Instruction.UcontrolPathfind(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1)));
+            yield Register.null_();
+          }
+          case Semantic.UcontrolAutopathfind p -> {
+            program.instruct(new Instruction.UcontrolAutopathfind());
+            yield Register.null_();
+          }
+          case Semantic.UcontrolBoost p -> {
+            program
+              .instruct(
+                new Instruction.UcontrolBoost(
+                  build_argument(e.arguments(), 0)));
+            yield Register.null_();
+          }
+          case Semantic.UcontrolTarget p -> {
+            program
+              .instruct(
+                new Instruction.UcontrolTarget(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2)));
+            yield Register.null_();
+          }
+          case Semantic.UcontrolTargetp p -> {
+            program
+              .instruct(
+                new Instruction.UcontrolTargetp(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1)));
+            yield Register.null_();
+          }
+          case Semantic.UcontrolItemdrop p -> {
+            program
+              .instruct(
+                new Instruction.UcontrolItemdrop(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1)));
+            yield Register.null_();
+          }
+          case Semantic.UcontrolItemtake p -> {
+            program
+              .instruct(
+                new Instruction.UcontrolItemtake(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2)));
+            yield Register.null_();
+          }
+          case Semantic.UcontrolPaydrop p -> {
+            program.instruct(new Instruction.UcontrolPaydrop());
+            yield Register.null_();
+          }
+          case Semantic.UcontrolPaytake p -> {
+            program
+              .instruct(
+                new Instruction.UcontrolPaytake(
+                  build_argument(e.arguments(), 0)));
+            yield Register.null_();
+          }
+          case Semantic.UcontrolPayenter p -> {
+            program.instruct(new Instruction.UcontrolPayenter());
+            yield Register.null_();
+          }
+          case Semantic.UcontrolMine p -> {
+            program
+              .instruct(
+                new Instruction.UcontrolMine(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1)));
+            yield Register.null_();
+          }
+          case Semantic.UcontrolFlag p -> {
+            program
+              .instruct(
+                new Instruction.UcontrolFlag(build_argument(e.arguments(), 0)));
+            yield Register.null_();
+          }
+          case Semantic.UcontrolBuild p -> {
+            program
+              .instruct(
+                new Instruction.UcontrolBuild(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2),
+                  build_argument(e.arguments(), 3),
+                  build_argument(e.arguments(), 4)));
+            yield Register.null_();
+          }
+          case Semantic.UcontrolGetblock p -> {
+            program
+              .instruct(
+                new Instruction.UcontrolGetblock(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2),
+                  build_argument(e.arguments(), 3),
+                  build_argument(e.arguments(), 4)));
+            yield Register.null_();
+          }
+          case Semantic.UcontrolWithin p -> {
+            program
+              .instruct(
+                new Instruction.UcontrolWithin(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1),
+                  build_argument(e.arguments(), 2),
+                  build_argument(e.arguments(), 3)));
+            yield Register.null_();
+          }
+          case Semantic.UcontrolUnbind p -> {
+            program.instruct(new Instruction.UcontrolUnbind());
+            yield Register.null_();
+          }
           case Semantic.RadarDistance p -> {
             program
               .instruct(
