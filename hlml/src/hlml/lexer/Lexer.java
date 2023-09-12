@@ -139,6 +139,7 @@ public final class Lexer {
             Token token;
             switch (text) {
               case "entrypoint" -> { token = new Token.Entrypoint(start); }
+              case "when" -> { token = new Token.When(start); }
               case "public" -> { token = new Token.Public(start); }
               case "link" -> { token = new Token.Link(start); }
               case "using" -> { token = new Token.Using(start); }

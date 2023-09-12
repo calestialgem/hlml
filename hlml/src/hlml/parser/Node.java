@@ -27,6 +27,27 @@ public sealed interface Node {
     }
   }
 
+  /** Declaration that conditionally declares other symbols. */
+  record GlobalWhen(Expression condition, List<Declaration> body)
+    implements Declaration
+  {
+    @Override
+    public int first(List<Token> tokens) { return condition.first(tokens) - 1; }
+
+    @Override
+    public int last(List<Token> tokens) {
+      if (!body.isEmpty()) {
+        return body.get(body.size() - 1).last(tokens) + 1;
+      }
+      return condition.first(tokens) + 2;
+    }
+
+    @Override
+    public Token representative(List<Token> tokens) {
+      return tokens.get(first(tokens));
+    }
+  }
+
   /** Creation of a new symbol by the user. */
   sealed interface Definition extends Declaration {
     /** Visibility modifier of the defined symbol if there is any. */
@@ -158,6 +179,22 @@ public sealed interface Node {
 
   /** Instructions that can be given to the processor. */
   sealed interface Statement extends Node {}
+
+  /** Statements that are conditionally compiled. */
+  record LocalWhen(Expression condition, List<Statement> body)
+    implements Statement
+  {
+    @Override
+    public int first(List<Token> tokens) { return condition.first(tokens) - 1; }
+
+    @Override
+    public int last(List<Token> tokens) {
+      if (!body.isEmpty()) {
+        return body.get(body.size() - 1).last(tokens) + 1;
+      }
+      return condition.first(tokens) + 2;
+    }
+  }
 
   /** Sequentially executed collection of statements. */
   record Block(int first, List<Statement> inner_statements)
