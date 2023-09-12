@@ -1,0 +1,11 @@
+# Tests short circuting logical expressions.
+
+proc expensive_to_call() {
+  mlog::wait(5);
+  return 42;
+}
+
+entrypoint {
+  if mlog::false && expensive_to_call() < 67 {}
+  if mlog::true || expensive_to_call() < 67 {}
+}
