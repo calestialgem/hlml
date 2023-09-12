@@ -1,7 +1,7 @@
 # Tests accessing a symbol in another source.
 
-const fine_structure_constant = 1 / 137;
+public const fine_structure_constant = 1 / 137;
 
-var scalar = 0;
+public var scalar = 0;
 
-proc scale(value) { return value * scalar; }
+public proc scale(value) { return value * scalar; }
