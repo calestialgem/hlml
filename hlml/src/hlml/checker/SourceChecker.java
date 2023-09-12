@@ -400,6 +400,16 @@ final class SourceChecker {
     Node.Expression node)
   {
     return switch (node) {
+      case Node.LogicalOr e ->
+        throw source
+          .subject(node)
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
+      case Node.LogicalAnd e ->
+        throw source
+          .subject(node)
+          .to_diagnostic("failure", "Unimplemented!")
+          .to_exception();
       case Node.EqualTo(var l, var r) ->
         fold_binary_operation(
           new Semantic.EqualTo(

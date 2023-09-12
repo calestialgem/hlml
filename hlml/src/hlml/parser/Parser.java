@@ -474,13 +474,33 @@ public final class Parser {
 
   /** Parses an expression. */
   private Optional<Node.Expression> parse_expression() {
-    return first_of(this::parse_precedence_9);
+    return first_of(this::parse_precedence_11);
+  }
+
+  /** Parses an expression at precedence level 11. */
+  private Optional<Node.Precedence11> parse_precedence_11() {
+    return parse_binary_operations(
+      this::parse_precedence_10,
+      new BinaryOperationParser<>(
+        Token.PipePipe.class,
+        Node.LogicalOr::new,
+        "logical or"));
+  }
+
+  /** Parses an expression at precedence level 10. */
+  private Optional<Node.Precedence10> parse_precedence_10() {
+    return parse_binary_operations(
+      this::parse_precedence_09,
+      new BinaryOperationParser<>(
+        Token.AmpersandAmpersand.class,
+        Node.LogicalAnd::new,
+        "logical and"));
   }
 
   /** Parses an expression at precedence level 9. */
-  private Optional<Node.Precedence9> parse_precedence_9() {
+  private Optional<Node.Precedence09> parse_precedence_09() {
     return parse_binary_operations(
-      this::parse_precedence_8,
+      this::parse_precedence_08,
       new BinaryOperationParser<>(
         Token.EqualEqual.class,
         Node.EqualTo::new,
@@ -496,9 +516,9 @@ public final class Parser {
   }
 
   /** Parses an expression at precedence level 8. */
-  private Optional<Node.Precedence8> parse_precedence_8() {
+  private Optional<Node.Precedence08> parse_precedence_08() {
     return parse_binary_operations(
-      this::parse_precedence_7,
+      this::parse_precedence_07,
       new BinaryOperationParser<>(
         Token.Left.class,
         Node.LessThan::new,
@@ -518,9 +538,9 @@ public final class Parser {
   }
 
   /** Parses an expression at precedence level 7. */
-  private Optional<Node.Precedence7> parse_precedence_7() {
+  private Optional<Node.Precedence07> parse_precedence_07() {
     return parse_binary_operations(
-      this::parse_precedence_6,
+      this::parse_precedence_06,
       new BinaryOperationParser<>(
         Token.Pipe.class,
         Node.BitwiseOr::new,
@@ -528,9 +548,9 @@ public final class Parser {
   }
 
   /** Parses an expression at precedence level 6. */
-  private Optional<Node.Precedence6> parse_precedence_6() {
+  private Optional<Node.Precedence06> parse_precedence_06() {
     return parse_binary_operations(
-      this::parse_precedence_5,
+      this::parse_precedence_05,
       new BinaryOperationParser<>(
         Token.Caret.class,
         Node.BitwiseXor::new,
@@ -538,9 +558,9 @@ public final class Parser {
   }
 
   /** Parses an expression at precedence level 5. */
-  private Optional<Node.Precedence5> parse_precedence_5() {
+  private Optional<Node.Precedence05> parse_precedence_05() {
     return parse_binary_operations(
-      this::parse_precedence_4,
+      this::parse_precedence_04,
       new BinaryOperationParser<>(
         Token.Ampersand.class,
         Node.BitwiseAnd::new,
@@ -548,9 +568,9 @@ public final class Parser {
   }
 
   /** Parses an expression at precedence level 4. */
-  private Optional<Node.Precedence4> parse_precedence_4() {
+  private Optional<Node.Precedence04> parse_precedence_04() {
     return parse_binary_operations(
-      this::parse_precedence_3,
+      this::parse_precedence_03,
       new BinaryOperationParser<>(
         Token.LeftLeft.class,
         Node.LeftShift::new,
@@ -562,9 +582,9 @@ public final class Parser {
   }
 
   /** Parses an expression at precedence level 3. */
-  private Optional<Node.Precedence3> parse_precedence_3() {
+  private Optional<Node.Precedence03> parse_precedence_03() {
     return parse_binary_operations(
-      this::parse_precedence_2,
+      this::parse_precedence_02,
       new BinaryOperationParser<>(
         Token.Plus.class,
         Node.Addition::new,
@@ -576,9 +596,9 @@ public final class Parser {
   }
 
   /** Parses an expression at precedence level 2. */
-  private Optional<Node.Precedence2> parse_precedence_2() {
+  private Optional<Node.Precedence02> parse_precedence_02() {
     return parse_binary_operations(
-      this::parse_precedence_1,
+      this::parse_precedence_01,
       new BinaryOperationParser<>(
         Token.Star.class,
         Node.Multiplication::new,
@@ -627,9 +647,9 @@ public final class Parser {
   }
 
   /** Parses an expression at precedence level 1. */
-  private Optional<Node.Precedence1> parse_precedence_1() {
+  private Optional<Node.Precedence01> parse_precedence_01() {
     return parse_unary_operations(
-      this::parse_precedence_0,
+      this::parse_precedence_00,
       new UnaryOperationParser<>(
         Token.Plus.class,
         Node.Promotion::new,
@@ -681,8 +701,8 @@ public final class Parser {
   }
 
   /** Parses an expression at precedence level 0. */
-  private Optional<Node.Precedence0> parse_precedence_0() {
-    Optional<Node.Precedence0> precedence_0 =
+  private Optional<Node.Precedence00> parse_precedence_00() {
+    Optional<Node.Precedence00> precedence_0 =
       first_of(
         this::parse_grouping,
         this::parse_symbol_based,
@@ -690,7 +710,7 @@ public final class Parser {
         this::parse_color_constant,
         this::parse_string_constant);
     if (precedence_0.isEmpty()) { return precedence_0; }
-    Node.Precedence0 result = precedence_0.get();
+    Node.Precedence00 result = precedence_0.get();
     while (true) {
       if (parse_token(Token.Dot.class).isEmpty()) { break; }
       Token.Identifier member =

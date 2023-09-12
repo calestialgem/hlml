@@ -430,165 +430,188 @@ public sealed interface Node {
     }
   }
 
+  /** Expressions at precedence level 11. */
+  sealed interface Precedence11 extends Expression {}
+
+  /** Expression that yields one if the left operand is not zero. Otherwise,
+   * evaluates the right operand and yields one if it is not zero. If that is
+   * also not the case, yields zero. */
+  record LogicalOr(Precedence11 left_operand, Precedence11 right_operand)
+    implements Precedence11, BinaryOperation
+  {}
+
+  /** Expressions at precedence level 10. */
+  sealed interface Precedence10 extends Precedence11 {}
+
+  /** Expression that yields zero if the left operand is zero. Otherwise,
+   * evaluates the right operand and yields zero if it is zero. If that is also
+   * not the case, yields one. */
+  record LogicalAnd(Precedence10 left_operand, Precedence10 right_operand)
+    implements Precedence10, BinaryOperation
+  {}
+
   /** Expressions at precedence level 9. */
-  sealed interface Precedence9 extends Expression {}
+  sealed interface Precedence09 extends Precedence10 {}
 
   /** Expression that yields one when the left operand is equal to the right
    * operand, and zero otherwise. */
-  record EqualTo(Precedence9 left_operand, Precedence9 right_operand)
-    implements Precedence9, BinaryOperation
+  record EqualTo(Precedence09 left_operand, Precedence09 right_operand)
+    implements Precedence09, BinaryOperation
   {}
 
   /** Expression that yields one when the left operand is not equal to the right
    * operand, and zero otherwise. */
-  record NotEqualTo(Precedence9 left_operand, Precedence9 right_operand)
-    implements Precedence9, BinaryOperation
+  record NotEqualTo(Precedence09 left_operand, Precedence09 right_operand)
+    implements Precedence09, BinaryOperation
   {}
 
   /** Expression that yields one when the left operand is equal to the right
    * operand without any operand undergoing implicit conversions, and zero
    * otherwise. */
-  record StrictlyEqualTo(Precedence9 left_operand, Precedence9 right_operand)
-    implements Precedence9, BinaryOperation
+  record StrictlyEqualTo(Precedence09 left_operand, Precedence09 right_operand)
+    implements Precedence09, BinaryOperation
   {}
 
   /** Expressions at precedence level 8. */
-  sealed interface Precedence8 extends Precedence9 {}
+  sealed interface Precedence08 extends Precedence09 {}
 
   /** Expression that yields one when the left operand is less than the right
    * operand, and zero otherwise. */
-  record LessThan(Precedence8 left_operand, Precedence8 right_operand)
-    implements Precedence8, BinaryOperation
+  record LessThan(Precedence08 left_operand, Precedence08 right_operand)
+    implements Precedence08, BinaryOperation
   {}
 
   /** Expression that yields one when the left operand is less than or equal to
    * the right operand, and zero otherwise. */
-  record LessThanOrEqualTo(Precedence8 left_operand, Precedence8 right_operand)
-    implements Precedence8, BinaryOperation
+  record LessThanOrEqualTo(
+    Precedence08 left_operand,
+    Precedence08 right_operand) implements Precedence08, BinaryOperation
   {}
 
   /** Expression that yields one when the left operand is greater than the right
    * operand, and zero otherwise. */
-  record GreaterThan(Precedence8 left_operand, Precedence8 right_operand)
-    implements Precedence8, BinaryOperation
+  record GreaterThan(Precedence08 left_operand, Precedence08 right_operand)
+    implements Precedence08, BinaryOperation
   {}
 
   /** Expression that yields one when the left operand is greater than or equal
    * to the right operand, and zero otherwise. */
   record GreaterThanOrEqualTo(
-    Precedence8 left_operand,
-    Precedence8 right_operand) implements Precedence8, BinaryOperation
+    Precedence08 left_operand,
+    Precedence08 right_operand) implements Precedence08, BinaryOperation
   {}
 
   /** Expressions at precedence level 7. */
-  sealed interface Precedence7 extends Precedence8 {}
+  sealed interface Precedence07 extends Precedence08 {}
 
   /** Expression that yields a number that has the bit pattern that is the OR'ed
    * version of its operands matching bits. */
-  record BitwiseOr(Precedence7 left_operand, Precedence7 right_operand)
-    implements Precedence7, BinaryOperation
+  record BitwiseOr(Precedence07 left_operand, Precedence07 right_operand)
+    implements Precedence07, BinaryOperation
   {}
 
   /** Expressions at precedence level 6. */
-  sealed interface Precedence6 extends Precedence7 {}
+  sealed interface Precedence06 extends Precedence07 {}
 
   /** Expression that yields a number that has the bit pattern that is the
    * XOR'ed version of its operands matching bits. */
-  record BitwiseXor(Precedence6 left_operand, Precedence6 right_operand)
-    implements Precedence6, BinaryOperation
+  record BitwiseXor(Precedence06 left_operand, Precedence06 right_operand)
+    implements Precedence06, BinaryOperation
   {}
 
   /** Expressions at precedence level 5. */
-  sealed interface Precedence5 extends Precedence6 {}
+  sealed interface Precedence05 extends Precedence06 {}
 
   /** Expression that yields a number that has the bit pattern that is the
    * AND'ed version of its operands matching bits. */
-  record BitwiseAnd(Precedence5 left_operand, Precedence5 right_operand)
-    implements Precedence5, BinaryOperation
+  record BitwiseAnd(Precedence05 left_operand, Precedence05 right_operand)
+    implements Precedence05, BinaryOperation
   {}
 
   /** Expressions at precedence level 4. */
-  sealed interface Precedence4 extends Precedence5 {}
+  sealed interface Precedence04 extends Precedence05 {}
 
   /** Expression that yields the left operand's bits shifted left by right
    * operand when the operands are taken as 53-bit signed two's complement
    * integers. */
-  record LeftShift(Precedence4 left_operand, Precedence4 right_operand)
-    implements Precedence4, BinaryOperation
+  record LeftShift(Precedence04 left_operand, Precedence04 right_operand)
+    implements Precedence04, BinaryOperation
   {}
 
   /** Expression that yields the left operand's bits shifted right by right
    * operand when the operands are taken as 53-bit signed two's complement
    * integers. */
-  record RightShift(Precedence4 left_operand, Precedence4 right_operand)
-    implements Precedence4, BinaryOperation
+  record RightShift(Precedence04 left_operand, Precedence04 right_operand)
+    implements Precedence04, BinaryOperation
   {}
 
   /** Expressions at precedence level 3. */
-  sealed interface Precedence3 extends Precedence4 {}
+  sealed interface Precedence03 extends Precedence04 {}
 
   /** Expression that yields the addition of its operands. */
-  record Addition(Precedence3 left_operand, Precedence3 right_operand)
-    implements Precedence3, BinaryOperation
+  record Addition(Precedence03 left_operand, Precedence03 right_operand)
+    implements Precedence03, BinaryOperation
   {}
 
   /** Expression that yields the subtraction of its operands. */
-  record Subtraction(Precedence3 left_operand, Precedence3 right_operand)
-    implements Precedence3, BinaryOperation
+  record Subtraction(Precedence03 left_operand, Precedence03 right_operand)
+    implements Precedence03, BinaryOperation
   {}
 
   /** Expressions at precedence level 2. */
-  sealed interface Precedence2 extends Precedence3 {}
+  sealed interface Precedence02 extends Precedence03 {}
 
   /** Expression that yields the multiplication of its operands. */
-  record Multiplication(Precedence2 left_operand, Precedence2 right_operand)
-    implements Precedence2, BinaryOperation
+  record Multiplication(Precedence02 left_operand, Precedence02 right_operand)
+    implements Precedence02, BinaryOperation
   {}
 
   /** Expression that yields the division of its operands. */
-  record Division(Precedence2 left_operand, Precedence2 right_operand)
-    implements Precedence2, BinaryOperation
+  record Division(Precedence02 left_operand, Precedence02 right_operand)
+    implements Precedence02, BinaryOperation
   {}
 
   /** Expression that yields the floor of the division of its operands. */
-  record IntegerDivision(Precedence2 left_operand, Precedence2 right_operand)
-    implements Precedence2, BinaryOperation
+  record IntegerDivision(Precedence02 left_operand, Precedence02 right_operand)
+    implements Precedence02, BinaryOperation
   {}
 
   /** Expression that yields the left operand in mod right operand. */
-  record Modulus(Precedence2 left_operand, Precedence2 right_operand)
-    implements Precedence2, BinaryOperation
+  record Modulus(Precedence02 left_operand, Precedence02 right_operand)
+    implements Precedence02, BinaryOperation
   {}
 
   /** Expressions at precedence level 1. */
-  sealed interface Precedence1 extends Precedence2 {}
+  sealed interface Precedence01 extends Precedence02 {}
 
   /** Expression that keeps the sign of a number. */
-  record Promotion(Precedence1 operand)
-    implements Precedence1, UnaryOperation
+  record Promotion(Precedence01 operand)
+    implements Precedence01, UnaryOperation
   {}
 
   /** Expression that flips the sign of a number. */
-  record Negation(Precedence1 operand) implements Precedence1, UnaryOperation {}
+  record Negation(Precedence01 operand)
+    implements Precedence01, UnaryOperation
+  {}
 
   /** Expression that flips every bit when the value is taken as an 53-bit
    * signed two's complement integer. */
-  record BitwiseNot(Precedence1 operand)
-    implements Precedence1, UnaryOperation
+  record BitwiseNot(Precedence01 operand)
+    implements Precedence01, UnaryOperation
   {}
 
   /** Expression that yields one when the operand is zero, and zero
    * otherwise. */
-  record LogicalNot(Precedence1 operand)
-    implements Precedence1, UnaryOperation
+  record LogicalNot(Precedence01 operand)
+    implements Precedence01, UnaryOperation
   {}
 
   /** Expressions at precedence level 0. */
-  sealed interface Precedence0 extends Precedence1 {}
+  sealed interface Precedence00 extends Precedence01 {}
 
   /** Expression that enforces a specific order of evaluation for
    * subexpressions. */
-  record Grouping(Expression grouped) implements Precedence0 {
+  record Grouping(Expression grouped) implements Precedence00 {
     @Override
     public int first(List<Token> tokens) { return grouped.first(tokens) - 1; }
 
@@ -597,7 +620,7 @@ public sealed interface Node {
   }
 
   /** Expression that start with a symbol. */
-  sealed interface SymbolBased extends Precedence0 {}
+  sealed interface SymbolBased extends Precedence00 {}
 
   /** Expression that denotes the value held by a symbol. */
   record SymbolAccess(Mention accessed) implements SymbolBased {
@@ -625,8 +648,8 @@ public sealed interface Node {
   }
 
   /** Expression that senses a property of an object. */
-  record MemberAccess(Precedence0 object, Token.Identifier member)
-    implements Precedence0
+  record MemberAccess(Precedence00 object, Token.Identifier member)
+    implements Precedence00
   {
     @Override
     public int first(List<Token> tokens) { return object.first(tokens); }
@@ -638,9 +661,9 @@ public sealed interface Node {
   /** Expression that calls a procedure by passing the first argument at the
    * beginning as if the procedure was a member of the first argument. */
   record MemberCall(
-    Precedence0 first_argument,
+    Precedence00 first_argument,
     Token.Identifier called,
-    List<Expression> remaining_arguments) implements Precedence0
+    List<Expression> remaining_arguments) implements Precedence00
   {
     @Override
     public int first(List<Token> tokens) {
@@ -660,7 +683,7 @@ public sealed interface Node {
   }
 
   /** Expression that directly denotes a compile-time known number value. */
-  record NumberConstant(int first, double value) implements Precedence0 {
+  record NumberConstant(int first, double value) implements Precedence00 {
     @Override
     public int first(List<Token> tokens) { return first; }
 
@@ -669,7 +692,7 @@ public sealed interface Node {
   }
 
   /** Expression that directly denotes a compile-time known color value. */
-  record ColorConstant(int first, int value) implements Precedence0 {
+  record ColorConstant(int first, int value) implements Precedence00 {
     @Override
     public int first(List<Token> tokens) { return first; }
 
@@ -678,7 +701,7 @@ public sealed interface Node {
   }
 
   /** Expression that directly denotes a compile-time known string value. */
-  record StringConstant(int first, String value) implements Precedence0 {
+  record StringConstant(int first, String value) implements Precedence00 {
     @Override
     public int first(List<Token> tokens) { return first; }
 
