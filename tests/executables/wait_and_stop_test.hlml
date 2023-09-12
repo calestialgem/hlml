@@ -1,0 +1,6 @@
+# Tests wait and stop instructions.
+
+entrypoint {
+  mlog::wait(0.5);                      # wait 0.5
+  mlog::stop();                         # stop
+}
