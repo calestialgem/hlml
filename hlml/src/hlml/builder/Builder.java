@@ -302,7 +302,14 @@ public final class Builder {
         stack.pop(right_evaluation);
         program.instruct(new Instruction.Set(evaluation, right_evaluation));
         program.define(after_evaluation);
-        yield evaluation;
+        Register normalized = stack.push(evaluation);
+        program
+          .instruct(
+            new Instruction.NotEqualTo(
+              normalized,
+              evaluation,
+              Register.number(0)));
+        yield normalized;
       }
       case Semantic.LogicalAnd e -> {
         Waypoint after_evaluation = program.waypoint();
@@ -315,7 +322,14 @@ public final class Builder {
         stack.pop(right_evaluation);
         program.instruct(new Instruction.Set(evaluation, right_evaluation));
         program.define(after_evaluation);
-        yield evaluation;
+        Register normalized = stack.push(evaluation);
+        program
+          .instruct(
+            new Instruction.NotEqualTo(
+              normalized,
+              evaluation,
+              Register.number(0)));
+        yield normalized;
       }
       case Semantic.EqualTo b ->
         build_binary_operation(b, Instruction.EqualTo::new);
