@@ -170,10 +170,15 @@ final class Program {
         appendable.append("control color");
         append_operands(appendable, i.b(), i.c());
       }
-      case Instruction.Sensor i-> {
+      case Instruction.Sensor i -> {
         appendable.append("sensor");
         append_operands(appendable, i.r(), i.t(), i.i());
       }
+      case Instruction.Wait i -> {
+        appendable.append("wait");
+        append_operands(appendable, i.t());
+      }
+      case Instruction.Stop i -> appendable.append("stop");
       case Instruction.RadarDistance i -> {
         appendable.append("radar any any any distance");
         append_operands(appendable, i.b(), i.o(), i.u());

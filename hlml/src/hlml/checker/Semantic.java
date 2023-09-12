@@ -485,6 +485,32 @@ public sealed interface Semantic {
     public Set<Name> dependencies() { return Set.of(); }
   }
 
+  /** Procedure that compiles to the `wait` instruction. */
+  record Wait() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "wait"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List.of(new Parameter("t", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `stop` instruction. */
+  record Stop() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "stop"); }
+
+    @Override
+    public List<Parameter> parameters() { return List.of(); }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
   /** Procedure that compiles to the `radar` instruction's `distance`
    * subinstruction with filters `any`, `any`, `any`. */
   record RadarDistance() implements Procedure {

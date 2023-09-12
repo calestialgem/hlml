@@ -116,6 +116,13 @@ sealed interface Instruction {
   /** Instruction that gets information from a building or a unit. */
   record Sensor(Register r, Register t, Register i) implements Instruction {}
 
+  /** Instruction that makes the processor postpone executing instructions for
+   * some amount of seconds. */
+  record Wait(Register t) implements Instruction {}
+
+  /** Instruction that makes the processor stop executing instructions. */
+  record Stop() implements Instruction {}
+
   /** Instruction that finds the first or last unit in a building's range via
    * `distance` as the metric. */
   record RadarDistance(Register b, Register o, Register u)
