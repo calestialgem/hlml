@@ -89,8 +89,7 @@ final class SourceChecker {
         .to_exception();
     }
     Semantic.Definition definition = global.get();
-    if (definition instanceof Semantic.Using using)
-      return using.aliased();
+    if (definition instanceof Semantic.Using using) { return using.aliased(); }
     return definition;
 
   }
@@ -405,11 +404,9 @@ final class SourceChecker {
         Expression left_operand = check_expression(scope, l);
         Expression right_operand = check_expression(scope, r);
         if (left_operand instanceof Semantic.KnownNumeric left) {
-          if (left.numeric() == 1)
-            yield new Semantic.KnownNumber(1);
+          if (left.numeric() == 1) { yield new Semantic.KnownNumber(1); }
           if (right_operand instanceof Semantic.KnownNumeric right) {
-            if (right.numeric() == 1)
-              yield new Semantic.KnownNumber(1);
+            if (right.numeric() == 1) { yield new Semantic.KnownNumber(1); }
             yield new Semantic.KnownNumber(0);
           }
           yield new Semantic.NotEqualTo(
@@ -418,8 +415,7 @@ final class SourceChecker {
         }
         else
           if (right_operand instanceof Semantic.KnownNumeric right) {
-            if (right.numeric() == 1)
-              yield new Semantic.KnownNumber(1);
+            if (right.numeric() == 1) { yield new Semantic.KnownNumber(1); }
             yield new Semantic.NotEqualTo(
               left_operand,
               new Semantic.KnownNumber(0));
@@ -430,11 +426,9 @@ final class SourceChecker {
         Expression left_operand = check_expression(scope, l);
         Expression right_operand = check_expression(scope, r);
         if (left_operand instanceof Semantic.KnownNumeric left) {
-          if (left.numeric() == 0)
-            yield new Semantic.KnownNumber(0);
+          if (left.numeric() == 0) { yield new Semantic.KnownNumber(0); }
           if (right_operand instanceof Semantic.KnownNumeric right) {
-            if (right.numeric() == 0)
-              yield new Semantic.KnownNumber(0);
+            if (right.numeric() == 0) { yield new Semantic.KnownNumber(0); }
             yield new Semantic.KnownNumber(1);
           }
           yield new Semantic.NotEqualTo(
@@ -443,8 +437,7 @@ final class SourceChecker {
         }
         else
           if (right_operand instanceof Semantic.KnownNumeric right) {
-            if (right.numeric() == 0)
-              yield new Semantic.KnownNumber(0);
+            if (right.numeric() == 0) { yield new Semantic.KnownNumber(0); }
             yield new Semantic.NotEqualTo(
               left_operand,
               new Semantic.KnownNumber(0));

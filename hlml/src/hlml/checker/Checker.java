@@ -934,7 +934,7 @@ public final class Checker {
         .to_exception();
     }
     Semantic.Definition global = source.globals().get(name.identifier());
-    if (!global.visible())
+    if (!global.visible()) {
       throw subject
         .to_diagnostic(
           "error",
@@ -942,8 +942,8 @@ public final class Checker {
           global.name().source(),
           global.name().identifier())
         .to_exception();
-    if (global instanceof Semantic.Using using)
-      return using.aliased();
+    }
+    if (global instanceof Semantic.Using using) { return using.aliased(); }
     return global;
   }
 

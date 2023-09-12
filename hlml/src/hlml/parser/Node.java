@@ -47,8 +47,7 @@ public sealed interface Node {
   {
     @Override
     public int first(List<Token> tokens) {
-      if (modifier.isPresent())
-        return tokens.indexOf(modifier.get());
+      if (modifier.isPresent()) { return tokens.indexOf(modifier.get()); }
       return tokens.indexOf(building) - 1;
     }
 
@@ -69,8 +68,7 @@ public sealed interface Node {
   {
     @Override
     public int first(List<Token> tokens) {
-      if (modifier.isPresent())
-        return tokens.indexOf(modifier.get());
+      if (modifier.isPresent()) { return tokens.indexOf(modifier.get()); }
       return used.first(tokens) - 1;
     }
 
@@ -95,8 +93,7 @@ public sealed interface Node {
   {
     @Override
     public int first(List<Token> tokens) {
-      if (modifier.isPresent())
-        return tokens.indexOf(modifier.get());
+      if (modifier.isPresent()) { return tokens.indexOf(modifier.get()); }
       return tokens.indexOf(identifier) - 1;
     }
 
@@ -125,8 +122,7 @@ public sealed interface Node {
   {
     @Override
     public int first(List<Token> tokens) {
-      if (modifier.isPresent())
-        return tokens.indexOf(modifier.get());
+      if (modifier.isPresent()) { return tokens.indexOf(modifier.get()); }
       return tokens.indexOf(identifier) - 1;
     }
 
@@ -142,8 +138,7 @@ public sealed interface Node {
   {
     @Override
     public int first(List<Token> tokens) {
-      if (modifier.isPresent())
-        return tokens.indexOf(modifier.get());
+      if (modifier.isPresent()) { return tokens.indexOf(modifier.get()); }
       return tokens.indexOf(identifier) - 1;
     }
 
