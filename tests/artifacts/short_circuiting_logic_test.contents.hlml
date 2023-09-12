@@ -9,6 +9,9 @@ link cell1 as memory;
 const index = 0;
 
 entrypoint {
+  if mlog::true && expensive_to_call() < 67 {}
+  if mlog::false || expensive_to_call() < 67 {}
+
   if mlog::false && expensive_to_call() < 67 {}
   if mlog::true || expensive_to_call() < 67 {}
 
