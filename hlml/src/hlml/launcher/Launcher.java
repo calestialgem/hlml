@@ -125,8 +125,7 @@ final class Launcher {
       List<String> builtin_text =
         Files.readAllLines(Path.of("builtin_variables.txt"));
       for (String builtin : builtin_text) {
-        if (builtin.charAt(0) != '@')
-          continue;
+        if (builtin.charAt(0) != '@') { continue; }
         String name = builtin.substring(1).replace('-', '_');
         formatter
           .format(
