@@ -412,11 +412,17 @@ final class SourceChecker {
               yield new Semantic.KnownNumber(1);
             yield new Semantic.KnownNumber(0);
           }
+          yield new Semantic.NotEqualTo(
+            right_operand,
+            new Semantic.KnownNumber(0));
         }
         else
           if (right_operand instanceof Semantic.KnownNumeric right) {
             if (right.numeric() == 1)
               yield new Semantic.KnownNumber(1);
+            yield new Semantic.NotEqualTo(
+              left_operand,
+              new Semantic.KnownNumber(0));
           }
         yield new Semantic.LogicalOr(left_operand, right_operand);
       }
@@ -431,11 +437,17 @@ final class SourceChecker {
               yield new Semantic.KnownNumber(0);
             yield new Semantic.KnownNumber(1);
           }
+          yield new Semantic.NotEqualTo(
+            right_operand,
+            new Semantic.KnownNumber(0));
         }
         else
           if (right_operand instanceof Semantic.KnownNumeric right) {
             if (right.numeric() == 0)
               yield new Semantic.KnownNumber(0);
+            yield new Semantic.NotEqualTo(
+              left_operand,
+              new Semantic.KnownNumber(0));
           }
         yield new Semantic.LogicalAnd(left_operand, right_operand);
       }
