@@ -291,10 +291,32 @@ public final class Builder {
   /** Builds an expression. */
   private Register build_expression(Semantic.Expression expression) {
     return switch (expression) {
-      case Semantic.LogicalOr e ->
-        throw subject.to_diagnostic("failure", "Unimplemented!").to_exception();
-      case Semantic.LogicalAnd e ->
-        throw subject.to_diagnostic("failure", "Unimplemented!").to_exception();
+      case Semantic.LogicalOr e -> {
+        Waypoint after_evaluation = program.waypoint();
+        Register left_evaluation = build_expression(e.left_operand());
+        Register evaluation = stack.push(left_evaluation);
+        program.instruct(new Instruction.Set(evaluation, left_evaluation));
+        program
+          .instruct(new Instruction.JumpOnTrue(after_evaluation, evaluation));
+        Register right_evaluation = build_expression(e.right_operand());
+        stack.pop(right_evaluation);
+        program.instruct(new Instruction.Set(evaluation, right_evaluation));
+        program.define(after_evaluation);
+        yield evaluation;
+      }
+      case Semantic.LogicalAnd e -> {
+        Waypoint after_evaluation = program.waypoint();
+        Register left_evaluation = build_expression(e.left_operand());
+        Register evaluation = stack.push(left_evaluation);
+        program.instruct(new Instruction.Set(evaluation, left_evaluation));
+        program
+          .instruct(new Instruction.JumpOnFalse(after_evaluation, evaluation));
+        Register right_evaluation = build_expression(e.right_operand());
+        stack.pop(right_evaluation);
+        program.instruct(new Instruction.Set(evaluation, right_evaluation));
+        program.define(after_evaluation);
+        yield evaluation;
+      }
       case Semantic.EqualTo b ->
         build_binary_operation(b, Instruction.EqualTo::new);
       case Semantic.NotEqualTo b ->
