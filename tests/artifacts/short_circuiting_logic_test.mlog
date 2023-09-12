@@ -1,0 +1,27 @@
+jump 2 equal false 0
+jump 2 always
+jump 4 equal false 1
+jump 4 always
+read short_circuiting_logic_test$entrypoint$boolean cell1 0
+set _0 short_circuiting_logic_test$entrypoint$boolean
+jump 11 equal false _0
+set short_circuiting_logic_test$expensive_to_call$return$location 9
+jump 22 always
+op lessThan _1 short_circuiting_logic_test$expensive_to_call$return$value 67
+set _0 _1
+jump 13 equal false _0
+jump 13 always
+set _0 short_circuiting_logic_test$entrypoint$boolean
+jump 19 equal true _0
+set short_circuiting_logic_test$expensive_to_call$return$location 17
+jump 22 always
+op lessThan _1 short_circuiting_logic_test$expensive_to_call$return$value 67
+set _0 _1
+jump 21 equal false _0
+jump 21 always
+end
+wait 5
+set short_circuiting_logic_test$expensive_to_call$return$value 42
+set @counter short_circuiting_logic_test$expensive_to_call$return$location
+set short_circuiting_logic_test$expensive_to_call$return$value null
+set @counter short_circuiting_logic_test$expensive_to_call$return$location

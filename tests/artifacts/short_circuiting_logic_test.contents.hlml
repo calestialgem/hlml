@@ -1,4 +1,4 @@
-# Tests short circuting logical expressions.
+# Tests short circuiting logical expressions.
 
 proc expensive_to_call() {
   mlog::wait(5);
