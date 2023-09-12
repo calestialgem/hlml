@@ -1,6 +1,12 @@
 # Tests unit locate instruction.
 
 entrypoint {
+  var ore;
+  var enemy;
+  var x;
+  var y;
+  var found;
+  var building;
   mlog::ulocate_ore(ore, x, y, found);                   # ulocate      ore      core     0 ore x y found
   mlog::ulocate_core(enemy, x, y, found, building);      # ulocate building      core enemy   0 x y found building
   mlog::ulocate_storage(enemy, x, y, found, building);   # ulocate building   storage enemy   0 x y found building

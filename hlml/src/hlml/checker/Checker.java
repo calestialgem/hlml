@@ -149,26 +149,19 @@ public final class Checker {
     filter_instruction_combinations[combination] = "any any any";
     combination++;
     for (int i = 0; i < filters.length; i++) {
-      String filter_i = filters[i];
-      String filter_i_name = filter_i.toLowerCase();
-      filter_name_combinations[combination] = filter_i_name;
-      filter_instruction_combinations[combination] = filter_i + " any any";
+      filter_name_combinations[combination] = filters[i];
+      filter_instruction_combinations[combination] = filters[i] + " any any";
       combination++;
       for (int j = i + 1; j < filters.length; j++) {
-        String filter_j = filters[j];
-        String filter_j_name = filter_j.toLowerCase();
-        filter_name_combinations[combination] =
-          filter_i_name + "_" + filter_j_name;
+        filter_name_combinations[combination] = filters[i] + "_" + filters[j];
         filter_instruction_combinations[combination] =
-          filter_i + " " + filter_j + " any";
+          filters[i] + " " + filters[j] + " any";
         combination++;
         for (int k = j + 1; k < filters.length; k++) {
-          String filter_k = filters[k];
-          String filter_k_name = filter_k.toLowerCase();
           filter_name_combinations[combination] =
-            filter_i_name + "_" + filter_j_name + "_" + filter_k_name;
+            filters[i] + "_" + filters[j] + "_" + filters[k];
           filter_instruction_combinations[combination] =
-            filter_i + " " + filter_j + " " + filter_k;
+            filters[i] + " " + filters[j] + " " + filters[k];
           combination++;
         }
       }
@@ -201,6 +194,37 @@ public final class Checker {
                 + " 0",
               2));
       }
+    }
+
+    builtins
+      .add(new Semantic.Instruction("ulocate_ore", "ulocate ore core 0", 4));
+    builtins
+      .add(
+        new Semantic.Instruction("ulocate_spawn", "ulocate spawn core 0 0", 4));
+    builtins
+      .add(
+        new Semantic.Instruction(
+          "ulocate_damaged",
+          "ulocate damaged core 0 0",
+          4));
+    String[] buildings =
+      {
+        "core",
+        "storage",
+        "generator",
+        "turret",
+        "factory",
+        "repair",
+        "battery",
+        "reactor" };
+    for (String building : buildings) {
+      builtins
+        .add(
+          new Semantic.InstructionWithDummy(
+            "ulocate_" + building,
+            "ulocate building " + building,
+            "0",
+            5));
     }
 
     sources = new HashMap<>();

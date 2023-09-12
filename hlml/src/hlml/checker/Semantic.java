@@ -74,6 +74,21 @@ public sealed interface Semantic {
     public Set<Name> dependencies() { return Set.of(); }
   }
 
+  /** Procedures that directly map to instructions with a dummy argument at the
+   * second place. */
+  record InstructionWithDummy(
+    String identifier,
+    String instruction_text,
+    String dummy_argument,
+    int parameter_count) implements Procedure
+  {
+    @Override
+    public Name name() { return new Name(built_in_scope, identifier); }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
   /** Definition of a procedure's parameter. */
   record Parameter(String identifier, boolean in_out) implements Semantic {}
 

@@ -9,6 +9,14 @@ sealed interface Instruction {
     implements Instruction
   {}
 
+  /** Instructions that directly compile as given with a dummy argument at the
+   * second place. */
+  record DirectlyCompiledWithDummy(
+    String text,
+    String dummy_argument,
+    List<Register> arguments) implements Instruction
+  {}
+
   /** Instruction that makes the currently run instruction to change out of
    * sequence. */
   sealed interface Jump extends Instruction {

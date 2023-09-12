@@ -392,25 +392,43 @@ public final class Builder {
             yield return_value;
           }
           case Semantic.Instruction p -> {
-            List<Register> arguments = new ArrayList<>();
-            for (Semantic.Expression a : e.arguments()) {
-              Register argument = build_expression(a);
-              stack.pop(argument);
-              arguments.add(argument);
-            }
-            for (int i = e.arguments().size(); i < p.parameter_count(); i++) {
-              arguments.add(Register.null_());
-            }
             program
               .instruct(
                 new Instruction.DirectlyCompiled(
                   p.instruction_text(),
-                  arguments));
+                  build_arguments(e.arguments(), p.parameter_count())));
+            yield Register.null_();
+          }
+          case Semantic.InstructionWithDummy p -> {
+            program
+              .instruct(
+                new Instruction.DirectlyCompiledWithDummy(
+                  p.instruction_text(),
+                  p.dummy_argument(),
+                  build_arguments(e.arguments(), p.parameter_count())));
             yield Register.null_();
           }
         };
       }
     };
+  }
+
+  /** Builds the argument list from the provided arguments and puts null for
+   * parameters that were left unprovided. */
+  private List<Register> build_arguments(
+    List<Semantic.Expression> provided_arguments,
+    int parameter_count)
+  {
+    List<Register> arguments = new ArrayList<>();
+    for (Semantic.Expression a : provided_arguments) {
+      Register argument = build_expression(a);
+      stack.pop(argument);
+      arguments.add(argument);
+    }
+    for (int i = provided_arguments.size(); i < parameter_count; i++) {
+      arguments.add(Register.null_());
+    }
+    return arguments;
   }
 
   /** Builds a binary operation. */

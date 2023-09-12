@@ -78,6 +78,17 @@ final class Program {
           append_register(appendable, argument);
         }
       }
+      case Instruction.DirectlyCompiledWithDummy i -> {
+        appendable.append(i.text());
+        appendable.append(' ');
+        append_register(appendable, i.arguments().get(0));
+        appendable.append(' ');
+        appendable.append(i.dummy_argument());
+        for (int j = 1; j < i.arguments().size(); j++) {
+          appendable.append(' ');
+          append_register(appendable, i.arguments().get(j));
+        }
+      }
       case Instruction.JumpAlways i -> {
         appendable.append("jump ");
         appendable.append(Integer.toString(resolve(i.goal())));
