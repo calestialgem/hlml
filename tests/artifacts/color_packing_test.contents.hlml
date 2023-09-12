@@ -6,7 +6,7 @@ entrypoint {
   var color;
   mlog::draw_clear(0, 0, 0);
 
-  mlog::pack_color(color, 0.78, 0.13, 0.25);  # packcolor color 0.78 0.13 0.25
+  mlog::packcolor(color, 0.78, 0.13, 0.25);  # packcolor color 0.78 0.13 0.25
   mlog::draw_col(color);
   mlog::draw_rect(0, 0, 80, 40);
 

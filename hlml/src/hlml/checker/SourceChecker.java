@@ -634,14 +634,14 @@ final class SourceChecker {
           called.name().identifier())
         .to_exception();
     }
-    if (arguments.size() > procedure.parameters().size()) {
+    if (arguments.size() > procedure.parameter_count()) {
       throw source
         .subject(node)
         .to_diagnostic(
           "error",
           "Providing more arguments (%d) than parameters (%d) for calling procedure `%s::%s`!",
           arguments.size(),
-          procedure.parameters().size(),
+          procedure.parameter_count(),
           procedure.name().source(),
           procedure.name().identifier())
         .to_exception();
