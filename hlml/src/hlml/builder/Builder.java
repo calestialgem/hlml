@@ -411,6 +411,13 @@ public final class Builder {
           }
         };
       }
+      case Semantic.MemberAccess e -> {
+        Register object = build_expression(e.object());
+        Register member = build_expression(e.member());
+        Register result = stack.push(object, member);
+        program.instruct(new Instruction.Sensor(result, object, member));
+        yield result;
+      }
     };
   }
 

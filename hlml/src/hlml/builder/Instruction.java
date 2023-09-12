@@ -42,6 +42,11 @@ sealed interface Instruction {
    * source register. */
   record Set(Register target, Register source) implements Instruction {}
 
+  /** Gets the value of a property for a source object. */
+  record Sensor(Register target, Register source, Register property)
+    implements Instruction
+  {}
+
   /** Instruction that operates on values. */
   sealed interface Operation extends Instruction {
     /** Identifier that separates this operation from the other operations. */

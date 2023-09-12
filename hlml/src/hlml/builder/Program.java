@@ -111,6 +111,10 @@ final class Program {
         appendable.append("set");
         append_operands(appendable, i.target(), i.source());
       }
+      case Instruction.Sensor i -> {
+        appendable.append("sensor");
+        append_operands(appendable, i.target(), i.source(), i.property());
+      }
       case Instruction.UnaryOperation i -> {
         appendable.append("op ");
         appendable.append(i.operation_code());
