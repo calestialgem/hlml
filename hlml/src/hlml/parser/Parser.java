@@ -58,16 +58,29 @@ public final class Parser {
 
   /** Parses a definition. */
   private Optional<Node.Definition> parse_definition() {
+    Optional<Token.Public> modifier = parse_token(Token.Public.class);
+    if (modifier.isPresent()) {
+      return Optional
+        .of(
+          expect(
+            () -> first_of(
+              () -> parse_link(modifier),
+              () -> parse_using(modifier),
+              () -> parse_proc(modifier),
+              () -> parse_const(modifier),
+              () -> parse_global_var(modifier)),
+            "a definition"));
+    }
     return first_of(
-      this::parse_link,
-      this::parse_using,
-      this::parse_proc,
-      this::parse_const,
-      this::parse_var);
+      () -> parse_link(modifier),
+      () -> parse_using(modifier),
+      () -> parse_proc(modifier),
+      () -> parse_const(modifier),
+      () -> parse_global_var(modifier));
   }
 
   /** Parses a link. */
-  private Optional<Node.Link> parse_link() {
+  private Optional<Node.Link> parse_link(Optional<Token.Public> modifier) {
     if (parse_token(Token.Link.class).isEmpty()) { return Optional.empty(); }
     Token.Identifier building =
       expect_token(
@@ -85,12 +98,12 @@ public final class Parser {
     expect_token(
       Token.Semicolon.class,
       "terminator `;` of the alias definition");
-    Node.Link link = new Node.Link(building, alias);
+    Node.Link link = new Node.Link(modifier, building, alias);
     return Optional.of(link);
   }
 
   /** Parses a using. */
-  private Optional<Node.Using> parse_using() {
+  private Optional<Node.Using> parse_using(Optional<Token.Public> modifier) {
     if (parse_token(Token.Using.class).isEmpty()) { return Optional.empty(); }
     Node.Mention used =
       expect(this::parse_mention, "mention to used of the alias definition");
@@ -106,12 +119,12 @@ public final class Parser {
     expect_token(
       Token.Semicolon.class,
       "terminator `;` of the alias definition");
-    Node.Using using = new Node.Using(used, alias);
+    Node.Using using = new Node.Using(modifier, used, alias);
     return Optional.of(using);
   }
 
   /** Parses a proc. */
-  private Optional<Node.Proc> parse_proc() {
+  private Optional<Node.Proc> parse_proc(Optional<Token.Public> modifier) {
     if (parse_token(Token.Proc.class).isEmpty()) { return Optional.empty(); }
     Token.Identifier identifier =
       expect_token(
@@ -126,7 +139,7 @@ public final class Parser {
       "parameter list closer `)` of the procedure declaration");
     Node.Statement body =
       expect(this::parse_block, "body of the procedure declaration");
-    Node.Proc proc = new Node.Proc(identifier, parameters, body);
+    Node.Proc proc = new Node.Proc(modifier, identifier, parameters, body);
     return Optional.of(proc);
   }
 
@@ -140,7 +153,7 @@ public final class Parser {
   }
 
   /** Parses a const. */
-  private Optional<Node.Const> parse_const() {
+  private Optional<Node.Const> parse_const(Optional<Token.Public> modifier) {
     if (parse_token(Token.Const.class).isEmpty()) { return Optional.empty(); }
     Token.Identifier identifier =
       expect_token(
@@ -154,29 +167,32 @@ public final class Parser {
     expect_token(
       Token.Semicolon.class,
       "terminator `;` of the constant declaration");
-    Node.Const var = new Node.Const(identifier, initial_value);
+    Node.Const var = new Node.Const(modifier, identifier, initial_value);
     return Optional.of(var);
   }
 
-  /** Parses a var. */
-  private Optional<Node.Var> parse_var() {
+  /** Parses a global variable. */
+  private Optional<Node.GlobalVar> parse_global_var(
+    Optional<Token.Public> modifier)
+  {
     if (parse_token(Token.Var.class).isEmpty()) { return Optional.empty(); }
     Token.Identifier identifier =
       expect_token(
         Token.Identifier.class,
-        "identifier of the variable declaration");
+        "identifier of the global variable declaration");
     Optional<Node.Expression> initial_value = Optional.empty();
     if (parse_token(Token.Equal.class).isPresent()) {
       Node.Expression given_initial_value =
         expect(
           this::parse_expression,
-          "initial value of the variable declaration");
+          "initial value of the global variable declaration");
       initial_value = Optional.of(given_initial_value);
     }
     expect_token(
       Token.Semicolon.class,
-      "terminator `;` of the variable declaration");
-    Node.Var var = new Node.Var(identifier, initial_value);
+      "terminator `;` of the global variable declaration");
+    Node.GlobalVar var =
+      new Node.GlobalVar(modifier, identifier, initial_value);
     return Optional.of(var);
   }
 
@@ -189,7 +205,7 @@ public final class Parser {
       this::parse_break,
       this::parse_continue,
       this::parse_return,
-      this::parse_var,
+      this::parse_local_var,
       this::parse_affect);
   }
 
@@ -210,7 +226,7 @@ public final class Parser {
   /** Parses an if statement. */
   private Optional<Node.If> parse_if() {
     if (parse_token(Token.If.class).isEmpty()) { return Optional.empty(); }
-    List<Node.Var> variables = repeats_of(this::parse_var);
+    List<Node.LocalVar> variables = repeats_of(this::parse_local_var);
     Node.Expression condition =
       expect(this::parse_expression, "condition of the if statement");
     Node.Statement true_branch =
@@ -239,7 +255,7 @@ public final class Parser {
       current = first;
       return Optional.empty();
     }
-    List<Node.Var> variables = repeats_of(this::parse_var);
+    List<Node.LocalVar> variables = repeats_of(this::parse_local_var);
     Node.Expression condition =
       expect(this::parse_expression, "condition of the while statement");
     Optional<Node.Statement> interleaved = Optional.empty();
@@ -309,6 +325,28 @@ public final class Parser {
       "terminator `;` of the return statement");
     Node.Return return_statement = new Node.Return(first, value);
     return Optional.of(return_statement);
+  }
+
+  /** Parses a local variable. */
+  private Optional<Node.LocalVar> parse_local_var() {
+    if (parse_token(Token.Var.class).isEmpty()) { return Optional.empty(); }
+    Token.Identifier identifier =
+      expect_token(
+        Token.Identifier.class,
+        "identifier of the local variable declaration");
+    Optional<Node.Expression> initial_value = Optional.empty();
+    if (parse_token(Token.Equal.class).isPresent()) {
+      Node.Expression given_initial_value =
+        expect(
+          this::parse_expression,
+          "initial value of the local variable declaration");
+      initial_value = Optional.of(given_initial_value);
+    }
+    expect_token(
+      Token.Semicolon.class,
+      "terminator `;` of the local variable declaration");
+    Node.LocalVar var = new Node.LocalVar(identifier, initial_value);
+    return Optional.of(var);
   }
 
   /** Parses an affect statement. */

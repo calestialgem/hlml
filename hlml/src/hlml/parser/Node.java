@@ -29,6 +29,9 @@ public sealed interface Node {
 
   /** Creation of a new symbol by the user. */
   sealed interface Definition extends Declaration {
+    /** Visibility modifier of the defined symbol if there is any. */
+    Optional<Token.Public> modifier();
+
     /** Identifier of the defined symbol. */
     Token.Identifier identifier();
 
@@ -37,11 +40,15 @@ public sealed interface Node {
   }
 
   /** Defining a symbol as building linked to the processor. */
-  record Link(Token.Identifier building, Optional<Token.Identifier> alias)
-    implements Definition
+  record Link(
+    Optional<Token.Public> modifier,
+    Token.Identifier building,
+    Optional<Token.Identifier> alias) implements Definition
   {
     @Override
     public int first(List<Token> tokens) {
+      if (modifier.isPresent())
+        return tokens.indexOf(modifier.get());
       return tokens.indexOf(building) - 1;
     }
 
@@ -55,11 +62,17 @@ public sealed interface Node {
   }
 
   /** Defining a symbol as an alias to another one. */
-  record Using(Mention used, Optional<Token.Identifier> alias)
-    implements Definition
+  record Using(
+    Optional<Token.Public> modifier,
+    Mention used,
+    Optional<Token.Identifier> alias) implements Definition
   {
     @Override
-    public int first(List<Token> tokens) { return used.first(tokens) - 1; }
+    public int first(List<Token> tokens) {
+      if (modifier.isPresent())
+        return tokens.indexOf(modifier.get());
+      return used.first(tokens) - 1;
+    }
 
     @Override
     public int last(List<Token> tokens) {
@@ -75,12 +88,15 @@ public sealed interface Node {
   /** Defining a symbol that is a parametrized set of instructions that resolve
    * to a value. */
   record Proc(
+    Optional<Token.Public> modifier,
     Token.Identifier identifier,
     List<Parameter> parameters,
     Statement body) implements Definition
   {
     @Override
     public int first(List<Token> tokens) {
+      if (modifier.isPresent())
+        return tokens.indexOf(modifier.get());
       return tokens.indexOf(identifier) - 1;
     }
 
@@ -102,11 +118,15 @@ public sealed interface Node {
   }
 
   /** Defining a symbol that holds an known value. */
-  record Const(Token.Identifier identifier, Expression value)
-    implements Definition
+  record Const(
+    Optional<Token.Public> modifier,
+    Token.Identifier identifier,
+    Expression value) implements Definition
   {
     @Override
     public int first(List<Token> tokens) {
+      if (modifier.isPresent())
+        return tokens.indexOf(modifier.get());
       return tokens.indexOf(identifier) - 1;
     }
 
@@ -115,11 +135,15 @@ public sealed interface Node {
   }
 
   /** Defining a symbol that holds an unknown value. */
-  record Var(Token.Identifier identifier, Optional<Expression> initial_value)
-    implements Definition, Statement
+  record GlobalVar(
+    Optional<Token.Public> modifier,
+    Token.Identifier identifier,
+    Optional<Expression> initial_value) implements Definition
   {
     @Override
     public int first(List<Token> tokens) {
+      if (modifier.isPresent())
+        return tokens.indexOf(modifier.get());
       return tokens.indexOf(identifier) - 1;
     }
 
@@ -154,7 +178,7 @@ public sealed interface Node {
 
   /** Statements that branch the control flow. */
   record If(
-    List<Var> variables,
+    List<LocalVar> variables,
     Expression condition,
     Statement true_branch,
     Optional<Statement> false_branch) implements Statement
@@ -175,7 +199,7 @@ public sealed interface Node {
   /** Statements that loop the control flow. */
   record While(
     Optional<Token.Identifier> label,
-    List<Var> variables,
+    List<LocalVar> variables,
     Expression condition,
     Optional<Statement> interleaved,
     Statement loop,
@@ -232,6 +256,25 @@ public sealed interface Node {
     public int last(List<Token> tokens) {
       if (value.isPresent()) { return value.get().last(tokens) + 1; }
       return first + 1;
+    }
+  }
+
+  /** Defining a symbol that holds an unknown value. */
+  record LocalVar(
+    Token.Identifier identifier,
+    Optional<Expression> initial_value) implements Statement
+  {
+    @Override
+    public int first(List<Token> tokens) {
+      return tokens.indexOf(identifier) - 1;
+    }
+
+    @Override
+    public int last(List<Token> tokens) {
+      if (initial_value.isPresent()) {
+        return initial_value.get().last(tokens) + 1;
+      }
+      return tokens.indexOf(identifier) + 1;
     }
   }
 

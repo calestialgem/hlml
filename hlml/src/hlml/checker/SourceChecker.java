@@ -132,7 +132,8 @@ final class SourceChecker {
       case Node.Proc d -> {
         Scope scope = Scope.create();
         for (Node.Parameter p : d.parameters()) {
-          Node.Var local = new Node.Var(p.identifier(), Optional.empty());
+          Node.LocalVar local =
+            new Node.LocalVar(p.identifier(), Optional.empty());
           check_local(scope, local);
         }
         Semantic.Statement body =
@@ -165,7 +166,7 @@ final class SourceChecker {
         globals.put(identifier, global);
         yield global;
       }
-      case Node.Var var -> {
+      case Node.GlobalVar var -> {
         Optional<Semantic.Expression> initial_value =
           var.initial_value().map(i -> check_expression(Scope.create(), i));
         if (initial_value.isPresent()
@@ -308,7 +309,7 @@ final class SourceChecker {
       }
       case Node.Return s ->
         new Semantic.Return(s.value().map(e -> check_expression(scope, e)));
-      case Node.Var v -> check_local(scope, v);
+      case Node.LocalVar v -> check_local(scope, v);
       case Node.Increment m ->
         new Semantic.Increment(check_target(scope, m.target()));
       case Node.Decrement m ->
@@ -369,15 +370,17 @@ final class SourceChecker {
   /** Checks inner variables of a statement. */
   private List<Semantic.LocalVar> check_variables(
     Scope scope,
-    List<Node.Var> nodes)
+    List<Node.LocalVar> nodes)
   {
     List<Semantic.LocalVar> variables = new ArrayList<>();
-    for (Node.Var node : nodes) { variables.add(check_local(scope, node)); }
+    for (Node.LocalVar node : nodes) {
+      variables.add(check_local(scope, node));
+    }
     return variables;
   }
 
   /** Introduces a local variable with the given name to the scope. */
-  private Semantic.LocalVar check_local(Scope scope, Node.Var node) {
+  private Semantic.LocalVar check_local(Scope scope, Node.LocalVar node) {
     Optional<Semantic.LocalVar> old_local =
       scope.find(node.identifier().text());
     if (old_local.isPresent()) {
