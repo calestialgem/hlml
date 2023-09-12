@@ -339,8 +339,11 @@ public final class Builder {
       }
       case Semantic.LogicalNot u ->
         build_unary_operation(u, Instruction.NotEqualTo::new);
+      case Semantic.KnownFalse c -> Register.false_();
+      case Semantic.KnownTrue c -> Register.true_();
+      case Semantic.KnownNull c -> Register.null_();
       case Semantic.KnownBuiltin c -> Register.builtin(c.name());
-      case Semantic.KnownNumber c -> Register.number(c.value());
+      case Semantic.KnownNumber c -> Register.number(c.numeric());
       case Semantic.KnownColor e -> Register.color(e.value());
       case Semantic.KnownString e -> Register.string(e.value());
       case Semantic.LinkAccess e -> Register.link(e.building());

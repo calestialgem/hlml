@@ -2,6 +2,9 @@
 
 entrypoint {
   var a;
+  a = mlog::false;                        # set a false
+  a = mlog::true;                         # set a true
+  a = mlog::null;                         # set a null
   a = mlog::pi;                           # set a @pi
   a = mlog::e;                            # set a @e
   a = mlog::degToRad;                     # set a @degToRad

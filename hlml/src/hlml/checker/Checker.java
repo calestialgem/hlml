@@ -77,6 +77,9 @@ public final class Checker {
         .to_exception(cause);
     }
     builtins = new HashSet<>();
+    builtins.add(new Semantic.BuiltinKeyword(new Semantic.KnownFalse()));
+    builtins.add(new Semantic.BuiltinKeyword(new Semantic.KnownTrue()));
+    builtins.add(new Semantic.BuiltinKeyword(new Semantic.KnownNull()));
     builtin_constant("pi");
     builtin_constant("e");
     builtin_constant("degToRad");

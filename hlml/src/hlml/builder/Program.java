@@ -177,6 +177,8 @@ final class Program {
         appendable.append('@');
         appendable.append(r.name());
       }
+      case Register.False r -> appendable.append("false");
+      case Register.True r -> appendable.append("true");
       case Register.Null r -> appendable.append("null");
     }
   }

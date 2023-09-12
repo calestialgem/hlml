@@ -1,3 +1,6 @@
+set builtin_variables_test$entrypoint$a false
+set builtin_variables_test$entrypoint$a true
+set builtin_variables_test$entrypoint$a null
 set builtin_variables_test$entrypoint$a @pi
 set builtin_variables_test$entrypoint$a @e
 set builtin_variables_test$entrypoint$a @degToRad

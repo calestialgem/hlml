@@ -553,13 +553,13 @@ final class SourceChecker {
     Semantic.BinaryOperation operation,
     DoubleBinaryOperator operator)
   {
-    if (!(operation.left_operand() instanceof Semantic.KnownNumber l)
-      || !(operation.right_operand() instanceof Semantic.KnownNumber r))
+    if (!(operation.left_operand() instanceof Semantic.KnownNumeric l)
+      || !(operation.right_operand() instanceof Semantic.KnownNumeric r))
     {
       return operation;
     }
     return new Semantic.KnownNumber(
-      operator.applyAsDouble(l.value(), r.value()));
+      operator.applyAsDouble(l.numeric(), r.numeric()));
   }
 
   /** Folds a unary operation if the operand is constant. */
@@ -567,10 +567,10 @@ final class SourceChecker {
     Semantic.UnaryOperation operation,
     DoubleUnaryOperator operator)
   {
-    if (!(operation.operand() instanceof Semantic.KnownNumber o)) {
+    if (!(operation.operand() instanceof Semantic.KnownNumeric o)) {
       return operation;
     }
-    return new Semantic.KnownNumber(operator.applyAsDouble(o.value()));
+    return new Semantic.KnownNumber(operator.applyAsDouble(o.numeric()));
   }
 
   /** Checks a variable access. */

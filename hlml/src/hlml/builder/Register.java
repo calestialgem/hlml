@@ -60,6 +60,18 @@ sealed interface Register {
     public boolean is_volatile() { return true; }
   }
 
+  /** Literal that holds the false Boolean value. */
+  record False() implements Register {
+    @Override
+    public boolean is_volatile() { return false; }
+  }
+
+  /** Literal that holds the true Boolean value. */
+  record True() implements Register {
+    @Override
+    public boolean is_volatile() { return false; }
+  }
+
   /** Literal that holds no value. */
   record Null() implements Register {
     @Override
@@ -116,6 +128,16 @@ sealed interface Register {
   /** Returns a literal holding the a built-in processor variable. */
   static Register builtin(String name) {
     return new Builtin(name);
+  }
+
+  /** Returns a literal holding false Boolean value. */
+  static Register false_() {
+    return new False();
+  }
+
+  /** Returns a literal holding true Boolean value. */
+  static Register true_() {
+    return new True();
   }
 
   /** Returns a literal holding nothing. */

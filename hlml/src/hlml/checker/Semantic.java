@@ -106,6 +106,12 @@ public sealed interface Semantic {
   /** Constants that are defined by the user. */
   record UserDefinedConstant(Name name, Known value) implements Constant {}
 
+  /** Constants that directly map to a processor keyword. */
+  record BuiltinKeyword(KnownKeyword value) implements Constant {
+    @Override
+    public Name name() { return new Name(built_in_scope, value.keyword()); }
+  }
+
   /** Constants that directly map to a processors variables. */
   record BuiltinConstant(String identifier, KnownBuiltin value)
     implements Constant
@@ -477,11 +483,51 @@ public sealed interface Semantic {
     default Set<Name> dependencies() { return Set.of(); }
   }
 
+  /** Known with a numeric value. */
+  sealed interface KnownNumeric extends Known {
+    /** Numeric value. */
+    double numeric();
+  }
+
+  /** Known with a value that can be represented with a keyword in
+   * instructions. */
+  sealed interface KnownKeyword extends KnownNumeric {
+    /** Keyword representation of this known. */
+    String keyword();
+  }
+
+  /** Expression that evaluates to the `false` processor variable. */
+  record KnownFalse() implements KnownKeyword {
+    @Override
+    public double numeric() { return 0; }
+
+    @Override
+    public String keyword() { return "false"; }
+  }
+
+  /** Expression that evaluates to the `true` processor variable. */
+  record KnownTrue() implements KnownKeyword {
+    @Override
+    public double numeric() { return 1; }
+
+    @Override
+    public String keyword() { return "true"; }
+  }
+
+  /** Expression that evaluates to the `null` processor variable. */
+  record KnownNull() implements KnownKeyword {
+    @Override
+    public double numeric() { return 0; }
+
+    @Override
+    public String keyword() { return "null"; }
+  }
+
   /** Expression that evaluates to a built-in constant. */
   record KnownBuiltin(String name) implements Known {}
 
   /** Expression that evaluates to a hard-coded number value. */
-  record KnownNumber(double value) implements Known {}
+  record KnownNumber(double numeric) implements KnownNumeric {}
 
   /** Expression that evaluates to a hard-coded color value. */
   record KnownColor(int value) implements Known {}
