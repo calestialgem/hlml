@@ -1,0 +1,1 @@
+[Link[start=37], Identifier[start=42, text=container1], As[start=53], Identifier[start=56, text=container], Semicolon[start=65], Entrypoint[start=70], OpeningBrace[start=81], Var[start=86], Identifier[start=90, text=copper], Equal[start=97], Identifier[start=99, text=container], Dot[start=108], Identifier[start=109, text=copper], Semicolon[start=115], ClosingBrace[start=171]]

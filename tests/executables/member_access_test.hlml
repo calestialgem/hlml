@@ -1,0 +1,9 @@
+# Tests member access expression.
+
+link container1 as container;
+
+entrypoint {
+  var copper = container.copper;
+  # sensor _0 container1 @copper
+  # set copper _0
+}
