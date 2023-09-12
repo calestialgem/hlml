@@ -173,7 +173,10 @@ final class Program {
       }
       case Register.Instruction r ->
         appendable.append(Integer.toString(resolve(r.waypoint())));
-      case Register.Counter r -> appendable.append("@counter");
+      case Register.Builtin r -> {
+        appendable.append('@');
+        appendable.append(r.name());
+      }
       case Register.Null r -> appendable.append("null");
     }
   }

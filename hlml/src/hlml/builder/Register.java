@@ -54,9 +54,8 @@ sealed interface Register {
     public boolean is_volatile() { return false; }
   }
 
-  /** Literal that holds the program counter, which is the currently executed
-   * instruction. */
-  record Counter() implements Register {
+  /** Literal that holds a variable built-in to the processor. */
+  record Builtin(String name) implements Register {
     @Override
     public boolean is_volatile() { return true; }
   }
@@ -74,7 +73,10 @@ sealed interface Register {
 
   /** Returns a register hosting the parameter of the given procedure at the
    * given index. */
-  static Register parameter(Semantic.Proc procedure, int index) {
+  static Register parameter(
+    Semantic.UserDefinedProcedure procedure,
+    int index)
+  {
     return local(
       procedure.name(),
       procedure.parameters().get(index).identifier());
@@ -111,9 +113,9 @@ sealed interface Register {
     return new Instruction(waypoint);
   }
 
-  /** Returns a literal holding the program counter. */
-  static Register counter() {
-    return new Counter();
+  /** Returns a literal holding the a built-in processor variable. */
+  static Register builtin(String name) {
+    return new Builtin(name);
   }
 
   /** Returns a literal holding nothing. */

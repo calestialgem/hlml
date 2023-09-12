@@ -102,8 +102,8 @@ public final class Builder {
     program.instruct(new Instruction.End());
     for (Name procedure : addresses.keySet()) {
       current = procedure;
-      Semantic.Proc proc =
-        (Semantic.Proc) target
+      Semantic.UserDefinedProcedure proc =
+        (Semantic.UserDefinedProcedure) target
           .sources()
           .get(procedure.source())
           .globals()
@@ -114,7 +114,7 @@ public final class Builder {
       Register return_value = Register.local(current, "return$value");
       program.instruct(new Instruction.Set(return_value, value));
       Register return_location = Register.local(current, "return$location");
-      Register program_counter = Register.counter();
+      Register program_counter = Register.builtin("counter");
       program.instruct(new Instruction.Set(program_counter, return_location));
     }
     Path output_path =
@@ -145,7 +145,8 @@ public final class Builder {
       build_dependency(dependency);
     }
     switch (definition) {
-      case Semantic.Proc d -> addresses.put(name, program.waypoint());
+      case Semantic.UserDefinedProcedure d ->
+        addresses.put(name, program.waypoint());
       case Semantic.GlobalVar d ->
         d.initial_value().ifPresent(i -> initialized.add(name));
       default -> {}
@@ -220,7 +221,7 @@ public final class Builder {
           program.instruct(new Instruction.Set(return_value, value));
         }
         Register return_location = Register.local(current, "return$location");
-        Register program_counter = Register.counter();
+        Register program_counter = Register.builtin("counter");
         program.instruct(new Instruction.Set(program_counter, return_location));
       }
       case Semantic.LocalVar l -> build_variable(l);
@@ -338,9 +339,10 @@ public final class Builder {
       }
       case Semantic.LogicalNot u ->
         build_unary_operation(u, Instruction.NotEqualTo::new);
-      case Semantic.NumberConstant c -> Register.number(c.value());
-      case Semantic.ColorConstant e -> Register.color(e.value());
-      case Semantic.StringConstant e -> Register.string(e.value());
+      case Semantic.KnownBuiltin c -> Register.builtin(c.name());
+      case Semantic.KnownNumber c -> Register.number(c.value());
+      case Semantic.KnownColor e -> Register.color(e.value());
+      case Semantic.KnownString e -> Register.string(e.value());
       case Semantic.LinkAccess e -> Register.link(e.building());
       case Semantic.GlobalVariableAccess g -> Register.global(g.name());
       case Semantic.LocalVariableAccess l ->
@@ -353,7 +355,7 @@ public final class Builder {
             .globals()
             .get(e.procedure().identifier());
         yield switch (procedure) {
-          case Semantic.Proc proc -> {
+          case Semantic.UserDefinedProcedure p -> {
             Waypoint after_call = program.waypoint();
             Register return_address = Register.instruction(after_call);
             Register return_location =
@@ -364,34 +366,30 @@ public final class Builder {
             for (int i = 0; i < e.arguments().size(); i++) {
               Register argument = build_expression(e.arguments().get(i));
               arguments.add(argument);
-              Register parameter = Register.parameter(proc, i);
+              Register parameter = Register.parameter(p, i);
               stack.pop(argument);
               program.instruct(new Instruction.Set(parameter, argument));
             }
-            for (
-              int i = e.arguments().size();
-              i < proc.parameters().size();
-              i++)
-            {
+            for (int i = e.arguments().size(); i < p.parameters().size(); i++) {
               Register argument = Register.null_();
-              Register parameter = Register.parameter(proc, i);
+              Register parameter = Register.parameter(p, i);
               program.instruct(new Instruction.Set(parameter, argument));
             }
             Waypoint address = addresses.get(e.procedure());
             program.instruct(new Instruction.JumpAlways(address));
             program.define(after_call);
             for (int i = 0; i < e.arguments().size(); i++) {
-              if (!proc.parameters().get(i).in_out()) { continue; }
+              if (!p.parameters().get(i).in_out()) { continue; }
               Register argument = arguments.get(i);
               if (!argument.is_volatile()) { continue; }
-              Register parameter = Register.parameter(proc, i);
+              Register parameter = Register.parameter(p, i);
               program.instruct(new Instruction.Set(argument, parameter));
             }
             Register return_value =
               Register.local(e.procedure(), "return$value");
             yield return_value;
           }
-          case Semantic.Instruction p -> {
+          case Semantic.BuiltinProcedure p -> {
             program
               .instruct(
                 new Instruction.DirectlyCompiled(
@@ -399,7 +397,7 @@ public final class Builder {
                   build_arguments(e.arguments(), p.parameter_count())));
             yield Register.null_();
           }
-          case Semantic.InstructionWithDummy p -> {
+          case Semantic.BuiltinProcedureWithDummy p -> {
             program
               .instruct(
                 new Instruction.DirectlyCompiledWithDummy(

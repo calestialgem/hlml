@@ -51,8 +51,10 @@ public sealed interface Semantic {
   }
 
   /** Procedures that are user-defined. */
-  record Proc(Name name, List<Parameter> parameters, Statement body)
-    implements Procedure
+  record UserDefinedProcedure(
+    Name name,
+    List<Parameter> parameters,
+    Statement body) implements Procedure
   {
     @Override
     public int parameter_count() { return parameters.size(); }
@@ -61,8 +63,11 @@ public sealed interface Semantic {
     public Set<Name> dependencies() { return body.dependencies(); }
   }
 
+  /** Definition of a procedure's parameter. */
+  record Parameter(String identifier, boolean in_out) implements Semantic {}
+
   /** Procedures that directly map to instructions. */
-  record Instruction(
+  record BuiltinProcedure(
     String identifier,
     String instruction_text,
     int parameter_count) implements Procedure
@@ -76,7 +81,7 @@ public sealed interface Semantic {
 
   /** Procedures that directly map to instructions with a dummy argument at the
    * second place. */
-  record InstructionWithDummy(
+  record BuiltinProcedureWithDummy(
     String identifier,
     String instruction_text,
     String dummy_argument,
@@ -89,13 +94,24 @@ public sealed interface Semantic {
     public Set<Name> dependencies() { return Set.of(); }
   }
 
-  /** Definition of a procedure's parameter. */
-  record Parameter(String identifier, boolean in_out) implements Semantic {}
-
   /** Definition of a constant. */
-  record Const(Name name, Constant value) implements Definition {
+  sealed interface Constant extends Definition {
+    /** Value of the constant. */
+    Known value();
+
     @Override
-    public Set<Name> dependencies() { return Set.of(); }
+    default Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Constants that are defined by the user. */
+  record UserDefinedConstant(Name name, Known value) implements Constant {}
+
+  /** Constants that directly map to a processors variables. */
+  record BuiltinConstant(String identifier, KnownBuiltin value)
+    implements Constant
+  {
+    @Override
+    public Name name() { return new Name(built_in_scope, identifier); }
   }
 
   /** Definition of a global variable. */
@@ -456,19 +472,22 @@ public sealed interface Semantic {
   sealed interface SymbolAccess extends Expression {}
 
   /** Expression that has a known value. */
-  sealed interface Constant extends SymbolAccess {
+  sealed interface Known extends SymbolAccess {
     @Override
     default Set<Name> dependencies() { return Set.of(); }
   }
 
+  /** Expression that evaluates to a built-in constant. */
+  record KnownBuiltin(String name) implements Known {}
+
   /** Expression that evaluates to a hard-coded number value. */
-  record NumberConstant(double value) implements Constant {}
+  record KnownNumber(double value) implements Known {}
 
   /** Expression that evaluates to a hard-coded color value. */
-  record ColorConstant(int value) implements Constant {}
+  record KnownColor(int value) implements Known {}
 
   /** Expression that evaluates to a hard-coded string value. */
-  record StringConstant(String value) implements Constant {}
+  record KnownString(String value) implements Known {}
 
   /** Expression that evaluates to a link. */
   record LinkAccess(String building) implements SymbolAccess {

@@ -137,8 +137,8 @@ final class SourceChecker {
         }
         Semantic.Statement body =
           check_statement(scope, new ArrayList<>(), d.body());
-        Semantic.Proc global =
-          new Semantic.Proc(
+        Semantic.UserDefinedProcedure global =
+          new Semantic.UserDefinedProcedure(
             new Name(source.name(), identifier),
             d
               .parameters()
@@ -152,14 +152,16 @@ final class SourceChecker {
       }
       case Node.Const c -> {
         Semantic.Expression value = check_expression(Scope.create(), c.value());
-        if (!(value instanceof Semantic.Constant constant)) {
+        if (!(value instanceof Semantic.Known constant)) {
           throw source
             .subject(c.value())
             .to_diagnostic("error", "Constant's value must be a constant!")
             .to_exception();
         }
-        Semantic.Const global =
-          new Semantic.Const(new Name(source.name(), identifier), constant);
+        Semantic.UserDefinedConstant global =
+          new Semantic.UserDefinedConstant(
+            new Name(source.name(), identifier),
+            constant);
         globals.put(identifier, global);
         yield global;
       }
@@ -167,7 +169,7 @@ final class SourceChecker {
         Optional<Semantic.Expression> initial_value =
           var.initial_value().map(i -> check_expression(Scope.create(), i));
         if (initial_value.isPresent()
-          && !(initial_value.get() instanceof Semantic.Constant))
+          && !(initial_value.get() instanceof Semantic.Known))
         {
           throw source
             .subject(var.initial_value().get())
@@ -528,9 +530,9 @@ final class SourceChecker {
           new Semantic.LogicalNot(check_expression(scope, o)),
           a -> a != 0 ? 1 : 0);
       case Node.NumberConstant number_constant ->
-        new Semantic.NumberConstant(number_constant.value());
-      case Node.ColorConstant e -> new Semantic.ColorConstant(e.value());
-      case Node.StringConstant e -> new Semantic.StringConstant(e.value());
+        new Semantic.KnownNumber(number_constant.value());
+      case Node.ColorConstant e -> new Semantic.KnownColor(e.value());
+      case Node.StringConstant e -> new Semantic.KnownString(e.value());
       case Node.SymbolAccess v -> check_symbol_access(scope, v);
       case Node.Grouping g -> check_expression(scope, g.grouped());
       case Node.Call e -> {
@@ -551,12 +553,12 @@ final class SourceChecker {
     Semantic.BinaryOperation operation,
     DoubleBinaryOperator operator)
   {
-    if (!(operation.left_operand() instanceof Semantic.NumberConstant l)
-      || !(operation.right_operand() instanceof Semantic.NumberConstant r))
+    if (!(operation.left_operand() instanceof Semantic.KnownNumber l)
+      || !(operation.right_operand() instanceof Semantic.KnownNumber r))
     {
       return operation;
     }
-    return new Semantic.NumberConstant(
+    return new Semantic.KnownNumber(
       operator.applyAsDouble(l.value(), r.value()));
   }
 
@@ -565,10 +567,10 @@ final class SourceChecker {
     Semantic.UnaryOperation operation,
     DoubleUnaryOperator operator)
   {
-    if (!(operation.operand() instanceof Semantic.NumberConstant o)) {
+    if (!(operation.operand() instanceof Semantic.KnownNumber o)) {
       return operation;
     }
-    return new Semantic.NumberConstant(operator.applyAsDouble(o.value()));
+    return new Semantic.KnownNumber(operator.applyAsDouble(o.value()));
   }
 
   /** Checks a variable access. */
@@ -603,7 +605,7 @@ final class SourceChecker {
     Semantic.Definition global = check_mention(node.accessed());
     return switch (global) {
       case Semantic.Link g -> new Semantic.LinkAccess(g.building());
-      case Semantic.Const g -> g.value();
+      case Semantic.Constant g -> g.value();
       case Semantic.GlobalVar g -> new Semantic.GlobalVariableAccess(g.name());
       default ->
         throw source

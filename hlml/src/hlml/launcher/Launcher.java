@@ -1,8 +1,10 @@
 package hlml.launcher;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Formatter;
 import java.util.List;
 
 import hlml.Source;
@@ -13,10 +15,15 @@ import hlml.reporter.Subject;
 
 /** Holds the entrypoint. */
 final class Launcher {
+  /** Launch option. */
+  enum Option {
+    build_executables, generate_builtin_variable_test,
+  }
+
   /** Entrypoint of the compiler. */
   public static void main(String... arguments) {
     Launcher launcher = new Launcher();
-    launcher.launch_tests();
+    launcher.launch(Option.build_executables);
   }
 
   /** Subject that is reported when the launcher fails. */
@@ -39,12 +46,23 @@ final class Launcher {
 
   /** Constructor. */
   private Launcher() {
-    subject = Subject.of("compiler launcher");
+    subject = Subject.of("launcher");
     tests = Path.of("tests");
     artifacts = tests.resolve("artifacts");
     executables = tests.resolve("executables");
     libraries = tests.resolve("libraries");
     includes = List.of(executables, libraries);
+  }
+
+  private void launch(Option option) {
+    switch (option) {
+      case build_executables -> launch_tests();
+      case generate_builtin_variable_test -> generate_builtin_variable_test();
+      default ->
+        subject
+          .to_diagnostic("failure", "Unknown launch option `%d`!", option)
+          .to_exception();
+    }
   }
 
   /** Tests the compiler by building the executable tests. */
@@ -53,11 +71,11 @@ final class Launcher {
       Files.walkFileTree(artifacts, new Deletor());
     }
     catch (IOException cause) {
-      throw Subject
-        .of(artifacts)
+      throw subject
         .to_diagnostic(
           "failure",
-          "Could not delete the existing artifact directory!")
+          "Could not delete the existing artifact directory '%s'!",
+          artifacts.toAbsolutePath().normalize())
         .to_exception(cause);
     }
     try {
@@ -85,6 +103,45 @@ final class Launcher {
     }
     catch (Throwable exception) {
       exception.printStackTrace();
+    }
+  }
+
+  /** Creates the built-in variable test. */
+  private void generate_builtin_variable_test() {
+    try (
+      Formatter formatter =
+        new Formatter(
+          new BufferedOutputStream(
+            Files
+              .newOutputStream(
+                executables.resolve("builtin_variables_test.hlml")))))
+    {
+      formatter
+        .format(
+          "# Tests accessing to the variables that are built-in to the processor.%n");
+      formatter.format("%n");
+      formatter.format("entrypoint {%n");
+      formatter.format("  var a;%n");
+      List<String> builtin_text =
+        Files.readAllLines(Path.of("builtin_variables.txt"));
+      for (String builtin : builtin_text) {
+        if (builtin.charAt(0) != '@')
+          continue;
+        String name = builtin.substring(1).replace('-', '_');
+        formatter
+          .format(
+            "%-41s # set a %s%n",
+            "  a = mlog::%s;".formatted(name),
+            builtin);
+      }
+      formatter.format("}%n");
+    }
+    catch (IOException cause) {
+      throw subject
+        .to_diagnostic(
+          "failure",
+          "Could not generate the builtin variable test!")
+        .to_exception(cause);
     }
   }
 }
