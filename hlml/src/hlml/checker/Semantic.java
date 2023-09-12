@@ -511,6 +511,66 @@ public sealed interface Semantic {
     public Set<Name> dependencies() { return Set.of(); }
   }
 
+  /** Procedure that compiles to the `lookup` instruction's `block`
+   * subinstruction. */
+  record LookupBlock() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "lookup_block"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List.of(new Parameter("t", true), new Parameter("i", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `lookup` instruction's `unit`
+   * subinstruction. */
+  record LookupUnit() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "lookup_unit"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List.of(new Parameter("t", true), new Parameter("i", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `lookup` instruction's `item`
+   * subinstruction. */
+  record LookupItem() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "lookup_item"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List.of(new Parameter("t", true), new Parameter("i", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
+  /** Procedure that compiles to the `lookup` instruction's `liquid`
+   * subinstruction. */
+  record LookupLiquid() implements Procedure {
+    @Override
+    public Name name() { return new Name(built_in_scope, "lookup_liquid"); }
+
+    @Override
+    public List<Parameter> parameters() {
+      return List.of(new Parameter("t", true), new Parameter("i", false));
+    }
+
+    @Override
+    public Set<Name> dependencies() { return Set.of(); }
+  }
+
   /** Procedure that compiles to the `radar` instruction's `distance`
    * subinstruction with filters `any`, `any`, `any`. */
   record RadarDistance() implements Procedure {

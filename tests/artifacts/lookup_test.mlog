@@ -1,0 +1,5 @@
+lookup block lookup_test$entrypoint$type 0
+lookup unit lookup_test$entrypoint$type 0
+lookup item lookup_test$entrypoint$type 0
+lookup liquid lookup_test$entrypoint$type 0
+end

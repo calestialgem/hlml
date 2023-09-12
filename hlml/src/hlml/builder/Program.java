@@ -179,6 +179,22 @@ final class Program {
         append_operands(appendable, i.t());
       }
       case Instruction.Stop i -> appendable.append("stop");
+      case Instruction.LookupBlock i -> {
+        appendable.append("lookup block");
+        append_operands(appendable, i.t(), i.i());
+      }
+      case Instruction.LookupUnit i -> {
+        appendable.append("lookup unit");
+        append_operands(appendable, i.t(), i.i());
+      }
+      case Instruction.LookupItem i -> {
+        appendable.append("lookup item");
+        append_operands(appendable, i.t(), i.i());
+      }
+      case Instruction.LookupLiquid i -> {
+        appendable.append("lookup liquid");
+        append_operands(appendable, i.t(), i.i());
+      }
       case Instruction.RadarDistance i -> {
         appendable.append("radar any any any distance");
         append_operands(appendable, i.b(), i.o(), i.u());

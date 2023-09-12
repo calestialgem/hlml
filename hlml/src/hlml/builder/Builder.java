@@ -612,6 +612,38 @@ public final class Builder {
             program.instruct(new Instruction.Stop());
             yield Register.null_();
           }
+          case Semantic.LookupBlock p -> {
+            program
+              .instruct(
+                new Instruction.LookupBlock(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1)));
+            yield Register.null_();
+          }
+          case Semantic.LookupUnit p -> {
+            program
+              .instruct(
+                new Instruction.LookupUnit(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1)));
+            yield Register.null_();
+          }
+          case Semantic.LookupItem p -> {
+            program
+              .instruct(
+                new Instruction.LookupItem(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1)));
+            yield Register.null_();
+          }
+          case Semantic.LookupLiquid p -> {
+            program
+              .instruct(
+                new Instruction.LookupLiquid(
+                  build_argument(e.arguments(), 0),
+                  build_argument(e.arguments(), 1)));
+            yield Register.null_();
+          }
           case Semantic.RadarDistance p -> {
             program
               .instruct(

@@ -123,6 +123,18 @@ sealed interface Instruction {
   /** Instruction that makes the processor stop executing instructions. */
   record Stop() implements Instruction {}
 
+  /** Instruction that gets a block type by its index. */
+  record LookupBlock(Register t, Register i) implements Instruction {}
+
+  /** Instruction that gets a unit type by its index. */
+  record LookupUnit(Register t, Register i) implements Instruction {}
+
+  /** Instruction that gets an item type by its index. */
+  record LookupItem(Register t, Register i) implements Instruction {}
+
+  /** Instruction that gets a liquid type by its index. */
+  record LookupLiquid(Register t, Register i) implements Instruction {}
+
   /** Instruction that finds the first or last unit in a building's range via
    * `distance` as the metric. */
   record RadarDistance(Register b, Register o, Register u)
