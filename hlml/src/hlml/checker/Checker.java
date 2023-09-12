@@ -924,16 +924,25 @@ public final class Checker {
   /** Find a global symbol. */
   private Semantic.Definition find_global(Subject subject, Name name) {
     Semantic.Source source = check_source(subject, name.source());
-    if (source.globals().containsKey(name.identifier())) {
-      return source.globals().get(name.identifier());
+    if (!source.globals().containsKey(name.identifier())) {
+      throw subject
+        .to_diagnostic(
+          "error",
+          "Could not find the symbol `%s::%s`!",
+          name.source(),
+          name.identifier())
+        .to_exception();
     }
-    throw subject
-      .to_diagnostic(
-        "error",
-        "Could not find the symbol `%s::%s`!",
-        name.source(),
-        name.identifier())
-      .to_exception();
+    Semantic.Definition global = source.globals().get(name.identifier());
+    if (!global.visible())
+      throw subject
+        .to_diagnostic(
+          "error",
+          "Requested symbol `%s::%s` is not visible!",
+          global.name().source(),
+          global.name().identifier())
+        .to_exception();
+    return global;
   }
 
   /** Check a source file. */

@@ -119,6 +119,7 @@ final class SourceChecker {
       case Node.Link d -> {
         Semantic.Link global =
           new Semantic.Link(
+            node.modifier().isPresent(),
             new Name(source.name(), identifier),
             d.building().text());
         globals.put(identifier, global);
@@ -140,6 +141,7 @@ final class SourceChecker {
           check_statement(scope, new ArrayList<>(), d.body());
         Semantic.UserDefinedProcedure global =
           new Semantic.UserDefinedProcedure(
+            node.modifier().isPresent(),
             new Name(source.name(), identifier),
             d
               .parameters()
@@ -161,6 +163,7 @@ final class SourceChecker {
         }
         Semantic.UserDefinedConstant global =
           new Semantic.UserDefinedConstant(
+            node.modifier().isPresent(),
             new Name(source.name(), identifier),
             constant);
         globals.put(identifier, global);
@@ -181,6 +184,7 @@ final class SourceChecker {
         }
         Semantic.GlobalVar global =
           new Semantic.GlobalVar(
+            node.modifier().isPresent(),
             new Name(source.name(), var.identifier().text()),
             initial_value);
         globals.put(identifier, global);

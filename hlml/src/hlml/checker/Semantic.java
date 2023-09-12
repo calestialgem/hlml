@@ -34,12 +34,17 @@ public sealed interface Semantic {
 
   /** Definition of a construct in code. */
   sealed interface Definition extends Declaration {
+    /** Whether the definition is visible from other sources. */
+    boolean visible();
+
     /** Name of the definition. */
     Name name();
   }
 
   /** Defining a symbol as building linked to the processor. */
-  record Link(Name name, String building) implements Definition {
+  record Link(boolean visible, Name name, String building)
+    implements Definition
+  {
     @Override
     public Set<Name> dependencies() { return Set.of(); }
   }
@@ -52,6 +57,7 @@ public sealed interface Semantic {
 
   /** Procedures that are user-defined. */
   record UserDefinedProcedure(
+    boolean visible,
     Name name,
     List<Parameter> parameters,
     Statement body) implements Procedure
@@ -73,6 +79,9 @@ public sealed interface Semantic {
     int parameter_count) implements Procedure
   {
     @Override
+    public boolean visible() { return true; }
+
+    @Override
     public Name name() { return new Name(built_in_scope, identifier); }
 
     @Override
@@ -87,6 +96,9 @@ public sealed interface Semantic {
     String dummy_argument,
     int parameter_count) implements Procedure
   {
+    @Override
+    public boolean visible() { return true; }
+
     @Override
     public Name name() { return new Name(built_in_scope, identifier); }
 
@@ -104,10 +116,15 @@ public sealed interface Semantic {
   }
 
   /** Constants that are defined by the user. */
-  record UserDefinedConstant(Name name, Known value) implements Constant {}
+  record UserDefinedConstant(boolean visible, Name name, Known value)
+    implements Constant
+  {}
 
   /** Constants that directly map to a processor keyword. */
   record BuiltinKeyword(KnownKeyword value) implements Constant {
+    @Override
+    public boolean visible() { return true; }
+
     @Override
     public Name name() { return new Name(built_in_scope, value.keyword()); }
   }
@@ -117,12 +134,17 @@ public sealed interface Semantic {
     implements Constant
   {
     @Override
+    public boolean visible() { return true; }
+
+    @Override
     public Name name() { return new Name(built_in_scope, identifier); }
   }
 
   /** Definition of a global variable. */
-  record GlobalVar(Name name, Optional<Expression> initial_value)
-    implements Definition
+  record GlobalVar(
+    boolean visible,
+    Name name,
+    Optional<Expression> initial_value) implements Definition
   {
     @Override
     public Set<Name> dependencies() {
