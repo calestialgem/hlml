@@ -1,146 +1,60 @@
 package hlml.launcher;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Formatter;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.Callable;
 
-import hlml.Source;
 import hlml.builder.Builder;
 import hlml.checker.Checker;
 import hlml.checker.Semantic;
 import hlml.reporter.Subject;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
 
-/** Holds the entrypoint. */
-final class Launcher {
-  /** Launch option. */
-  enum Option {
-    build_executables, generate_builtin_variable_test,
-  }
-
-  /** Entrypoint of the compiler. */
+@Command(
+  name = "hlml",
+  version = "0.1.0",
+  description = "High Level Mindustry Logic Compiler",
+  mixinStandardHelpOptions = true)
+final class Launcher implements Callable<Integer> {
+  /** Launches after parsing commands. */
   public static void main(String... arguments) {
-    Launcher launcher = new Launcher();
-    launcher.launch(Option.build_executables);
+    System.exit(new CommandLine(new Launcher()).execute(arguments));
   }
 
-  /** Subject that is reported when the launcher fails. */
-  private final Subject subject;
+  @Option(
+    names = "-o",
+    defaultValue = "a.mlog",
+    description = "File the compiled instructions will be saved to.")
+  private Path output_path;
 
-  /** Path to the directory that holds test files. */
-  private final Path tests;
+  @Option(
+    names = "-I",
+    defaultValue = ".",
+    description = "A directory to look for source files.")
+  private List<Path> includes;
 
-  /** Test artifact directory. */
-  private final Path artifacts;
+  @Parameters(description = "Name of the compiled source.")
+  private String name;
 
-  /** Test executable source files' directory. */
-  private final Path executables;
-
-  /** Test library source files' directory. */
-  private final Path libraries;
-
-  /** Test include directories. */
-  private final List<Path> includes;
-
-  /** Constructor. */
-  private Launcher() {
-    subject = Subject.of("launcher");
-    tests = Path.of("tests");
-    artifacts = tests.resolve("artifacts");
-    executables = tests.resolve("executables");
-    libraries = tests.resolve("libraries");
-    includes = List.of(executables, libraries);
-  }
-
-  private void launch(Option option) {
-    switch (option) {
-      case build_executables -> launch_tests();
-      case generate_builtin_variable_test -> generate_builtin_variable_test();
-      default ->
-        subject
-          .to_diagnostic("failure", "Unknown launch option `%d`!", option)
-          .to_exception();
-    }
-  }
-
-  /** Tests the compiler by building the executable tests. */
-  private void launch_tests() {
+  @Override
+  public Integer call() {
     try {
-      Files.walkFileTree(artifacts, new Deletor());
-    }
-    catch (IOException cause) {
-      throw subject
-        .to_diagnostic(
-          "failure",
-          "Could not delete the existing artifact directory '%s'!",
-          artifacts.toAbsolutePath().normalize())
-        .to_exception(cause);
-    }
-    try {
-      Files
-        .list(executables)
-        .map(Path::getFileName)
-        .map(Path::toString)
-        .filter(n -> n.endsWith(Source.extension))
-        .map(n -> n.substring(0, n.length() - Source.extension.length()))
-        .forEach(this::launch_test);
-    }
-    catch (IOException cause) {
-      throw subject
-        .to_diagnostic("failure", "Could not list the executable tests!")
-        .to_exception(cause);
-    }
-  }
-
-  /** Builds an executable test. */
-  private void launch_test(String name) {
-    try {
+      Subject subject = Subject.of("compiler");
       Semantic.Target target =
-        Checker.check(subject, artifacts, includes, name, true);
-      Builder.build(subject, artifacts, target);
+        Checker.check(subject, includes, name, Optional.empty());
+      Builder.build(subject, output_path, target);
+      return 0;
     }
-    catch (Throwable exception) {
-      exception.printStackTrace();
-    }
-  }
-
-  /** Creates the built-in variable test. */
-  private void generate_builtin_variable_test() {
-    try (
-      Formatter formatter =
-        new Formatter(
-          new BufferedOutputStream(
-            Files
-              .newOutputStream(
-                executables.resolve("builtin_variables_test.hlml")))))
-    {
-      formatter
-        .format(
-          "# Tests accessing to the variables that are built-in to the processor.%n");
-      formatter.format("%n");
-      formatter.format("entrypoint {%n");
-      formatter.format("  var a;%n");
-      List<String> builtin_text =
-        Files.readAllLines(Path.of("builtin_variables.txt"));
-      for (String builtin : builtin_text) {
-        if (builtin.charAt(0) != '@') { continue; }
-        String name = builtin.substring(1).replace('-', '_');
-        formatter
-          .format(
-            "%-41s # set a %s%n",
-            "  a = mlog::%s;".formatted(name),
-            builtin);
+    catch (Throwable cause) {
+      while (cause != null) {
+        System.err.println(cause.getMessage());
+        cause = cause.getCause();
       }
-      formatter.format("}%n");
-    }
-    catch (IOException cause) {
-      throw subject
-        .to_diagnostic(
-          "failure",
-          "Could not generate the builtin variable test!")
-        .to_exception(cause);
+      return -1;
     }
   }
 }

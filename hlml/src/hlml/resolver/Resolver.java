@@ -21,12 +21,8 @@ import hlml.reporter.Subject;
  * designators. */
 public final class Resolver {
   /** Resolves a source. */
-  public static ResolvedSource resolve(
-    Path file,
-    Path artifacts,
-    boolean create_debug_artifacts)
-  {
-    Resolver resolver = new Resolver(file, artifacts, create_debug_artifacts);
+  public static ResolvedSource resolve(Path file, Optional<Path> artifacts) {
+    Resolver resolver = new Resolver(file, artifacts);
     return resolver.resolve();
   }
 
@@ -34,16 +30,12 @@ public final class Resolver {
   private final Path file;
 
   /** Path to the directory where compilation artifacts can be recorded to. */
-  private final Path artifacts;
-
-  /** Whether the checker creates debug artifacts. */
-  private final boolean create_debug_artifacts;
+  private final Optional<Path> artifacts;
 
   /** Constructor. */
-  private Resolver(Path file, Path artifacts, boolean create_debug_artifacts) {
+  private Resolver(Path file, Optional<Path> artifacts) {
     this.file = file;
     this.artifacts = artifacts;
-    this.create_debug_artifacts = create_debug_artifacts;
   }
 
   /** Resolves the source. */
@@ -93,10 +85,11 @@ public final class Resolver {
     String representation_name,
     Object representation)
   {
-    if (!create_debug_artifacts)
+    if (artifacts.isEmpty())
       return;
     Path representation_path =
       artifacts
+        .get()
         .resolve(
           "%s.%s%s"
             .formatted(source_name, representation_name, Source.extension));

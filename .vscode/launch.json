@@ -6,6 +6,14 @@
       "name": "Launcher",
       "request": "launch",
       "mainClass": "hlml/hlml.launcher.Launcher",
+      "projectName": "hlml",
+      "args": "access_test -o tests/artifacts/access_test.mlog -I tests/executables -I tests/libraries"
+    },
+    {
+      "type": "java",
+      "name": "Debug",
+      "request": "launch",
+      "mainClass": "hlml/hlml.launcher.DebugLauncher",
       "projectName": "hlml"
     }
   ]

@@ -20,24 +20,21 @@ import hlml.reporter.Subject;
 /** Transforms a target to a list of instructions that could be run by a
  * processor. */
 public final class Builder {
-  /** Assembly file extension. */
-  public static final String extension = ".mlog";
-
-  /** Builds a target. Returns the path to the output assembly file. */
+  /** Builds a target. */
   public static Path build(
     Subject subject,
-    Path artifacts,
+    Path output_path,
     Semantic.Target target)
   {
-    Builder builder = new Builder(subject, artifacts, target);
+    Builder builder = new Builder(subject, output_path, target);
     return builder.build();
   }
 
   /** Subject that is reported when the entrypoint is not found. */
   private final Subject subject;
 
-  /** Path to the directory where compilation artifacts can be recorded to. */
-  private final Path artifacts;
+  /** Path to the output file. */
+  private final Path output_path;
 
   /** Target that is built. */
   private final Semantic.Target target;
@@ -61,10 +58,10 @@ public final class Builder {
   private Map<Name, Waypoint> addresses;
 
   /** Constructor. */
-  private Builder(Subject subject, Path artifacts, Semantic.Target target) {
+  private Builder(Subject subject, Path output_path, Semantic.Target target) {
     this.subject = subject;
     this.target = target;
-    this.artifacts = artifacts;
+    this.output_path = output_path;
   }
 
   /** Builds the target. */
@@ -117,8 +114,6 @@ public final class Builder {
       Register program_counter = Register.builtin("counter");
       program.instruct(new Instruction.Set(program_counter, return_location));
     }
-    Path output_path =
-      artifacts.resolve("%s%s".formatted(target.name(), extension));
     try (
       BufferedWriter output =
         new BufferedWriter(
