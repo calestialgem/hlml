@@ -7,7 +7,7 @@ entrypoint {
   mlog::op_max(result, a, b);           # op       max result a b
   mlog::op_min(result, a, b);           # op       min result a b
   mlog::op_angle(result, a, b);         # op     angle result a b
-  mlog::op_anglediff(result, a, b);     # op angleDiff result a b
+  mlog::op_angleDiff(result, a, b);     # op angleDiff result a b
   mlog::op_len(result, a, b);           # op       len result a b
   mlog::op_noise(result, a, b);         # op     noise result a b
   mlog::op_abs(result, a);              # op       abs result a

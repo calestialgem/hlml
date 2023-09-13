@@ -1,16 +1,16 @@
 # Tests drawing and flushing instructions.
 
 entrypoint {
-  mlog::draw_clear(1, 2, 3);                    # draw    clear 1 2 3 0 0 0
-  mlog::draw_color(1, 2, 3, 4);                 # draw    color 1 2 3 4 0 0
-  mlog::draw_col(1);                            # draw      col 1 0 0 0 0 0
-  mlog::draw_stroke(1);                         # draw   stroke 1 0 0 0 0 0
-  mlog::draw_line(1, 2, 3, 4);                  # draw     line 1 2 3 4 0 0
-  mlog::draw_rect(1, 2, 3, 4);                  # draw     rect 1 2 3 4 0 0
-  mlog::draw_linerect(1, 2, 3, 4);              # draw lineRect 1 2 3 4 0 0
-  mlog::draw_poly(1, 2, 3, 4, 5);               # draw     poly 1 2 3 4 5 0
-  mlog::draw_linepoly(1, 2, 3, 4, 5);           # draw linePoly 1 2 3 4 5 0
+  mlog::draw_clear(1, 2, 3);                    # draw    clear 1 2 3
+  mlog::draw_color(1, 2, 3, 4);                 # draw    color 1 2 3 4
+  mlog::draw_col(1);                            # draw      col 1
+  mlog::draw_stroke(1);                         # draw   stroke 1
+  mlog::draw_line(1, 2, 3, 4);                  # draw     line 1 2 3 4
+  mlog::draw_rect(1, 2, 3, 4);                  # draw     rect 1 2 3 4
+  mlog::draw_lineRect(1, 2, 3, 4);              # draw lineRect 1 2 3 4
+  mlog::draw_poly(1, 2, 3, 4, 5);               # draw     poly 1 2 3 4 5
+  mlog::draw_linePoly(1, 2, 3, 4, 5);           # draw linePoly 1 2 3 4 5
   mlog::draw_triangle(1, 2, 3, 4, 5, 6);        # draw triangle 1 2 3 4 5 6
-  mlog::draw_image(1, 2, 3, 4, 5);              # draw    image 1 2 3 4 5 0
+  mlog::draw_image(1, 2, 3, 4, 5);              # draw    image 1 2 3 4 5
   mlog::drawflush(1);                           # drawflush   1
 }

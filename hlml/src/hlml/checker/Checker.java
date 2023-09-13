@@ -813,7 +813,7 @@ public final class Checker {
 
     String[] metrics = { "distance", "health", "shield", "armor", "maxHealth" };
     for (String metric : metrics) {
-      String metric_name = metric.toLowerCase();
+      String metric_name = metric;
       for (int i = 0; i < filter_combinations; i++) {
         builtins
           .add(
@@ -869,7 +869,7 @@ public final class Checker {
       builtins
         .add(
           new Semantic.BuiltinProcedureWithDummy(
-            "ulocate_" + building,
+            "ulocate_building_" + building,
             "ulocate building " + building,
             "0",
             5));
@@ -920,7 +920,7 @@ public final class Checker {
     builtins
       .add(
         new Semantic.BuiltinProcedure(
-          instruction.toLowerCase(),
+          instruction,
           instruction,
           parameter_count));
   }
@@ -935,7 +935,7 @@ public final class Checker {
     builtins
       .add(
         new Semantic.BuiltinProcedure(
-          instruction.toLowerCase() + '_' + subinstruction.toLowerCase(),
+          instruction + '_' + subinstruction,
           instruction + ' ' + subinstruction,
           parameter_count));
   }

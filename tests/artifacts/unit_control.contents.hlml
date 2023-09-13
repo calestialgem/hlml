@@ -26,19 +26,19 @@ entrypoint {
   mlog::ucontrol_move(x_coordinate, y_coordinate);                                  # ucontrol         move x_coordinate y_coordinate
   mlog::ucontrol_approach(x_coordinate, y_coordinate, radius);                      # ucontrol     approach x_coordinate y_coordinate radius
   mlog::ucontrol_pathfind(x_coordinate, y_coordinate);                              # ucontrol     pathfind x_coordinate y_coordinate
-  mlog::ucontrol_autopathfind();                                                    # ucontrol autoPathfind
+  mlog::ucontrol_autoPathfind();                                                    # ucontrol autoPathfind
   mlog::ucontrol_boost(enabled);                                                    # ucontrol        boost      enabled
   mlog::ucontrol_target(x_coordinate, y_coordinate, shoot);                         # ucontrol       target x_coordinate y_coordinate  shoot
   mlog::ucontrol_targetp(unit, shoot);                                              # ucontrol      targetp         unit        shoot
-  mlog::ucontrol_itemdrop(to, amount);                                              # ucontrol     itemDrop           to       amount
-  mlog::ucontrol_itemtake(from, item, amount);                                      # ucontrol     itemTake         from         item amount
-  mlog::ucontrol_paydrop();                                                         # ucontrol      payDrop
-  mlog::ucontrol_paytake(take_units);                                               # ucontrol      payTake   take_units
-  mlog::ucontrol_payenter();                                                        # ucontrol     payEnter
+  mlog::ucontrol_itemDrop(to, amount);                                              # ucontrol     itemDrop           to       amount
+  mlog::ucontrol_itemTake(from, item, amount);                                      # ucontrol     itemTake         from         item amount
+  mlog::ucontrol_payDrop();                                                         # ucontrol      payDrop
+  mlog::ucontrol_payTake(take_units);                                               # ucontrol      payTake   take_units
+  mlog::ucontrol_payEnter();                                                        # ucontrol     payEnter
   mlog::ucontrol_mine(x_coordinate, y_coordinate);                                  # ucontrol         mine x_coordinate y_coordinate
   mlog::ucontrol_flag(value);                                                       # ucontrol         flag        value
   mlog::ucontrol_build(x_coordinate, y_coordinate, block, rotation, configuration); # ucontrol        build x_coordinate y_coordinate  block rotation configuration
-  mlog::ucontrol_getblock(x_coordinate, y_coordinate, type, building, floor);       # ucontrol     getBlock x_coordinate y_coordinate   type building         floor
+  mlog::ucontrol_getBlock(x_coordinate, y_coordinate, type, building, floor);       # ucontrol     getBlock x_coordinate y_coordinate   type building         floor
   mlog::ucontrol_within(x_coordinate, y_coordinate, radius, result);                # ucontrol       within x_coordinate y_coordinate radius   result
   mlog::ucontrol_unbind();                                                          # ucontrol       unbind
 }
