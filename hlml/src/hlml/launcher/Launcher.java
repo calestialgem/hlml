@@ -98,7 +98,7 @@ final class Launcher {
   private void launch_test(String name) {
     try {
       Semantic.Target target =
-        Checker.check(subject, artifacts, includes, name);
+        Checker.check(subject, artifacts, includes, name, true);
       Builder.build(subject, artifacts, target);
     }
     catch (Throwable exception) {

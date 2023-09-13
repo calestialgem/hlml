@@ -24,9 +24,11 @@ public final class Checker {
     Subject subject,
     Path artifacts,
     List<Path> includes,
-    String name)
+    String name,
+    boolean create_debug_artifacts)
   {
-    Checker checker = new Checker(subject, artifacts, includes, name);
+    Checker checker =
+      new Checker(subject, artifacts, includes, name, create_debug_artifacts);
     return checker.check();
   }
 
@@ -43,6 +45,9 @@ public final class Checker {
   /** Name of the checked target. */
   private final String name;
 
+  /** Whether the checker creates debug artifacts. */
+  private final boolean create_debug_artifacts;
+
   /** Definitions that are not user-made. */
   private Set<Semantic.Definition> builtins = new HashSet<>();
 
@@ -57,12 +62,14 @@ public final class Checker {
     Subject subject,
     Path artifacts,
     List<Path> includes,
-    String name)
+    String name,
+    boolean create_debug_artifacts)
   {
     this.subject = subject;
     this.artifacts = artifacts;
     this.includes = includes;
     this.name = name;
+    this.create_debug_artifacts = create_debug_artifacts;
   }
 
   /** Checks the target. */
@@ -889,19 +896,22 @@ public final class Checker {
     currently_checked = new HashSet<>();
     check_source(subject, name);
     Semantic.Target target = new Semantic.Target(name, sources);
-    Path target_artifact_path =
-      artifacts.resolve("%s.%s%s".formatted(name, "target", Source.extension));
-    try {
-      Files.writeString(target_artifact_path, target.toString());
-    }
-    catch (IOException cause) {
-      throw Subject
-        .of(target_artifact_path)
-        .to_diagnostic(
-          "failure",
-          "Could not record the target of source `%s`",
-          name)
-        .to_exception(cause);
+    if (create_debug_artifacts) {
+      Path target_artifact_path =
+        artifacts
+          .resolve("%s.%s%s".formatted(name, "target", Source.extension));
+      try {
+        Files.writeString(target_artifact_path, target.toString());
+      }
+      catch (IOException cause) {
+        throw Subject
+          .of(target_artifact_path)
+          .to_diagnostic(
+            "failure",
+            "Could not record the target of source `%s`",
+            name)
+          .to_exception(cause);
+      }
     }
     return target;
   }
@@ -976,7 +986,8 @@ public final class Checker {
     }
     currently_checked.add(name);
     Path file = find_source(subject, name);
-    ResolvedSource resolution = Resolver.resolve(file, artifacts);
+    ResolvedSource resolution =
+      Resolver.resolve(file, artifacts, create_debug_artifacts);
     Semantic.Source source = SourceChecker.check(resolution, this::find_global);
     sources.put(name, source);
     currently_checked.remove(name);
