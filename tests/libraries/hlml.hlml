@@ -1,1 +1,74 @@
-# Tests access to the standard library.
+# Library that provides a wide variety of functionalities that are useful for
+# most programs and creates a common vocabulary that strengthens composition
+# between code packages.
+#
+# See [mlog] for the library of built-ins that directly map to Mindustry Logic.
+# [hlml] redeclares many symbols from [mlog] just to give them better names and
+# document them. Even if a symbol in [mlog] is redeclared with the same name in
+# [hlml], the [hlml] version should be used for clarity.
+#
+# Version 0.1.0. Currently, the standard library is missing a lot. It will be
+# filled as patterns that are observed to emerge in multiple code bases get
+# added.
+
+## Boolean algebra constant that represents logical propositions that evaluate
+## to be not holding.
+##
+## See [true] for inverse constant.
+##
+## Aliases to [mlog::false].
+public const false = mlog::false;
+
+## Boolean algebra constant that represents logical propositions that evaluate
+## to be holding.
+##
+## See [false] for inverse constant.
+##
+## Aliases to [mlog::true].
+public const true = mlog::true;
+
+## Constant that represents nothingness, which is the value of a variable that
+## is not initialized in its declaration or a procedure argument that is not
+## provided by the caller.
+##
+## Aliases to [mlog::null].
+public const null = mlog::null;
+
+## Numeric constant that represents the base of natural logarithms. It has the
+## closest 64-bit, binary, floating-point value to `e`.
+##
+## See [mlog::e] for the built-in version. Currently, [mlog::e] cannot
+## participate in constant folding as it is treated as a processor-embedded that
+## can have any value in runtime. Thus, [e] can provide more optimized code as
+## its value is known by the compiler.
+public const e = 2.718281828459045;
+
+## Numeric constant that represents the ratio of the circumference of a circle
+## to its diameter. It has the closest 64-bit, binary, floating-point value to
+## `pi`.
+##
+## See [mlog::pi] for the built-in version. Currently, [mlog::pi] cannot
+## participate in constant folding as it is treated as a processor-embedded that
+## can have any value in runtime. Thus, [pi] can provide more optimized code as
+## its value is known by the compiler.
+public const pi = 3.141592653589793;
+
+## Numeric constant by which to multiply an angular value in degrees to obtain
+## an angular value in radians.
+##
+## See [mlog::degToRad] for the built-in version. Currently, [mlog::degToRad]
+## cannot participate in constant folding as it is treated as a
+## processor-embedded that can have any value in runtime. Thus,
+## [degrees_to_radians] can provide more optimized code as its value is known by
+## the compiler.
+public const degrees_to_radians = 0.017453292519943295;
+
+## Numeric constant by which to multiply an angular value in radians to obtain
+## an angular value in degrees.
+##
+## See [mlog::radToDeg] for the built-in version. Currently, [mlog::radToDeg]
+## cannot participate in constant folding as it is treated as a
+## processor-embedded that can have any value in runtime. Thus,
+## [radians_to_degrees] can provide more optimized code as its value is known by
+## the compiler.
+public const radians_to_degrees = 57.29577951308232;
