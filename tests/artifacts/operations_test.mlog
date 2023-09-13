@@ -1,0 +1,20 @@
+op max operations_test$entrypoint$result operations_test$entrypoint$a operations_test$entrypoint$b
+op min operations_test$entrypoint$result operations_test$entrypoint$a operations_test$entrypoint$b
+op angle operations_test$entrypoint$result operations_test$entrypoint$a operations_test$entrypoint$b
+op angleDiff operations_test$entrypoint$result operations_test$entrypoint$a operations_test$entrypoint$b
+op len operations_test$entrypoint$result operations_test$entrypoint$a operations_test$entrypoint$b
+op noise operations_test$entrypoint$result operations_test$entrypoint$a operations_test$entrypoint$b
+op abs operations_test$entrypoint$result operations_test$entrypoint$a
+op log operations_test$entrypoint$result operations_test$entrypoint$a
+op log10 operations_test$entrypoint$result operations_test$entrypoint$a
+op floor operations_test$entrypoint$result operations_test$entrypoint$a
+op ceil operations_test$entrypoint$result operations_test$entrypoint$a
+op sqrt operations_test$entrypoint$result operations_test$entrypoint$a
+op rand operations_test$entrypoint$result operations_test$entrypoint$a
+op sin operations_test$entrypoint$result operations_test$entrypoint$a
+op cos operations_test$entrypoint$result operations_test$entrypoint$a
+op tan operations_test$entrypoint$result operations_test$entrypoint$a
+op asin operations_test$entrypoint$result operations_test$entrypoint$a
+op acos operations_test$entrypoint$result operations_test$entrypoint$a
+op atan operations_test$entrypoint$result operations_test$entrypoint$a
+end

@@ -753,6 +753,25 @@ public final class Checker {
     builtin_procedure("ucontrol", "getBlock", 5);
     builtin_procedure("ucontrol", "within", 4);
     builtin_procedure("ucontrol", "unbind", 0);
+    builtin_procedure("op", "max", 3);
+    builtin_procedure("op", "min", 3);
+    builtin_procedure("op", "angle", 3);
+    builtin_procedure("op", "angleDiff", 3);
+    builtin_procedure("op", "len", 3);
+    builtin_procedure("op", "noise", 3);
+    builtin_procedure("op", "abs", 2);
+    builtin_procedure("op", "log", 2);
+    builtin_procedure("op", "log10", 2);
+    builtin_procedure("op", "floor", 2);
+    builtin_procedure("op", "ceil", 2);
+    builtin_procedure("op", "sqrt", 2);
+    builtin_procedure("op", "rand", 2);
+    builtin_procedure("op", "sin", 2);
+    builtin_procedure("op", "cos", 2);
+    builtin_procedure("op", "tan", 2);
+    builtin_procedure("op", "asin", 2);
+    builtin_procedure("op", "acos", 2);
+    builtin_procedure("op", "atan", 2);
 
     String[] filters =
       { "enemy", "ally", "player", "attacker", "flying", "boss", "ground" };
