@@ -1,1 +1,0 @@
-[Entrypoint[body=Block[first=1, inner_statements=[Discard[source=Call[called=Mention[source=Optional[Identifier[start=55, text=mlog]], identifier=Identifier[start=61, text=wait]], arguments=[NumberConstant[first=6, value=0.5]]]], Discard[source=Call[called=Mention[source=Optional[Identifier[start=107, text=mlog]], identifier=Identifier[start=113, text=stop]], arguments=[]]]]]]]

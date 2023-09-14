@@ -1,6 +1,0 @@
-# Simple test using while statements so that the result is human readable.
-
-entrypoint {
-  var counter = 0;
-  while counter < 100; counter++ {}
-}

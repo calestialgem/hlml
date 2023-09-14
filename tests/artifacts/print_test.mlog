@@ -1,6 +1,0 @@
-set print_test$entrypoint$text "My age is: "
-print print_test$entrypoint$text
-print 22.96986301369863
-print "\n"
-printflush message1
-end

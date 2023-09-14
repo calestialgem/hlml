@@ -1,8 +1,0 @@
-# Tests sensing buildings or units.
-
-link message1 as building;
-
-entrypoint {
-  var result;
-  mlog::sensor(result, building, 0);    # sensor result message1 0
-}

@@ -1,3 +1,0 @@
-sensor _0 container1 @copper
-set member_access_test$entrypoint$found _0
-end

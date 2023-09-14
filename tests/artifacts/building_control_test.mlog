@@ -1,6 +1,0 @@
-control enabled message1 1
-control shoot message1 0 0 1
-control shootp message1 0 1
-control config message1 0
-control color message1 0
-end

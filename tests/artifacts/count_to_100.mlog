@@ -1,8 +1,0 @@
-set count_to_100$entrypoint$counter 0
-op lessThan _0 count_to_100$entrypoint$counter 100
-jump 4 equal true _0
-jump 7 always
-op add count_to_100$entrypoint$counter count_to_100$entrypoint$counter 1
-op lessThan _0 count_to_100$entrypoint$counter 100
-jump 4 equal true _0
-end
