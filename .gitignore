@@ -3,3 +3,4 @@
 
 # Java object files.
 *.class
+*.jar
