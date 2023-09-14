@@ -632,7 +632,7 @@ entrypoint {
 
 You can use
 [hlml.vscode](https://marketplace.visualstudio.com/items?itemName=calestialgem.hlml)
-to highlighting in VS Code.
+for highlighting in VS Code.
 
 ## License
 
