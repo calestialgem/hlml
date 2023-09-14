@@ -52,6 +52,7 @@ breach                       # @breach
 bridge_conduit               # @bridge-conduit
 bridge_conveyor              # @bridge-conveyor
 bryde                        # @bryde
+build                        # @build
 build1                       # @build1
 build10                      # @build10
 build11                      # @build11
@@ -68,6 +69,7 @@ build6                       # @build6
 build7                       # @build7
 build8                       # @build8
 build9                       # @build9
+buildCount                   # @buildCount
 build_tower                  # @build-tower
 canvas                       # @canvas
 carbide                      # @carbide
@@ -142,6 +144,8 @@ conveyor                     # @conveyor
 copper                       # @copper
 copper_wall                  # @copper-wall
 copper_wall_large            # @copper-wall-large
+core                         # @core
+coreCount                    # @coreCount
 core_acropolis               # @core-acropolis
 core_bastion                 # @core-bastion
 core_citadel                 # @core-citadel
@@ -397,6 +401,8 @@ plastanium_conveyor          # @plastanium-conveyor
 plastanium_wall              # @plastanium-wall
 plastanium_wall_large        # @plastanium-wall-large
 plated_conduit               # @plated-conduit
+player                       # @player
+playerCount                  # @playerCount
 pneumatic_drill              # @pneumatic-drill
 poly                         # @poly
 pooled_cryofluid             # @pooled-cryofluid
@@ -594,6 +600,7 @@ turret_unit_build_tower      # @turret-unit-build-tower
 type                         # @type
 underflow_duct               # @underflow-duct
 underflow_gate               # @underflow-gate
+unit                         # @unit
 unitCount                    # @unitCount
 unit_cargo_loader            # @unit-cargo-loader
 unit_cargo_unload_point      # @unit-cargo-unload-point
