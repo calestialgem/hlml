@@ -1,0 +1,721 @@
+control_color(a0, a1)                              # control color a0 a1
+control_config(a0, a1)                             # control config a0 a1
+control_enabled(a0, a1)                            # control enabled a0 a1
+control_shoot(a0, a1, a2, a3)                      # control shoot a0 a1 a2 a3
+control_shootp(a0, a1, a2)                         # control shootp a0 a1 a2
+draw_clear(a0, a1, a2)                             # draw clear a0 a1 a2
+draw_col(a0)                                       # draw col a0
+draw_color(a0, a1, a2, a3)                         # draw color a0 a1 a2 a3
+draw_image(a0, a1, a2, a3, a4)                     # draw image a0 a1 a2 a3 a4
+draw_line(a0, a1, a2, a3)                          # draw line a0 a1 a2 a3
+draw_linePoly(a0, a1, a2, a3, a4)                  # draw linePoly a0 a1 a2 a3 a4
+draw_lineRect(a0, a1, a2, a3)                      # draw lineRect a0 a1 a2 a3
+draw_poly(a0, a1, a2, a3, a4)                      # draw poly a0 a1 a2 a3 a4
+draw_rect(a0, a1, a2, a3)                          # draw rect a0 a1 a2 a3
+draw_stroke(a0)                                    # draw stroke a0
+draw_triangle(a0, a1, a2, a3, a4, a5)              # draw triangle a0 a1 a2 a3 a4 a5
+drawflush(a0)                                      # drawflush a0
+getlink(a0, a1)                                    # getlink a0 a1
+lookup_block(a0, a1)                               # lookup block a0 a1
+lookup_item(a0, a1)                                # lookup item a0 a1
+lookup_liquid(a0, a1)                              # lookup liquid a0 a1
+lookup_unit(a0, a1)                                # lookup unit a0 a1
+op_abs(a0, a1)                                     # op abs a0 a1
+op_acos(a0, a1)                                    # op acos a0 a1
+op_angle(a0, a1, a2)                               # op angle a0 a1 a2
+op_angleDiff(a0, a1, a2)                           # op angleDiff a0 a1 a2
+op_asin(a0, a1)                                    # op asin a0 a1
+op_atan(a0, a1)                                    # op atan a0 a1
+op_ceil(a0, a1)                                    # op ceil a0 a1
+op_cos(a0, a1)                                     # op cos a0 a1
+op_floor(a0, a1)                                   # op floor a0 a1
+op_len(a0, a1, a2)                                 # op len a0 a1 a2
+op_log(a0, a1)                                     # op log a0 a1
+op_log10(a0, a1)                                   # op log10 a0 a1
+op_max(a0, a1, a2)                                 # op max a0 a1 a2
+op_min(a0, a1, a2)                                 # op min a0 a1 a2
+op_noise(a0, a1, a2)                               # op noise a0 a1 a2
+op_rand(a0, a1)                                    # op rand a0 a1
+op_sin(a0, a1)                                     # op sin a0 a1
+op_sqrt(a0, a1)                                    # op sqrt a0 a1
+op_tan(a0, a1)                                     # op tan a0 a1
+packcolor(a0, a1, a2, a3)                          # packcolor a0 a1 a2 a3
+print(a0)                                          # print a0
+printflush(a0)                                     # printflush a0
+radar_ally_armor(a0, a1, a2)                       # radar ally any any armor a0 a1 a2
+radar_ally_attacker_armor(a0, a1, a2)              # radar ally attacker any armor a0 a1 a2
+radar_ally_attacker_boss_armor(a0, a1, a2)         # radar ally attacker boss armor a0 a1 a2
+radar_ally_attacker_boss_distance(a0, a1, a2)      # radar ally attacker boss distance a0 a1 a2
+radar_ally_attacker_boss_health(a0, a1, a2)        # radar ally attacker boss health a0 a1 a2
+radar_ally_attacker_boss_maxHealth(a0, a1, a2)     # radar ally attacker boss maxHealth a0 a1 a2
+radar_ally_attacker_boss_shield(a0, a1, a2)        # radar ally attacker boss shield a0 a1 a2
+radar_ally_attacker_distance(a0, a1, a2)           # radar ally attacker any distance a0 a1 a2
+radar_ally_attacker_flying_armor(a0, a1, a2)       # radar ally attacker flying armor a0 a1 a2
+radar_ally_attacker_flying_distance(a0, a1, a2)    # radar ally attacker flying distance a0 a1 a2
+radar_ally_attacker_flying_health(a0, a1, a2)      # radar ally attacker flying health a0 a1 a2
+radar_ally_attacker_flying_maxHealth(a0, a1, a2)   # radar ally attacker flying maxHealth a0 a1 a2
+radar_ally_attacker_flying_shield(a0, a1, a2)      # radar ally attacker flying shield a0 a1 a2
+radar_ally_attacker_ground_armor(a0, a1, a2)       # radar ally attacker ground armor a0 a1 a2
+radar_ally_attacker_ground_distance(a0, a1, a2)    # radar ally attacker ground distance a0 a1 a2
+radar_ally_attacker_ground_health(a0, a1, a2)      # radar ally attacker ground health a0 a1 a2
+radar_ally_attacker_ground_maxHealth(a0, a1, a2)   # radar ally attacker ground maxHealth a0 a1 a2
+radar_ally_attacker_ground_shield(a0, a1, a2)      # radar ally attacker ground shield a0 a1 a2
+radar_ally_attacker_health(a0, a1, a2)             # radar ally attacker any health a0 a1 a2
+radar_ally_attacker_maxHealth(a0, a1, a2)          # radar ally attacker any maxHealth a0 a1 a2
+radar_ally_attacker_shield(a0, a1, a2)             # radar ally attacker any shield a0 a1 a2
+radar_ally_boss_armor(a0, a1, a2)                  # radar ally boss any armor a0 a1 a2
+radar_ally_boss_distance(a0, a1, a2)               # radar ally boss any distance a0 a1 a2
+radar_ally_boss_ground_armor(a0, a1, a2)           # radar ally boss ground armor a0 a1 a2
+radar_ally_boss_ground_distance(a0, a1, a2)        # radar ally boss ground distance a0 a1 a2
+radar_ally_boss_ground_health(a0, a1, a2)          # radar ally boss ground health a0 a1 a2
+radar_ally_boss_ground_maxHealth(a0, a1, a2)       # radar ally boss ground maxHealth a0 a1 a2
+radar_ally_boss_ground_shield(a0, a1, a2)          # radar ally boss ground shield a0 a1 a2
+radar_ally_boss_health(a0, a1, a2)                 # radar ally boss any health a0 a1 a2
+radar_ally_boss_maxHealth(a0, a1, a2)              # radar ally boss any maxHealth a0 a1 a2
+radar_ally_boss_shield(a0, a1, a2)                 # radar ally boss any shield a0 a1 a2
+radar_ally_distance(a0, a1, a2)                    # radar ally any any distance a0 a1 a2
+radar_ally_flying_armor(a0, a1, a2)                # radar ally flying any armor a0 a1 a2
+radar_ally_flying_boss_armor(a0, a1, a2)           # radar ally flying boss armor a0 a1 a2
+radar_ally_flying_boss_distance(a0, a1, a2)        # radar ally flying boss distance a0 a1 a2
+radar_ally_flying_boss_health(a0, a1, a2)          # radar ally flying boss health a0 a1 a2
+radar_ally_flying_boss_maxHealth(a0, a1, a2)       # radar ally flying boss maxHealth a0 a1 a2
+radar_ally_flying_boss_shield(a0, a1, a2)          # radar ally flying boss shield a0 a1 a2
+radar_ally_flying_distance(a0, a1, a2)             # radar ally flying any distance a0 a1 a2
+radar_ally_flying_ground_armor(a0, a1, a2)         # radar ally flying ground armor a0 a1 a2
+radar_ally_flying_ground_distance(a0, a1, a2)      # radar ally flying ground distance a0 a1 a2
+radar_ally_flying_ground_health(a0, a1, a2)        # radar ally flying ground health a0 a1 a2
+radar_ally_flying_ground_maxHealth(a0, a1, a2)     # radar ally flying ground maxHealth a0 a1 a2
+radar_ally_flying_ground_shield(a0, a1, a2)        # radar ally flying ground shield a0 a1 a2
+radar_ally_flying_health(a0, a1, a2)               # radar ally flying any health a0 a1 a2
+radar_ally_flying_maxHealth(a0, a1, a2)            # radar ally flying any maxHealth a0 a1 a2
+radar_ally_flying_shield(a0, a1, a2)               # radar ally flying any shield a0 a1 a2
+radar_ally_ground_armor(a0, a1, a2)                # radar ally ground any armor a0 a1 a2
+radar_ally_ground_distance(a0, a1, a2)             # radar ally ground any distance a0 a1 a2
+radar_ally_ground_health(a0, a1, a2)               # radar ally ground any health a0 a1 a2
+radar_ally_ground_maxHealth(a0, a1, a2)            # radar ally ground any maxHealth a0 a1 a2
+radar_ally_ground_shield(a0, a1, a2)               # radar ally ground any shield a0 a1 a2
+radar_ally_health(a0, a1, a2)                      # radar ally any any health a0 a1 a2
+radar_ally_maxHealth(a0, a1, a2)                   # radar ally any any maxHealth a0 a1 a2
+radar_ally_player_armor(a0, a1, a2)                # radar ally player any armor a0 a1 a2
+radar_ally_player_attacker_armor(a0, a1, a2)       # radar ally player attacker armor a0 a1 a2
+radar_ally_player_attacker_distance(a0, a1, a2)    # radar ally player attacker distance a0 a1 a2
+radar_ally_player_attacker_health(a0, a1, a2)      # radar ally player attacker health a0 a1 a2
+radar_ally_player_attacker_maxHealth(a0, a1, a2)   # radar ally player attacker maxHealth a0 a1 a2
+radar_ally_player_attacker_shield(a0, a1, a2)      # radar ally player attacker shield a0 a1 a2
+radar_ally_player_boss_armor(a0, a1, a2)           # radar ally player boss armor a0 a1 a2
+radar_ally_player_boss_distance(a0, a1, a2)        # radar ally player boss distance a0 a1 a2
+radar_ally_player_boss_health(a0, a1, a2)          # radar ally player boss health a0 a1 a2
+radar_ally_player_boss_maxHealth(a0, a1, a2)       # radar ally player boss maxHealth a0 a1 a2
+radar_ally_player_boss_shield(a0, a1, a2)          # radar ally player boss shield a0 a1 a2
+radar_ally_player_distance(a0, a1, a2)             # radar ally player any distance a0 a1 a2
+radar_ally_player_flying_armor(a0, a1, a2)         # radar ally player flying armor a0 a1 a2
+radar_ally_player_flying_distance(a0, a1, a2)      # radar ally player flying distance a0 a1 a2
+radar_ally_player_flying_health(a0, a1, a2)        # radar ally player flying health a0 a1 a2
+radar_ally_player_flying_maxHealth(a0, a1, a2)     # radar ally player flying maxHealth a0 a1 a2
+radar_ally_player_flying_shield(a0, a1, a2)        # radar ally player flying shield a0 a1 a2
+radar_ally_player_ground_armor(a0, a1, a2)         # radar ally player ground armor a0 a1 a2
+radar_ally_player_ground_distance(a0, a1, a2)      # radar ally player ground distance a0 a1 a2
+radar_ally_player_ground_health(a0, a1, a2)        # radar ally player ground health a0 a1 a2
+radar_ally_player_ground_maxHealth(a0, a1, a2)     # radar ally player ground maxHealth a0 a1 a2
+radar_ally_player_ground_shield(a0, a1, a2)        # radar ally player ground shield a0 a1 a2
+radar_ally_player_health(a0, a1, a2)               # radar ally player any health a0 a1 a2
+radar_ally_player_maxHealth(a0, a1, a2)            # radar ally player any maxHealth a0 a1 a2
+radar_ally_player_shield(a0, a1, a2)               # radar ally player any shield a0 a1 a2
+radar_ally_shield(a0, a1, a2)                      # radar ally any any shield a0 a1 a2
+radar_armor(a0, a1, a2)                            # radar any any any armor a0 a1 a2
+radar_attacker_armor(a0, a1, a2)                   # radar attacker any any armor a0 a1 a2
+radar_attacker_boss_armor(a0, a1, a2)              # radar attacker boss any armor a0 a1 a2
+radar_attacker_boss_distance(a0, a1, a2)           # radar attacker boss any distance a0 a1 a2
+radar_attacker_boss_ground_armor(a0, a1, a2)       # radar attacker boss ground armor a0 a1 a2
+radar_attacker_boss_ground_distance(a0, a1, a2)    # radar attacker boss ground distance a0 a1 a2
+radar_attacker_boss_ground_health(a0, a1, a2)      # radar attacker boss ground health a0 a1 a2
+radar_attacker_boss_ground_maxHealth(a0, a1, a2)   # radar attacker boss ground maxHealth a0 a1 a2
+radar_attacker_boss_ground_shield(a0, a1, a2)      # radar attacker boss ground shield a0 a1 a2
+radar_attacker_boss_health(a0, a1, a2)             # radar attacker boss any health a0 a1 a2
+radar_attacker_boss_maxHealth(a0, a1, a2)          # radar attacker boss any maxHealth a0 a1 a2
+radar_attacker_boss_shield(a0, a1, a2)             # radar attacker boss any shield a0 a1 a2
+radar_attacker_distance(a0, a1, a2)                # radar attacker any any distance a0 a1 a2
+radar_attacker_flying_armor(a0, a1, a2)            # radar attacker flying any armor a0 a1 a2
+radar_attacker_flying_boss_armor(a0, a1, a2)       # radar attacker flying boss armor a0 a1 a2
+radar_attacker_flying_boss_distance(a0, a1, a2)    # radar attacker flying boss distance a0 a1 a2
+radar_attacker_flying_boss_health(a0, a1, a2)      # radar attacker flying boss health a0 a1 a2
+radar_attacker_flying_boss_maxHealth(a0, a1, a2)   # radar attacker flying boss maxHealth a0 a1 a2
+radar_attacker_flying_boss_shield(a0, a1, a2)      # radar attacker flying boss shield a0 a1 a2
+radar_attacker_flying_distance(a0, a1, a2)         # radar attacker flying any distance a0 a1 a2
+radar_attacker_flying_ground_armor(a0, a1, a2)     # radar attacker flying ground armor a0 a1 a2
+radar_attacker_flying_ground_distance(a0, a1, a2)  # radar attacker flying ground distance a0 a1 a2
+radar_attacker_flying_ground_health(a0, a1, a2)    # radar attacker flying ground health a0 a1 a2
+radar_attacker_flying_ground_maxHealth(a0, a1, a2) # radar attacker flying ground maxHealth a0 a1 a2
+radar_attacker_flying_ground_shield(a0, a1, a2)    # radar attacker flying ground shield a0 a1 a2
+radar_attacker_flying_health(a0, a1, a2)           # radar attacker flying any health a0 a1 a2
+radar_attacker_flying_maxHealth(a0, a1, a2)        # radar attacker flying any maxHealth a0 a1 a2
+radar_attacker_flying_shield(a0, a1, a2)           # radar attacker flying any shield a0 a1 a2
+radar_attacker_ground_armor(a0, a1, a2)            # radar attacker ground any armor a0 a1 a2
+radar_attacker_ground_distance(a0, a1, a2)         # radar attacker ground any distance a0 a1 a2
+radar_attacker_ground_health(a0, a1, a2)           # radar attacker ground any health a0 a1 a2
+radar_attacker_ground_maxHealth(a0, a1, a2)        # radar attacker ground any maxHealth a0 a1 a2
+radar_attacker_ground_shield(a0, a1, a2)           # radar attacker ground any shield a0 a1 a2
+radar_attacker_health(a0, a1, a2)                  # radar attacker any any health a0 a1 a2
+radar_attacker_maxHealth(a0, a1, a2)               # radar attacker any any maxHealth a0 a1 a2
+radar_attacker_shield(a0, a1, a2)                  # radar attacker any any shield a0 a1 a2
+radar_boss_armor(a0, a1, a2)                       # radar boss any any armor a0 a1 a2
+radar_boss_distance(a0, a1, a2)                    # radar boss any any distance a0 a1 a2
+radar_boss_ground_armor(a0, a1, a2)                # radar boss ground any armor a0 a1 a2
+radar_boss_ground_distance(a0, a1, a2)             # radar boss ground any distance a0 a1 a2
+radar_boss_ground_health(a0, a1, a2)               # radar boss ground any health a0 a1 a2
+radar_boss_ground_maxHealth(a0, a1, a2)            # radar boss ground any maxHealth a0 a1 a2
+radar_boss_ground_shield(a0, a1, a2)               # radar boss ground any shield a0 a1 a2
+radar_boss_health(a0, a1, a2)                      # radar boss any any health a0 a1 a2
+radar_boss_maxHealth(a0, a1, a2)                   # radar boss any any maxHealth a0 a1 a2
+radar_boss_shield(a0, a1, a2)                      # radar boss any any shield a0 a1 a2
+radar_distance(a0, a1, a2)                         # radar any any any distance a0 a1 a2
+radar_enemy_ally_armor(a0, a1, a2)                 # radar enemy ally any armor a0 a1 a2
+radar_enemy_ally_attacker_armor(a0, a1, a2)        # radar enemy ally attacker armor a0 a1 a2
+radar_enemy_ally_attacker_distance(a0, a1, a2)     # radar enemy ally attacker distance a0 a1 a2
+radar_enemy_ally_attacker_health(a0, a1, a2)       # radar enemy ally attacker health a0 a1 a2
+radar_enemy_ally_attacker_maxHealth(a0, a1, a2)    # radar enemy ally attacker maxHealth a0 a1 a2
+radar_enemy_ally_attacker_shield(a0, a1, a2)       # radar enemy ally attacker shield a0 a1 a2
+radar_enemy_ally_boss_armor(a0, a1, a2)            # radar enemy ally boss armor a0 a1 a2
+radar_enemy_ally_boss_distance(a0, a1, a2)         # radar enemy ally boss distance a0 a1 a2
+radar_enemy_ally_boss_health(a0, a1, a2)           # radar enemy ally boss health a0 a1 a2
+radar_enemy_ally_boss_maxHealth(a0, a1, a2)        # radar enemy ally boss maxHealth a0 a1 a2
+radar_enemy_ally_boss_shield(a0, a1, a2)           # radar enemy ally boss shield a0 a1 a2
+radar_enemy_ally_distance(a0, a1, a2)              # radar enemy ally any distance a0 a1 a2
+radar_enemy_ally_flying_armor(a0, a1, a2)          # radar enemy ally flying armor a0 a1 a2
+radar_enemy_ally_flying_distance(a0, a1, a2)       # radar enemy ally flying distance a0 a1 a2
+radar_enemy_ally_flying_health(a0, a1, a2)         # radar enemy ally flying health a0 a1 a2
+radar_enemy_ally_flying_maxHealth(a0, a1, a2)      # radar enemy ally flying maxHealth a0 a1 a2
+radar_enemy_ally_flying_shield(a0, a1, a2)         # radar enemy ally flying shield a0 a1 a2
+radar_enemy_ally_ground_armor(a0, a1, a2)          # radar enemy ally ground armor a0 a1 a2
+radar_enemy_ally_ground_distance(a0, a1, a2)       # radar enemy ally ground distance a0 a1 a2
+radar_enemy_ally_ground_health(a0, a1, a2)         # radar enemy ally ground health a0 a1 a2
+radar_enemy_ally_ground_maxHealth(a0, a1, a2)      # radar enemy ally ground maxHealth a0 a1 a2
+radar_enemy_ally_ground_shield(a0, a1, a2)         # radar enemy ally ground shield a0 a1 a2
+radar_enemy_ally_health(a0, a1, a2)                # radar enemy ally any health a0 a1 a2
+radar_enemy_ally_maxHealth(a0, a1, a2)             # radar enemy ally any maxHealth a0 a1 a2
+radar_enemy_ally_player_armor(a0, a1, a2)          # radar enemy ally player armor a0 a1 a2
+radar_enemy_ally_player_distance(a0, a1, a2)       # radar enemy ally player distance a0 a1 a2
+radar_enemy_ally_player_health(a0, a1, a2)         # radar enemy ally player health a0 a1 a2
+radar_enemy_ally_player_maxHealth(a0, a1, a2)      # radar enemy ally player maxHealth a0 a1 a2
+radar_enemy_ally_player_shield(a0, a1, a2)         # radar enemy ally player shield a0 a1 a2
+radar_enemy_ally_shield(a0, a1, a2)                # radar enemy ally any shield a0 a1 a2
+radar_enemy_armor(a0, a1, a2)                      # radar enemy any any armor a0 a1 a2
+radar_enemy_attacker_armor(a0, a1, a2)             # radar enemy attacker any armor a0 a1 a2
+radar_enemy_attacker_boss_armor(a0, a1, a2)        # radar enemy attacker boss armor a0 a1 a2
+radar_enemy_attacker_boss_distance(a0, a1, a2)     # radar enemy attacker boss distance a0 a1 a2
+radar_enemy_attacker_boss_health(a0, a1, a2)       # radar enemy attacker boss health a0 a1 a2
+radar_enemy_attacker_boss_maxHealth(a0, a1, a2)    # radar enemy attacker boss maxHealth a0 a1 a2
+radar_enemy_attacker_boss_shield(a0, a1, a2)       # radar enemy attacker boss shield a0 a1 a2
+radar_enemy_attacker_distance(a0, a1, a2)          # radar enemy attacker any distance a0 a1 a2
+radar_enemy_attacker_flying_armor(a0, a1, a2)      # radar enemy attacker flying armor a0 a1 a2
+radar_enemy_attacker_flying_distance(a0, a1, a2)   # radar enemy attacker flying distance a0 a1 a2
+radar_enemy_attacker_flying_health(a0, a1, a2)     # radar enemy attacker flying health a0 a1 a2
+radar_enemy_attacker_flying_maxHealth(a0, a1, a2)  # radar enemy attacker flying maxHealth a0 a1 a2
+radar_enemy_attacker_flying_shield(a0, a1, a2)     # radar enemy attacker flying shield a0 a1 a2
+radar_enemy_attacker_ground_armor(a0, a1, a2)      # radar enemy attacker ground armor a0 a1 a2
+radar_enemy_attacker_ground_distance(a0, a1, a2)   # radar enemy attacker ground distance a0 a1 a2
+radar_enemy_attacker_ground_health(a0, a1, a2)     # radar enemy attacker ground health a0 a1 a2
+radar_enemy_attacker_ground_maxHealth(a0, a1, a2)  # radar enemy attacker ground maxHealth a0 a1 a2
+radar_enemy_attacker_ground_shield(a0, a1, a2)     # radar enemy attacker ground shield a0 a1 a2
+radar_enemy_attacker_health(a0, a1, a2)            # radar enemy attacker any health a0 a1 a2
+radar_enemy_attacker_maxHealth(a0, a1, a2)         # radar enemy attacker any maxHealth a0 a1 a2
+radar_enemy_attacker_shield(a0, a1, a2)            # radar enemy attacker any shield a0 a1 a2
+radar_enemy_boss_armor(a0, a1, a2)                 # radar enemy boss any armor a0 a1 a2
+radar_enemy_boss_distance(a0, a1, a2)              # radar enemy boss any distance a0 a1 a2
+radar_enemy_boss_ground_armor(a0, a1, a2)          # radar enemy boss ground armor a0 a1 a2
+radar_enemy_boss_ground_distance(a0, a1, a2)       # radar enemy boss ground distance a0 a1 a2
+radar_enemy_boss_ground_health(a0, a1, a2)         # radar enemy boss ground health a0 a1 a2
+radar_enemy_boss_ground_maxHealth(a0, a1, a2)      # radar enemy boss ground maxHealth a0 a1 a2
+radar_enemy_boss_ground_shield(a0, a1, a2)         # radar enemy boss ground shield a0 a1 a2
+radar_enemy_boss_health(a0, a1, a2)                # radar enemy boss any health a0 a1 a2
+radar_enemy_boss_maxHealth(a0, a1, a2)             # radar enemy boss any maxHealth a0 a1 a2
+radar_enemy_boss_shield(a0, a1, a2)                # radar enemy boss any shield a0 a1 a2
+radar_enemy_distance(a0, a1, a2)                   # radar enemy any any distance a0 a1 a2
+radar_enemy_flying_armor(a0, a1, a2)               # radar enemy flying any armor a0 a1 a2
+radar_enemy_flying_boss_armor(a0, a1, a2)          # radar enemy flying boss armor a0 a1 a2
+radar_enemy_flying_boss_distance(a0, a1, a2)       # radar enemy flying boss distance a0 a1 a2
+radar_enemy_flying_boss_health(a0, a1, a2)         # radar enemy flying boss health a0 a1 a2
+radar_enemy_flying_boss_maxHealth(a0, a1, a2)      # radar enemy flying boss maxHealth a0 a1 a2
+radar_enemy_flying_boss_shield(a0, a1, a2)         # radar enemy flying boss shield a0 a1 a2
+radar_enemy_flying_distance(a0, a1, a2)            # radar enemy flying any distance a0 a1 a2
+radar_enemy_flying_ground_armor(a0, a1, a2)        # radar enemy flying ground armor a0 a1 a2
+radar_enemy_flying_ground_distance(a0, a1, a2)     # radar enemy flying ground distance a0 a1 a2
+radar_enemy_flying_ground_health(a0, a1, a2)       # radar enemy flying ground health a0 a1 a2
+radar_enemy_flying_ground_maxHealth(a0, a1, a2)    # radar enemy flying ground maxHealth a0 a1 a2
+radar_enemy_flying_ground_shield(a0, a1, a2)       # radar enemy flying ground shield a0 a1 a2
+radar_enemy_flying_health(a0, a1, a2)              # radar enemy flying any health a0 a1 a2
+radar_enemy_flying_maxHealth(a0, a1, a2)           # radar enemy flying any maxHealth a0 a1 a2
+radar_enemy_flying_shield(a0, a1, a2)              # radar enemy flying any shield a0 a1 a2
+radar_enemy_ground_armor(a0, a1, a2)               # radar enemy ground any armor a0 a1 a2
+radar_enemy_ground_distance(a0, a1, a2)            # radar enemy ground any distance a0 a1 a2
+radar_enemy_ground_health(a0, a1, a2)              # radar enemy ground any health a0 a1 a2
+radar_enemy_ground_maxHealth(a0, a1, a2)           # radar enemy ground any maxHealth a0 a1 a2
+radar_enemy_ground_shield(a0, a1, a2)              # radar enemy ground any shield a0 a1 a2
+radar_enemy_health(a0, a1, a2)                     # radar enemy any any health a0 a1 a2
+radar_enemy_maxHealth(a0, a1, a2)                  # radar enemy any any maxHealth a0 a1 a2
+radar_enemy_player_armor(a0, a1, a2)               # radar enemy player any armor a0 a1 a2
+radar_enemy_player_attacker_armor(a0, a1, a2)      # radar enemy player attacker armor a0 a1 a2
+radar_enemy_player_attacker_distance(a0, a1, a2)   # radar enemy player attacker distance a0 a1 a2
+radar_enemy_player_attacker_health(a0, a1, a2)     # radar enemy player attacker health a0 a1 a2
+radar_enemy_player_attacker_maxHealth(a0, a1, a2)  # radar enemy player attacker maxHealth a0 a1 a2
+radar_enemy_player_attacker_shield(a0, a1, a2)     # radar enemy player attacker shield a0 a1 a2
+radar_enemy_player_boss_armor(a0, a1, a2)          # radar enemy player boss armor a0 a1 a2
+radar_enemy_player_boss_distance(a0, a1, a2)       # radar enemy player boss distance a0 a1 a2
+radar_enemy_player_boss_health(a0, a1, a2)         # radar enemy player boss health a0 a1 a2
+radar_enemy_player_boss_maxHealth(a0, a1, a2)      # radar enemy player boss maxHealth a0 a1 a2
+radar_enemy_player_boss_shield(a0, a1, a2)         # radar enemy player boss shield a0 a1 a2
+radar_enemy_player_distance(a0, a1, a2)            # radar enemy player any distance a0 a1 a2
+radar_enemy_player_flying_armor(a0, a1, a2)        # radar enemy player flying armor a0 a1 a2
+radar_enemy_player_flying_distance(a0, a1, a2)     # radar enemy player flying distance a0 a1 a2
+radar_enemy_player_flying_health(a0, a1, a2)       # radar enemy player flying health a0 a1 a2
+radar_enemy_player_flying_maxHealth(a0, a1, a2)    # radar enemy player flying maxHealth a0 a1 a2
+radar_enemy_player_flying_shield(a0, a1, a2)       # radar enemy player flying shield a0 a1 a2
+radar_enemy_player_ground_armor(a0, a1, a2)        # radar enemy player ground armor a0 a1 a2
+radar_enemy_player_ground_distance(a0, a1, a2)     # radar enemy player ground distance a0 a1 a2
+radar_enemy_player_ground_health(a0, a1, a2)       # radar enemy player ground health a0 a1 a2
+radar_enemy_player_ground_maxHealth(a0, a1, a2)    # radar enemy player ground maxHealth a0 a1 a2
+radar_enemy_player_ground_shield(a0, a1, a2)       # radar enemy player ground shield a0 a1 a2
+radar_enemy_player_health(a0, a1, a2)              # radar enemy player any health a0 a1 a2
+radar_enemy_player_maxHealth(a0, a1, a2)           # radar enemy player any maxHealth a0 a1 a2
+radar_enemy_player_shield(a0, a1, a2)              # radar enemy player any shield a0 a1 a2
+radar_enemy_shield(a0, a1, a2)                     # radar enemy any any shield a0 a1 a2
+radar_flying_armor(a0, a1, a2)                     # radar flying any any armor a0 a1 a2
+radar_flying_boss_armor(a0, a1, a2)                # radar flying boss any armor a0 a1 a2
+radar_flying_boss_distance(a0, a1, a2)             # radar flying boss any distance a0 a1 a2
+radar_flying_boss_ground_armor(a0, a1, a2)         # radar flying boss ground armor a0 a1 a2
+radar_flying_boss_ground_distance(a0, a1, a2)      # radar flying boss ground distance a0 a1 a2
+radar_flying_boss_ground_health(a0, a1, a2)        # radar flying boss ground health a0 a1 a2
+radar_flying_boss_ground_maxHealth(a0, a1, a2)     # radar flying boss ground maxHealth a0 a1 a2
+radar_flying_boss_ground_shield(a0, a1, a2)        # radar flying boss ground shield a0 a1 a2
+radar_flying_boss_health(a0, a1, a2)               # radar flying boss any health a0 a1 a2
+radar_flying_boss_maxHealth(a0, a1, a2)            # radar flying boss any maxHealth a0 a1 a2
+radar_flying_boss_shield(a0, a1, a2)               # radar flying boss any shield a0 a1 a2
+radar_flying_distance(a0, a1, a2)                  # radar flying any any distance a0 a1 a2
+radar_flying_ground_armor(a0, a1, a2)              # radar flying ground any armor a0 a1 a2
+radar_flying_ground_distance(a0, a1, a2)           # radar flying ground any distance a0 a1 a2
+radar_flying_ground_health(a0, a1, a2)             # radar flying ground any health a0 a1 a2
+radar_flying_ground_maxHealth(a0, a1, a2)          # radar flying ground any maxHealth a0 a1 a2
+radar_flying_ground_shield(a0, a1, a2)             # radar flying ground any shield a0 a1 a2
+radar_flying_health(a0, a1, a2)                    # radar flying any any health a0 a1 a2
+radar_flying_maxHealth(a0, a1, a2)                 # radar flying any any maxHealth a0 a1 a2
+radar_flying_shield(a0, a1, a2)                    # radar flying any any shield a0 a1 a2
+radar_ground_armor(a0, a1, a2)                     # radar ground any any armor a0 a1 a2
+radar_ground_distance(a0, a1, a2)                  # radar ground any any distance a0 a1 a2
+radar_ground_health(a0, a1, a2)                    # radar ground any any health a0 a1 a2
+radar_ground_maxHealth(a0, a1, a2)                 # radar ground any any maxHealth a0 a1 a2
+radar_ground_shield(a0, a1, a2)                    # radar ground any any shield a0 a1 a2
+radar_health(a0, a1, a2)                           # radar any any any health a0 a1 a2
+radar_maxHealth(a0, a1, a2)                        # radar any any any maxHealth a0 a1 a2
+radar_player_armor(a0, a1, a2)                     # radar player any any armor a0 a1 a2
+radar_player_attacker_armor(a0, a1, a2)            # radar player attacker any armor a0 a1 a2
+radar_player_attacker_boss_armor(a0, a1, a2)       # radar player attacker boss armor a0 a1 a2
+radar_player_attacker_boss_distance(a0, a1, a2)    # radar player attacker boss distance a0 a1 a2
+radar_player_attacker_boss_health(a0, a1, a2)      # radar player attacker boss health a0 a1 a2
+radar_player_attacker_boss_maxHealth(a0, a1, a2)   # radar player attacker boss maxHealth a0 a1 a2
+radar_player_attacker_boss_shield(a0, a1, a2)      # radar player attacker boss shield a0 a1 a2
+radar_player_attacker_distance(a0, a1, a2)         # radar player attacker any distance a0 a1 a2
+radar_player_attacker_flying_armor(a0, a1, a2)     # radar player attacker flying armor a0 a1 a2
+radar_player_attacker_flying_distance(a0, a1, a2)  # radar player attacker flying distance a0 a1 a2
+radar_player_attacker_flying_health(a0, a1, a2)    # radar player attacker flying health a0 a1 a2
+radar_player_attacker_flying_maxHealth(a0, a1, a2) # radar player attacker flying maxHealth a0 a1 a2
+radar_player_attacker_flying_shield(a0, a1, a2)    # radar player attacker flying shield a0 a1 a2
+radar_player_attacker_ground_armor(a0, a1, a2)     # radar player attacker ground armor a0 a1 a2
+radar_player_attacker_ground_distance(a0, a1, a2)  # radar player attacker ground distance a0 a1 a2
+radar_player_attacker_ground_health(a0, a1, a2)    # radar player attacker ground health a0 a1 a2
+radar_player_attacker_ground_maxHealth(a0, a1, a2) # radar player attacker ground maxHealth a0 a1 a2
+radar_player_attacker_ground_shield(a0, a1, a2)    # radar player attacker ground shield a0 a1 a2
+radar_player_attacker_health(a0, a1, a2)           # radar player attacker any health a0 a1 a2
+radar_player_attacker_maxHealth(a0, a1, a2)        # radar player attacker any maxHealth a0 a1 a2
+radar_player_attacker_shield(a0, a1, a2)           # radar player attacker any shield a0 a1 a2
+radar_player_boss_armor(a0, a1, a2)                # radar player boss any armor a0 a1 a2
+radar_player_boss_distance(a0, a1, a2)             # radar player boss any distance a0 a1 a2
+radar_player_boss_ground_armor(a0, a1, a2)         # radar player boss ground armor a0 a1 a2
+radar_player_boss_ground_distance(a0, a1, a2)      # radar player boss ground distance a0 a1 a2
+radar_player_boss_ground_health(a0, a1, a2)        # radar player boss ground health a0 a1 a2
+radar_player_boss_ground_maxHealth(a0, a1, a2)     # radar player boss ground maxHealth a0 a1 a2
+radar_player_boss_ground_shield(a0, a1, a2)        # radar player boss ground shield a0 a1 a2
+radar_player_boss_health(a0, a1, a2)               # radar player boss any health a0 a1 a2
+radar_player_boss_maxHealth(a0, a1, a2)            # radar player boss any maxHealth a0 a1 a2
+radar_player_boss_shield(a0, a1, a2)               # radar player boss any shield a0 a1 a2
+radar_player_distance(a0, a1, a2)                  # radar player any any distance a0 a1 a2
+radar_player_flying_armor(a0, a1, a2)              # radar player flying any armor a0 a1 a2
+radar_player_flying_boss_armor(a0, a1, a2)         # radar player flying boss armor a0 a1 a2
+radar_player_flying_boss_distance(a0, a1, a2)      # radar player flying boss distance a0 a1 a2
+radar_player_flying_boss_health(a0, a1, a2)        # radar player flying boss health a0 a1 a2
+radar_player_flying_boss_maxHealth(a0, a1, a2)     # radar player flying boss maxHealth a0 a1 a2
+radar_player_flying_boss_shield(a0, a1, a2)        # radar player flying boss shield a0 a1 a2
+radar_player_flying_distance(a0, a1, a2)           # radar player flying any distance a0 a1 a2
+radar_player_flying_ground_armor(a0, a1, a2)       # radar player flying ground armor a0 a1 a2
+radar_player_flying_ground_distance(a0, a1, a2)    # radar player flying ground distance a0 a1 a2
+radar_player_flying_ground_health(a0, a1, a2)      # radar player flying ground health a0 a1 a2
+radar_player_flying_ground_maxHealth(a0, a1, a2)   # radar player flying ground maxHealth a0 a1 a2
+radar_player_flying_ground_shield(a0, a1, a2)      # radar player flying ground shield a0 a1 a2
+radar_player_flying_health(a0, a1, a2)             # radar player flying any health a0 a1 a2
+radar_player_flying_maxHealth(a0, a1, a2)          # radar player flying any maxHealth a0 a1 a2
+radar_player_flying_shield(a0, a1, a2)             # radar player flying any shield a0 a1 a2
+radar_player_ground_armor(a0, a1, a2)              # radar player ground any armor a0 a1 a2
+radar_player_ground_distance(a0, a1, a2)           # radar player ground any distance a0 a1 a2
+radar_player_ground_health(a0, a1, a2)             # radar player ground any health a0 a1 a2
+radar_player_ground_maxHealth(a0, a1, a2)          # radar player ground any maxHealth a0 a1 a2
+radar_player_ground_shield(a0, a1, a2)             # radar player ground any shield a0 a1 a2
+radar_player_health(a0, a1, a2)                    # radar player any any health a0 a1 a2
+radar_player_maxHealth(a0, a1, a2)                 # radar player any any maxHealth a0 a1 a2
+radar_player_shield(a0, a1, a2)                    # radar player any any shield a0 a1 a2
+radar_shield(a0, a1, a2)                           # radar any any any shield a0 a1 a2
+read(a0, a1, a2)                                   # read a0 a1 a2
+sensor(a0, a1, a2)                                 # sensor a0 a1 a2
+stop()                                             # stop
+ubind(a0)                                          # ubind a0
+ucontrol_approach(a0, a1, a2)                      # ucontrol approach a0 a1 a2
+ucontrol_autoPathfind()                            # ucontrol autoPathfind
+ucontrol_boost(a0)                                 # ucontrol boost a0
+ucontrol_build(a0, a1, a2, a3, a4)                 # ucontrol build a0 a1 a2 a3 a4
+ucontrol_flag(a0)                                  # ucontrol flag a0
+ucontrol_getBlock(a0, a1, a2, a3, a4)              # ucontrol getBlock a0 a1 a2 a3 a4
+ucontrol_idle()                                    # ucontrol idle
+ucontrol_itemDrop(a0, a1)                          # ucontrol itemDrop a0 a1
+ucontrol_itemTake(a0, a1, a2)                      # ucontrol itemTake a0 a1 a2
+ucontrol_mine(a0, a1)                              # ucontrol mine a0 a1
+ucontrol_move(a0, a1)                              # ucontrol move a0 a1
+ucontrol_pathfind(a0, a1)                          # ucontrol pathfind a0 a1
+ucontrol_payDrop()                                 # ucontrol payDrop
+ucontrol_payEnter()                                # ucontrol payEnter
+ucontrol_payTake(a0)                               # ucontrol payTake a0
+ucontrol_stop()                                    # ucontrol stop
+ucontrol_target(a0, a1, a2)                        # ucontrol target a0 a1 a2
+ucontrol_targetp(a0, a1)                           # ucontrol targetp a0 a1
+ucontrol_unbind()                                  # ucontrol unbind
+ucontrol_within(a0, a1, a2, a3)                    # ucontrol within a0 a1 a2 a3
+ulocate_building_battery(a0, a1, a2, a3, a4)       # ulocate building battery a0 0 a1 a2 a3 a4
+ulocate_building_core(a0, a1, a2, a3, a4)          # ulocate building core a0 0 a1 a2 a3 a4
+ulocate_building_factory(a0, a1, a2, a3, a4)       # ulocate building factory a0 0 a1 a2 a3 a4
+ulocate_building_generator(a0, a1, a2, a3, a4)     # ulocate building generator a0 0 a1 a2 a3 a4
+ulocate_building_reactor(a0, a1, a2, a3, a4)       # ulocate building reactor a0 0 a1 a2 a3 a4
+ulocate_building_repair(a0, a1, a2, a3, a4)        # ulocate building repair a0 0 a1 a2 a3 a4
+ulocate_building_storage(a0, a1, a2, a3, a4)       # ulocate building storage a0 0 a1 a2 a3 a4
+ulocate_building_turret(a0, a1, a2, a3, a4)        # ulocate building turret a0 0 a1 a2 a3 a4
+ulocate_damaged(a0, a1, a2, a3)                    # ulocate damaged core 0 0 a0 a1 a2 a3
+ulocate_ore(a0, a1, a2, a3)                        # ulocate ore core 0 a0 a1 a2 a3
+ulocate_spawn(a0, a1, a2, a3)                      # ulocate spawn core 0 0 a0 a1 a2 a3
+uradar_ally_armor(a0, a1)                          # uradar ally any any armor 0 a0 a1
+uradar_ally_attacker_armor(a0, a1)                 # uradar ally attacker any armor 0 a0 a1
+uradar_ally_attacker_boss_armor(a0, a1)            # uradar ally attacker boss armor 0 a0 a1
+uradar_ally_attacker_boss_distance(a0, a1)         # uradar ally attacker boss distance 0 a0 a1
+uradar_ally_attacker_boss_health(a0, a1)           # uradar ally attacker boss health 0 a0 a1
+uradar_ally_attacker_boss_maxHealth(a0, a1)        # uradar ally attacker boss maxHealth 0 a0 a1
+uradar_ally_attacker_boss_shield(a0, a1)           # uradar ally attacker boss shield 0 a0 a1
+uradar_ally_attacker_distance(a0, a1)              # uradar ally attacker any distance 0 a0 a1
+uradar_ally_attacker_flying_armor(a0, a1)          # uradar ally attacker flying armor 0 a0 a1
+uradar_ally_attacker_flying_distance(a0, a1)       # uradar ally attacker flying distance 0 a0 a1
+uradar_ally_attacker_flying_health(a0, a1)         # uradar ally attacker flying health 0 a0 a1
+uradar_ally_attacker_flying_maxHealth(a0, a1)      # uradar ally attacker flying maxHealth 0 a0 a1
+uradar_ally_attacker_flying_shield(a0, a1)         # uradar ally attacker flying shield 0 a0 a1
+uradar_ally_attacker_ground_armor(a0, a1)          # uradar ally attacker ground armor 0 a0 a1
+uradar_ally_attacker_ground_distance(a0, a1)       # uradar ally attacker ground distance 0 a0 a1
+uradar_ally_attacker_ground_health(a0, a1)         # uradar ally attacker ground health 0 a0 a1
+uradar_ally_attacker_ground_maxHealth(a0, a1)      # uradar ally attacker ground maxHealth 0 a0 a1
+uradar_ally_attacker_ground_shield(a0, a1)         # uradar ally attacker ground shield 0 a0 a1
+uradar_ally_attacker_health(a0, a1)                # uradar ally attacker any health 0 a0 a1
+uradar_ally_attacker_maxHealth(a0, a1)             # uradar ally attacker any maxHealth 0 a0 a1
+uradar_ally_attacker_shield(a0, a1)                # uradar ally attacker any shield 0 a0 a1
+uradar_ally_boss_armor(a0, a1)                     # uradar ally boss any armor 0 a0 a1
+uradar_ally_boss_distance(a0, a1)                  # uradar ally boss any distance 0 a0 a1
+uradar_ally_boss_ground_armor(a0, a1)              # uradar ally boss ground armor 0 a0 a1
+uradar_ally_boss_ground_distance(a0, a1)           # uradar ally boss ground distance 0 a0 a1
+uradar_ally_boss_ground_health(a0, a1)             # uradar ally boss ground health 0 a0 a1
+uradar_ally_boss_ground_maxHealth(a0, a1)          # uradar ally boss ground maxHealth 0 a0 a1
+uradar_ally_boss_ground_shield(a0, a1)             # uradar ally boss ground shield 0 a0 a1
+uradar_ally_boss_health(a0, a1)                    # uradar ally boss any health 0 a0 a1
+uradar_ally_boss_maxHealth(a0, a1)                 # uradar ally boss any maxHealth 0 a0 a1
+uradar_ally_boss_shield(a0, a1)                    # uradar ally boss any shield 0 a0 a1
+uradar_ally_distance(a0, a1)                       # uradar ally any any distance 0 a0 a1
+uradar_ally_flying_armor(a0, a1)                   # uradar ally flying any armor 0 a0 a1
+uradar_ally_flying_boss_armor(a0, a1)              # uradar ally flying boss armor 0 a0 a1
+uradar_ally_flying_boss_distance(a0, a1)           # uradar ally flying boss distance 0 a0 a1
+uradar_ally_flying_boss_health(a0, a1)             # uradar ally flying boss health 0 a0 a1
+uradar_ally_flying_boss_maxHealth(a0, a1)          # uradar ally flying boss maxHealth 0 a0 a1
+uradar_ally_flying_boss_shield(a0, a1)             # uradar ally flying boss shield 0 a0 a1
+uradar_ally_flying_distance(a0, a1)                # uradar ally flying any distance 0 a0 a1
+uradar_ally_flying_ground_armor(a0, a1)            # uradar ally flying ground armor 0 a0 a1
+uradar_ally_flying_ground_distance(a0, a1)         # uradar ally flying ground distance 0 a0 a1
+uradar_ally_flying_ground_health(a0, a1)           # uradar ally flying ground health 0 a0 a1
+uradar_ally_flying_ground_maxHealth(a0, a1)        # uradar ally flying ground maxHealth 0 a0 a1
+uradar_ally_flying_ground_shield(a0, a1)           # uradar ally flying ground shield 0 a0 a1
+uradar_ally_flying_health(a0, a1)                  # uradar ally flying any health 0 a0 a1
+uradar_ally_flying_maxHealth(a0, a1)               # uradar ally flying any maxHealth 0 a0 a1
+uradar_ally_flying_shield(a0, a1)                  # uradar ally flying any shield 0 a0 a1
+uradar_ally_ground_armor(a0, a1)                   # uradar ally ground any armor 0 a0 a1
+uradar_ally_ground_distance(a0, a1)                # uradar ally ground any distance 0 a0 a1
+uradar_ally_ground_health(a0, a1)                  # uradar ally ground any health 0 a0 a1
+uradar_ally_ground_maxHealth(a0, a1)               # uradar ally ground any maxHealth 0 a0 a1
+uradar_ally_ground_shield(a0, a1)                  # uradar ally ground any shield 0 a0 a1
+uradar_ally_health(a0, a1)                         # uradar ally any any health 0 a0 a1
+uradar_ally_maxHealth(a0, a1)                      # uradar ally any any maxHealth 0 a0 a1
+uradar_ally_player_armor(a0, a1)                   # uradar ally player any armor 0 a0 a1
+uradar_ally_player_attacker_armor(a0, a1)          # uradar ally player attacker armor 0 a0 a1
+uradar_ally_player_attacker_distance(a0, a1)       # uradar ally player attacker distance 0 a0 a1
+uradar_ally_player_attacker_health(a0, a1)         # uradar ally player attacker health 0 a0 a1
+uradar_ally_player_attacker_maxHealth(a0, a1)      # uradar ally player attacker maxHealth 0 a0 a1
+uradar_ally_player_attacker_shield(a0, a1)         # uradar ally player attacker shield 0 a0 a1
+uradar_ally_player_boss_armor(a0, a1)              # uradar ally player boss armor 0 a0 a1
+uradar_ally_player_boss_distance(a0, a1)           # uradar ally player boss distance 0 a0 a1
+uradar_ally_player_boss_health(a0, a1)             # uradar ally player boss health 0 a0 a1
+uradar_ally_player_boss_maxHealth(a0, a1)          # uradar ally player boss maxHealth 0 a0 a1
+uradar_ally_player_boss_shield(a0, a1)             # uradar ally player boss shield 0 a0 a1
+uradar_ally_player_distance(a0, a1)                # uradar ally player any distance 0 a0 a1
+uradar_ally_player_flying_armor(a0, a1)            # uradar ally player flying armor 0 a0 a1
+uradar_ally_player_flying_distance(a0, a1)         # uradar ally player flying distance 0 a0 a1
+uradar_ally_player_flying_health(a0, a1)           # uradar ally player flying health 0 a0 a1
+uradar_ally_player_flying_maxHealth(a0, a1)        # uradar ally player flying maxHealth 0 a0 a1
+uradar_ally_player_flying_shield(a0, a1)           # uradar ally player flying shield 0 a0 a1
+uradar_ally_player_ground_armor(a0, a1)            # uradar ally player ground armor 0 a0 a1
+uradar_ally_player_ground_distance(a0, a1)         # uradar ally player ground distance 0 a0 a1
+uradar_ally_player_ground_health(a0, a1)           # uradar ally player ground health 0 a0 a1
+uradar_ally_player_ground_maxHealth(a0, a1)        # uradar ally player ground maxHealth 0 a0 a1
+uradar_ally_player_ground_shield(a0, a1)           # uradar ally player ground shield 0 a0 a1
+uradar_ally_player_health(a0, a1)                  # uradar ally player any health 0 a0 a1
+uradar_ally_player_maxHealth(a0, a1)               # uradar ally player any maxHealth 0 a0 a1
+uradar_ally_player_shield(a0, a1)                  # uradar ally player any shield 0 a0 a1
+uradar_ally_shield(a0, a1)                         # uradar ally any any shield 0 a0 a1
+uradar_armor(a0, a1)                               # uradar any any any armor 0 a0 a1
+uradar_attacker_armor(a0, a1)                      # uradar attacker any any armor 0 a0 a1
+uradar_attacker_boss_armor(a0, a1)                 # uradar attacker boss any armor 0 a0 a1
+uradar_attacker_boss_distance(a0, a1)              # uradar attacker boss any distance 0 a0 a1
+uradar_attacker_boss_ground_armor(a0, a1)          # uradar attacker boss ground armor 0 a0 a1
+uradar_attacker_boss_ground_distance(a0, a1)       # uradar attacker boss ground distance 0 a0 a1
+uradar_attacker_boss_ground_health(a0, a1)         # uradar attacker boss ground health 0 a0 a1
+uradar_attacker_boss_ground_maxHealth(a0, a1)      # uradar attacker boss ground maxHealth 0 a0 a1
+uradar_attacker_boss_ground_shield(a0, a1)         # uradar attacker boss ground shield 0 a0 a1
+uradar_attacker_boss_health(a0, a1)                # uradar attacker boss any health 0 a0 a1
+uradar_attacker_boss_maxHealth(a0, a1)             # uradar attacker boss any maxHealth 0 a0 a1
+uradar_attacker_boss_shield(a0, a1)                # uradar attacker boss any shield 0 a0 a1
+uradar_attacker_distance(a0, a1)                   # uradar attacker any any distance 0 a0 a1
+uradar_attacker_flying_armor(a0, a1)               # uradar attacker flying any armor 0 a0 a1
+uradar_attacker_flying_boss_armor(a0, a1)          # uradar attacker flying boss armor 0 a0 a1
+uradar_attacker_flying_boss_distance(a0, a1)       # uradar attacker flying boss distance 0 a0 a1
+uradar_attacker_flying_boss_health(a0, a1)         # uradar attacker flying boss health 0 a0 a1
+uradar_attacker_flying_boss_maxHealth(a0, a1)      # uradar attacker flying boss maxHealth 0 a0 a1
+uradar_attacker_flying_boss_shield(a0, a1)         # uradar attacker flying boss shield 0 a0 a1
+uradar_attacker_flying_distance(a0, a1)            # uradar attacker flying any distance 0 a0 a1
+uradar_attacker_flying_ground_armor(a0, a1)        # uradar attacker flying ground armor 0 a0 a1
+uradar_attacker_flying_ground_distance(a0, a1)     # uradar attacker flying ground distance 0 a0 a1
+uradar_attacker_flying_ground_health(a0, a1)       # uradar attacker flying ground health 0 a0 a1
+uradar_attacker_flying_ground_maxHealth(a0, a1)    # uradar attacker flying ground maxHealth 0 a0 a1
+uradar_attacker_flying_ground_shield(a0, a1)       # uradar attacker flying ground shield 0 a0 a1
+uradar_attacker_flying_health(a0, a1)              # uradar attacker flying any health 0 a0 a1
+uradar_attacker_flying_maxHealth(a0, a1)           # uradar attacker flying any maxHealth 0 a0 a1
+uradar_attacker_flying_shield(a0, a1)              # uradar attacker flying any shield 0 a0 a1
+uradar_attacker_ground_armor(a0, a1)               # uradar attacker ground any armor 0 a0 a1
+uradar_attacker_ground_distance(a0, a1)            # uradar attacker ground any distance 0 a0 a1
+uradar_attacker_ground_health(a0, a1)              # uradar attacker ground any health 0 a0 a1
+uradar_attacker_ground_maxHealth(a0, a1)           # uradar attacker ground any maxHealth 0 a0 a1
+uradar_attacker_ground_shield(a0, a1)              # uradar attacker ground any shield 0 a0 a1
+uradar_attacker_health(a0, a1)                     # uradar attacker any any health 0 a0 a1
+uradar_attacker_maxHealth(a0, a1)                  # uradar attacker any any maxHealth 0 a0 a1
+uradar_attacker_shield(a0, a1)                     # uradar attacker any any shield 0 a0 a1
+uradar_boss_armor(a0, a1)                          # uradar boss any any armor 0 a0 a1
+uradar_boss_distance(a0, a1)                       # uradar boss any any distance 0 a0 a1
+uradar_boss_ground_armor(a0, a1)                   # uradar boss ground any armor 0 a0 a1
+uradar_boss_ground_distance(a0, a1)                # uradar boss ground any distance 0 a0 a1
+uradar_boss_ground_health(a0, a1)                  # uradar boss ground any health 0 a0 a1
+uradar_boss_ground_maxHealth(a0, a1)               # uradar boss ground any maxHealth 0 a0 a1
+uradar_boss_ground_shield(a0, a1)                  # uradar boss ground any shield 0 a0 a1
+uradar_boss_health(a0, a1)                         # uradar boss any any health 0 a0 a1
+uradar_boss_maxHealth(a0, a1)                      # uradar boss any any maxHealth 0 a0 a1
+uradar_boss_shield(a0, a1)                         # uradar boss any any shield 0 a0 a1
+uradar_distance(a0, a1)                            # uradar any any any distance 0 a0 a1
+uradar_enemy_ally_armor(a0, a1)                    # uradar enemy ally any armor 0 a0 a1
+uradar_enemy_ally_attacker_armor(a0, a1)           # uradar enemy ally attacker armor 0 a0 a1
+uradar_enemy_ally_attacker_distance(a0, a1)        # uradar enemy ally attacker distance 0 a0 a1
+uradar_enemy_ally_attacker_health(a0, a1)          # uradar enemy ally attacker health 0 a0 a1
+uradar_enemy_ally_attacker_maxHealth(a0, a1)       # uradar enemy ally attacker maxHealth 0 a0 a1
+uradar_enemy_ally_attacker_shield(a0, a1)          # uradar enemy ally attacker shield 0 a0 a1
+uradar_enemy_ally_boss_armor(a0, a1)               # uradar enemy ally boss armor 0 a0 a1
+uradar_enemy_ally_boss_distance(a0, a1)            # uradar enemy ally boss distance 0 a0 a1
+uradar_enemy_ally_boss_health(a0, a1)              # uradar enemy ally boss health 0 a0 a1
+uradar_enemy_ally_boss_maxHealth(a0, a1)           # uradar enemy ally boss maxHealth 0 a0 a1
+uradar_enemy_ally_boss_shield(a0, a1)              # uradar enemy ally boss shield 0 a0 a1
+uradar_enemy_ally_distance(a0, a1)                 # uradar enemy ally any distance 0 a0 a1
+uradar_enemy_ally_flying_armor(a0, a1)             # uradar enemy ally flying armor 0 a0 a1
+uradar_enemy_ally_flying_distance(a0, a1)          # uradar enemy ally flying distance 0 a0 a1
+uradar_enemy_ally_flying_health(a0, a1)            # uradar enemy ally flying health 0 a0 a1
+uradar_enemy_ally_flying_maxHealth(a0, a1)         # uradar enemy ally flying maxHealth 0 a0 a1
+uradar_enemy_ally_flying_shield(a0, a1)            # uradar enemy ally flying shield 0 a0 a1
+uradar_enemy_ally_ground_armor(a0, a1)             # uradar enemy ally ground armor 0 a0 a1
+uradar_enemy_ally_ground_distance(a0, a1)          # uradar enemy ally ground distance 0 a0 a1
+uradar_enemy_ally_ground_health(a0, a1)            # uradar enemy ally ground health 0 a0 a1
+uradar_enemy_ally_ground_maxHealth(a0, a1)         # uradar enemy ally ground maxHealth 0 a0 a1
+uradar_enemy_ally_ground_shield(a0, a1)            # uradar enemy ally ground shield 0 a0 a1
+uradar_enemy_ally_health(a0, a1)                   # uradar enemy ally any health 0 a0 a1
+uradar_enemy_ally_maxHealth(a0, a1)                # uradar enemy ally any maxHealth 0 a0 a1
+uradar_enemy_ally_player_armor(a0, a1)             # uradar enemy ally player armor 0 a0 a1
+uradar_enemy_ally_player_distance(a0, a1)          # uradar enemy ally player distance 0 a0 a1
+uradar_enemy_ally_player_health(a0, a1)            # uradar enemy ally player health 0 a0 a1
+uradar_enemy_ally_player_maxHealth(a0, a1)         # uradar enemy ally player maxHealth 0 a0 a1
+uradar_enemy_ally_player_shield(a0, a1)            # uradar enemy ally player shield 0 a0 a1
+uradar_enemy_ally_shield(a0, a1)                   # uradar enemy ally any shield 0 a0 a1
+uradar_enemy_armor(a0, a1)                         # uradar enemy any any armor 0 a0 a1
+uradar_enemy_attacker_armor(a0, a1)                # uradar enemy attacker any armor 0 a0 a1
+uradar_enemy_attacker_boss_armor(a0, a1)           # uradar enemy attacker boss armor 0 a0 a1
+uradar_enemy_attacker_boss_distance(a0, a1)        # uradar enemy attacker boss distance 0 a0 a1
+uradar_enemy_attacker_boss_health(a0, a1)          # uradar enemy attacker boss health 0 a0 a1
+uradar_enemy_attacker_boss_maxHealth(a0, a1)       # uradar enemy attacker boss maxHealth 0 a0 a1
+uradar_enemy_attacker_boss_shield(a0, a1)          # uradar enemy attacker boss shield 0 a0 a1
+uradar_enemy_attacker_distance(a0, a1)             # uradar enemy attacker any distance 0 a0 a1
+uradar_enemy_attacker_flying_armor(a0, a1)         # uradar enemy attacker flying armor 0 a0 a1
+uradar_enemy_attacker_flying_distance(a0, a1)      # uradar enemy attacker flying distance 0 a0 a1
+uradar_enemy_attacker_flying_health(a0, a1)        # uradar enemy attacker flying health 0 a0 a1
+uradar_enemy_attacker_flying_maxHealth(a0, a1)     # uradar enemy attacker flying maxHealth 0 a0 a1
+uradar_enemy_attacker_flying_shield(a0, a1)        # uradar enemy attacker flying shield 0 a0 a1
+uradar_enemy_attacker_ground_armor(a0, a1)         # uradar enemy attacker ground armor 0 a0 a1
+uradar_enemy_attacker_ground_distance(a0, a1)      # uradar enemy attacker ground distance 0 a0 a1
+uradar_enemy_attacker_ground_health(a0, a1)        # uradar enemy attacker ground health 0 a0 a1
+uradar_enemy_attacker_ground_maxHealth(a0, a1)     # uradar enemy attacker ground maxHealth 0 a0 a1
+uradar_enemy_attacker_ground_shield(a0, a1)        # uradar enemy attacker ground shield 0 a0 a1
+uradar_enemy_attacker_health(a0, a1)               # uradar enemy attacker any health 0 a0 a1
+uradar_enemy_attacker_maxHealth(a0, a1)            # uradar enemy attacker any maxHealth 0 a0 a1
+uradar_enemy_attacker_shield(a0, a1)               # uradar enemy attacker any shield 0 a0 a1
+uradar_enemy_boss_armor(a0, a1)                    # uradar enemy boss any armor 0 a0 a1
+uradar_enemy_boss_distance(a0, a1)                 # uradar enemy boss any distance 0 a0 a1
+uradar_enemy_boss_ground_armor(a0, a1)             # uradar enemy boss ground armor 0 a0 a1
+uradar_enemy_boss_ground_distance(a0, a1)          # uradar enemy boss ground distance 0 a0 a1
+uradar_enemy_boss_ground_health(a0, a1)            # uradar enemy boss ground health 0 a0 a1
+uradar_enemy_boss_ground_maxHealth(a0, a1)         # uradar enemy boss ground maxHealth 0 a0 a1
+uradar_enemy_boss_ground_shield(a0, a1)            # uradar enemy boss ground shield 0 a0 a1
+uradar_enemy_boss_health(a0, a1)                   # uradar enemy boss any health 0 a0 a1
+uradar_enemy_boss_maxHealth(a0, a1)                # uradar enemy boss any maxHealth 0 a0 a1
+uradar_enemy_boss_shield(a0, a1)                   # uradar enemy boss any shield 0 a0 a1
+uradar_enemy_distance(a0, a1)                      # uradar enemy any any distance 0 a0 a1
+uradar_enemy_flying_armor(a0, a1)                  # uradar enemy flying any armor 0 a0 a1
+uradar_enemy_flying_boss_armor(a0, a1)             # uradar enemy flying boss armor 0 a0 a1
+uradar_enemy_flying_boss_distance(a0, a1)          # uradar enemy flying boss distance 0 a0 a1
+uradar_enemy_flying_boss_health(a0, a1)            # uradar enemy flying boss health 0 a0 a1
+uradar_enemy_flying_boss_maxHealth(a0, a1)         # uradar enemy flying boss maxHealth 0 a0 a1
+uradar_enemy_flying_boss_shield(a0, a1)            # uradar enemy flying boss shield 0 a0 a1
+uradar_enemy_flying_distance(a0, a1)               # uradar enemy flying any distance 0 a0 a1
+uradar_enemy_flying_ground_armor(a0, a1)           # uradar enemy flying ground armor 0 a0 a1
+uradar_enemy_flying_ground_distance(a0, a1)        # uradar enemy flying ground distance 0 a0 a1
+uradar_enemy_flying_ground_health(a0, a1)          # uradar enemy flying ground health 0 a0 a1
+uradar_enemy_flying_ground_maxHealth(a0, a1)       # uradar enemy flying ground maxHealth 0 a0 a1
+uradar_enemy_flying_ground_shield(a0, a1)          # uradar enemy flying ground shield 0 a0 a1
+uradar_enemy_flying_health(a0, a1)                 # uradar enemy flying any health 0 a0 a1
+uradar_enemy_flying_maxHealth(a0, a1)              # uradar enemy flying any maxHealth 0 a0 a1
+uradar_enemy_flying_shield(a0, a1)                 # uradar enemy flying any shield 0 a0 a1
+uradar_enemy_ground_armor(a0, a1)                  # uradar enemy ground any armor 0 a0 a1
+uradar_enemy_ground_distance(a0, a1)               # uradar enemy ground any distance 0 a0 a1
+uradar_enemy_ground_health(a0, a1)                 # uradar enemy ground any health 0 a0 a1
+uradar_enemy_ground_maxHealth(a0, a1)              # uradar enemy ground any maxHealth 0 a0 a1
+uradar_enemy_ground_shield(a0, a1)                 # uradar enemy ground any shield 0 a0 a1
+uradar_enemy_health(a0, a1)                        # uradar enemy any any health 0 a0 a1
+uradar_enemy_maxHealth(a0, a1)                     # uradar enemy any any maxHealth 0 a0 a1
+uradar_enemy_player_armor(a0, a1)                  # uradar enemy player any armor 0 a0 a1
+uradar_enemy_player_attacker_armor(a0, a1)         # uradar enemy player attacker armor 0 a0 a1
+uradar_enemy_player_attacker_distance(a0, a1)      # uradar enemy player attacker distance 0 a0 a1
+uradar_enemy_player_attacker_health(a0, a1)        # uradar enemy player attacker health 0 a0 a1
+uradar_enemy_player_attacker_maxHealth(a0, a1)     # uradar enemy player attacker maxHealth 0 a0 a1
+uradar_enemy_player_attacker_shield(a0, a1)        # uradar enemy player attacker shield 0 a0 a1
+uradar_enemy_player_boss_armor(a0, a1)             # uradar enemy player boss armor 0 a0 a1
+uradar_enemy_player_boss_distance(a0, a1)          # uradar enemy player boss distance 0 a0 a1
+uradar_enemy_player_boss_health(a0, a1)            # uradar enemy player boss health 0 a0 a1
+uradar_enemy_player_boss_maxHealth(a0, a1)         # uradar enemy player boss maxHealth 0 a0 a1
+uradar_enemy_player_boss_shield(a0, a1)            # uradar enemy player boss shield 0 a0 a1
+uradar_enemy_player_distance(a0, a1)               # uradar enemy player any distance 0 a0 a1
+uradar_enemy_player_flying_armor(a0, a1)           # uradar enemy player flying armor 0 a0 a1
+uradar_enemy_player_flying_distance(a0, a1)        # uradar enemy player flying distance 0 a0 a1
+uradar_enemy_player_flying_health(a0, a1)          # uradar enemy player flying health 0 a0 a1
+uradar_enemy_player_flying_maxHealth(a0, a1)       # uradar enemy player flying maxHealth 0 a0 a1
+uradar_enemy_player_flying_shield(a0, a1)          # uradar enemy player flying shield 0 a0 a1
+uradar_enemy_player_ground_armor(a0, a1)           # uradar enemy player ground armor 0 a0 a1
+uradar_enemy_player_ground_distance(a0, a1)        # uradar enemy player ground distance 0 a0 a1
+uradar_enemy_player_ground_health(a0, a1)          # uradar enemy player ground health 0 a0 a1
+uradar_enemy_player_ground_maxHealth(a0, a1)       # uradar enemy player ground maxHealth 0 a0 a1
+uradar_enemy_player_ground_shield(a0, a1)          # uradar enemy player ground shield 0 a0 a1
+uradar_enemy_player_health(a0, a1)                 # uradar enemy player any health 0 a0 a1
+uradar_enemy_player_maxHealth(a0, a1)              # uradar enemy player any maxHealth 0 a0 a1
+uradar_enemy_player_shield(a0, a1)                 # uradar enemy player any shield 0 a0 a1
+uradar_enemy_shield(a0, a1)                        # uradar enemy any any shield 0 a0 a1
+uradar_flying_armor(a0, a1)                        # uradar flying any any armor 0 a0 a1
+uradar_flying_boss_armor(a0, a1)                   # uradar flying boss any armor 0 a0 a1
+uradar_flying_boss_distance(a0, a1)                # uradar flying boss any distance 0 a0 a1
+uradar_flying_boss_ground_armor(a0, a1)            # uradar flying boss ground armor 0 a0 a1
+uradar_flying_boss_ground_distance(a0, a1)         # uradar flying boss ground distance 0 a0 a1
+uradar_flying_boss_ground_health(a0, a1)           # uradar flying boss ground health 0 a0 a1
+uradar_flying_boss_ground_maxHealth(a0, a1)        # uradar flying boss ground maxHealth 0 a0 a1
+uradar_flying_boss_ground_shield(a0, a1)           # uradar flying boss ground shield 0 a0 a1
+uradar_flying_boss_health(a0, a1)                  # uradar flying boss any health 0 a0 a1
+uradar_flying_boss_maxHealth(a0, a1)               # uradar flying boss any maxHealth 0 a0 a1
+uradar_flying_boss_shield(a0, a1)                  # uradar flying boss any shield 0 a0 a1
+uradar_flying_distance(a0, a1)                     # uradar flying any any distance 0 a0 a1
+uradar_flying_ground_armor(a0, a1)                 # uradar flying ground any armor 0 a0 a1
+uradar_flying_ground_distance(a0, a1)              # uradar flying ground any distance 0 a0 a1
+uradar_flying_ground_health(a0, a1)                # uradar flying ground any health 0 a0 a1
+uradar_flying_ground_maxHealth(a0, a1)             # uradar flying ground any maxHealth 0 a0 a1
+uradar_flying_ground_shield(a0, a1)                # uradar flying ground any shield 0 a0 a1
+uradar_flying_health(a0, a1)                       # uradar flying any any health 0 a0 a1
+uradar_flying_maxHealth(a0, a1)                    # uradar flying any any maxHealth 0 a0 a1
+uradar_flying_shield(a0, a1)                       # uradar flying any any shield 0 a0 a1
+uradar_ground_armor(a0, a1)                        # uradar ground any any armor 0 a0 a1
+uradar_ground_distance(a0, a1)                     # uradar ground any any distance 0 a0 a1
+uradar_ground_health(a0, a1)                       # uradar ground any any health 0 a0 a1
+uradar_ground_maxHealth(a0, a1)                    # uradar ground any any maxHealth 0 a0 a1
+uradar_ground_shield(a0, a1)                       # uradar ground any any shield 0 a0 a1
+uradar_health(a0, a1)                              # uradar any any any health 0 a0 a1
+uradar_maxHealth(a0, a1)                           # uradar any any any maxHealth 0 a0 a1
+uradar_player_armor(a0, a1)                        # uradar player any any armor 0 a0 a1
+uradar_player_attacker_armor(a0, a1)               # uradar player attacker any armor 0 a0 a1
+uradar_player_attacker_boss_armor(a0, a1)          # uradar player attacker boss armor 0 a0 a1
+uradar_player_attacker_boss_distance(a0, a1)       # uradar player attacker boss distance 0 a0 a1
+uradar_player_attacker_boss_health(a0, a1)         # uradar player attacker boss health 0 a0 a1
+uradar_player_attacker_boss_maxHealth(a0, a1)      # uradar player attacker boss maxHealth 0 a0 a1
+uradar_player_attacker_boss_shield(a0, a1)         # uradar player attacker boss shield 0 a0 a1
+uradar_player_attacker_distance(a0, a1)            # uradar player attacker any distance 0 a0 a1
+uradar_player_attacker_flying_armor(a0, a1)        # uradar player attacker flying armor 0 a0 a1
+uradar_player_attacker_flying_distance(a0, a1)     # uradar player attacker flying distance 0 a0 a1
+uradar_player_attacker_flying_health(a0, a1)       # uradar player attacker flying health 0 a0 a1
+uradar_player_attacker_flying_maxHealth(a0, a1)    # uradar player attacker flying maxHealth 0 a0 a1
+uradar_player_attacker_flying_shield(a0, a1)       # uradar player attacker flying shield 0 a0 a1
+uradar_player_attacker_ground_armor(a0, a1)        # uradar player attacker ground armor 0 a0 a1
+uradar_player_attacker_ground_distance(a0, a1)     # uradar player attacker ground distance 0 a0 a1
+uradar_player_attacker_ground_health(a0, a1)       # uradar player attacker ground health 0 a0 a1
+uradar_player_attacker_ground_maxHealth(a0, a1)    # uradar player attacker ground maxHealth 0 a0 a1
+uradar_player_attacker_ground_shield(a0, a1)       # uradar player attacker ground shield 0 a0 a1
+uradar_player_attacker_health(a0, a1)              # uradar player attacker any health 0 a0 a1
+uradar_player_attacker_maxHealth(a0, a1)           # uradar player attacker any maxHealth 0 a0 a1
+uradar_player_attacker_shield(a0, a1)              # uradar player attacker any shield 0 a0 a1
+uradar_player_boss_armor(a0, a1)                   # uradar player boss any armor 0 a0 a1
+uradar_player_boss_distance(a0, a1)                # uradar player boss any distance 0 a0 a1
+uradar_player_boss_ground_armor(a0, a1)            # uradar player boss ground armor 0 a0 a1
+uradar_player_boss_ground_distance(a0, a1)         # uradar player boss ground distance 0 a0 a1
+uradar_player_boss_ground_health(a0, a1)           # uradar player boss ground health 0 a0 a1
+uradar_player_boss_ground_maxHealth(a0, a1)        # uradar player boss ground maxHealth 0 a0 a1
+uradar_player_boss_ground_shield(a0, a1)           # uradar player boss ground shield 0 a0 a1
+uradar_player_boss_health(a0, a1)                  # uradar player boss any health 0 a0 a1
+uradar_player_boss_maxHealth(a0, a1)               # uradar player boss any maxHealth 0 a0 a1
+uradar_player_boss_shield(a0, a1)                  # uradar player boss any shield 0 a0 a1
+uradar_player_distance(a0, a1)                     # uradar player any any distance 0 a0 a1
+uradar_player_flying_armor(a0, a1)                 # uradar player flying any armor 0 a0 a1
+uradar_player_flying_boss_armor(a0, a1)            # uradar player flying boss armor 0 a0 a1
+uradar_player_flying_boss_distance(a0, a1)         # uradar player flying boss distance 0 a0 a1
+uradar_player_flying_boss_health(a0, a1)           # uradar player flying boss health 0 a0 a1
+uradar_player_flying_boss_maxHealth(a0, a1)        # uradar player flying boss maxHealth 0 a0 a1
+uradar_player_flying_boss_shield(a0, a1)           # uradar player flying boss shield 0 a0 a1
+uradar_player_flying_distance(a0, a1)              # uradar player flying any distance 0 a0 a1
+uradar_player_flying_ground_armor(a0, a1)          # uradar player flying ground armor 0 a0 a1
+uradar_player_flying_ground_distance(a0, a1)       # uradar player flying ground distance 0 a0 a1
+uradar_player_flying_ground_health(a0, a1)         # uradar player flying ground health 0 a0 a1
+uradar_player_flying_ground_maxHealth(a0, a1)      # uradar player flying ground maxHealth 0 a0 a1
+uradar_player_flying_ground_shield(a0, a1)         # uradar player flying ground shield 0 a0 a1
+uradar_player_flying_health(a0, a1)                # uradar player flying any health 0 a0 a1
+uradar_player_flying_maxHealth(a0, a1)             # uradar player flying any maxHealth 0 a0 a1
+uradar_player_flying_shield(a0, a1)                # uradar player flying any shield 0 a0 a1
+uradar_player_ground_armor(a0, a1)                 # uradar player ground any armor 0 a0 a1
+uradar_player_ground_distance(a0, a1)              # uradar player ground any distance 0 a0 a1
+uradar_player_ground_health(a0, a1)                # uradar player ground any health 0 a0 a1
+uradar_player_ground_maxHealth(a0, a1)             # uradar player ground any maxHealth 0 a0 a1
+uradar_player_ground_shield(a0, a1)                # uradar player ground any shield 0 a0 a1
+uradar_player_health(a0, a1)                       # uradar player any any health 0 a0 a1
+uradar_player_maxHealth(a0, a1)                    # uradar player any any maxHealth 0 a0 a1
+uradar_player_shield(a0, a1)                       # uradar player any any shield 0 a0 a1
+uradar_shield(a0, a1)                              # uradar any any any shield 0 a0 a1
+wait(a0)                                           # wait a0
+write(a0, a1, a2)                                  # write a0 a1 a2

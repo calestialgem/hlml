@@ -33,6 +33,10 @@ example, `radar enemy any any distance message1 1 unit` becomes
 
 Standard library is the scope `hlml` but it only has some constants for now.
 
+See [`builtin.variable.hlml`](builtin.variable.hlml) and
+[`builtin.procedure.hlml`](builtin.procedure.hlml) for a list all the symbols in
+the `mlog` scope and their counter parts in Mindustry logic.
+
 ## Declarations
 
 Declarations go to the top-level scope in a source file.
