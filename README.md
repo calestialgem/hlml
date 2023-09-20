@@ -20,11 +20,12 @@ invoked as procedures from the built-in scope `mlog`. For example,
 
 Furthermore, the variables and constants that are embedded in the processor
 (like `@counter`) are accessed through `mlog`. The variables and constants have
-`-`s in their name replaced with `_`, otherwise they would not be valid hlml
+`-`s in their name replaced with `_`s, otherwise they would not be valid hlml
 identifiers. For example, `@phase-fabric` becomes `mlog::phase_fabric`.
-Similarly, instructions with different structure depending on the first argument
-are identified with a `_` between the instruction name and the argument name.
-For example, `draw lineRect x y w h` becomes `mlog::draw_lineRect(x, y, w, h)`.
+Similarly, instructions with a different structure depending on the first
+argument are identified with a `_` between the instruction name and the argument
+name. For example, `draw lineRect x y w h` becomes
+`mlog::draw_lineRect(x, y, w, h)`.
 
 Instructions with filters (`radar`, `uradar`) have all the combinations
 available. Filters that are not there (`any`) are not written in hlml. For
@@ -34,8 +35,8 @@ example, `radar enemy any any distance message1 1 unit` becomes
 Standard library is the scope `hlml` but it only has some constants for now.
 
 See [`builtin.variable.hlml`](builtin.variable.hlml) and
-[`builtin.procedure.hlml`](builtin.procedure.hlml) for a list all the symbols in
-the `mlog` scope and their counter parts in Mindustry logic.
+[`builtin.procedure.hlml`](builtin.procedure.hlml) for a list of all the symbols
+in the `mlog` scope and their counter-parts in Mindustry logic.
 
 ## Declarations
 
