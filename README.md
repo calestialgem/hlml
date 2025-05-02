@@ -541,7 +541,7 @@ entrypoint {
 
 These are just bunch of `""` delimitated characters in the source file. (Source
 file's are all handled in Unicode, but non-ASCII characters are only allowed in
-comment sand strings.) There are no escape characters in HLML but Mindustry
+comments and strings.) There are no escape characters in HLML but Mindustry
 itself understands `\n` and `[[`: former is used for new lines and the latter is
 used for escaping color specifiers in printing (which are like
 `"[red]some red text"`).
