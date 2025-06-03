@@ -276,30 +276,8 @@ entrypoint {
 ### While Loop
 
 Using the `while` keyword, control flow can loop depending on a condition. The
-`while` branch is executed if the condition is not `mlog::false` using `jump`
-instruction's semantics. Otherwise the `else` branch is executed. If the `while`
-branch is executed, the interleaved statement is executed. Then, the condition
-is checked again and the `while` branch is executed again if the condition is
-not `mlog::false`. This loops while the condition is not `mlog::false` using
-`jump` instruction's semantics.
-
-```hlml
-link cell1;
-entrypoint {
-  var value;
-  var i = 1;
-  while i <= 1000; i++ {
-    value = i;
-  }
-  else {
-    value = 0;
-  }
-  mlog::write(value, cell1, 0);
-}
-```
-
-`else` might be omitted. In that case, it works as if the `else` had an empty
-block.
+`while` branch is executed while the condition is not `mlog::false` using `jump`
+instruction's semantics.
 
 ```hlml
 link cell1;
