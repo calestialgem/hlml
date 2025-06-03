@@ -747,7 +747,6 @@ velocityX                    # @velocityX
 velocityY                    # @velocityY
 vent_condenser               # @vent-condenser
 vibrant_crystal_cluster      # @vibrant-crystal-cluster
-wait                         # @wait
 water                        # @water
 water_extractor              # @water-extractor
 wave                         # @wave
